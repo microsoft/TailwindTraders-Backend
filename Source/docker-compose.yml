@@ -1,0 +1,82 @@
+version: '3.4'
+
+services:
+  sql.data:
+    image: microsoft/mssql-server-linux:2017-latest
+
+  nosql.data:
+    image: mongo
+  
+  cart-cosmosdb:
+    image: microsoft/azure-cosmosdb-emulator
+
+  cart.api:
+    image: ${REGISTRY:-tailwindtraders}/cart.api:${TAG:-latest}
+    build:
+      context: Services/Tailwind.Traders.Cart.Api
+      dockerfile: Dockerfile
+
+  product.api:
+    image: ${REGISTRY:-tailwindtraders}/product.api:${TAG:-latest}
+    build:
+      context: .
+      dockerfile: Services/Tailwind.Traders.Product.Api/Dockerfile    
+    depends_on:
+      - sql.data
+
+  profile.api:
+    image: ${REGISTRY:-tailwindtraders}/profile.api:${TAG:-latest}
+    build:
+      context: .
+      dockerfile: Services/Tailwind.Traders.Profile.Api/Dockerfile    
+    depends_on:
+      - sql.data
+
+  coupon.api:
+    image: ${REGISTRY:-tailwindtraders}/coupon.api:${TAG:-latest}
+    container_name: coupon-node
+    build:
+      context: .
+      dockerfile: Services/Tailwind.Traders.Coupon.Api/Dockerfile
+    depends_on:
+      - nosql.data
+
+  popular-product.api:
+    image: ${REGISTRY:-tailwindtraders}/popular-product.api:${TAG:-latest}
+    build:
+      context: .
+      dockerfile: Services/Tailwind.Traders.PopularProduct.Api/Dockerfile    
+    depends_on:
+      - sql.data
+
+  stock.api:
+    image: ${REGISTRY:-tailwindtraders}/stock.api:${TAG:-latest}
+    container_name: stock-node
+    build:
+      context: ./Services/Tailwind.Traders.Stock.Api/
+      dockerfile: Dockerfile  
+
+  product-visits.function:
+    image: ${REGISTRY:-tailwindtraders}/product-visits.function:${TAG:-latest}
+    container_name: product-visits-node
+    build:
+      context: ./Services/Tailwind.Traders.Visits.Function/
+      dockerfile: Dockerfile
+
+  image-classifier.api:
+    image: ${REGISTRY:-tailwindtraders}/image-classifier.api:${TAG:-latest}
+    build:
+      context: .
+      dockerfile: Services/Tailwind.Traders.ImageClassifier.Api/Dockerfile
+
+  mobileapigw:
+    image: ${REGISTRY:-tailwindtraders}/mobileapigw:${TAG:-latest}
+    build:
+      context: .
+      dockerfile: ApiGWs/Tailwind.Traders.Bff/Dockerfile 
+
+  webapigw:
+    image: ${REGISTRY:-tailwindtraders}/webapigw:${TAG:-latest}
+    build:
+      context: .
+      dockerfile: ApiGWs/Tailwind.Traders.WebBff/Dockerfile

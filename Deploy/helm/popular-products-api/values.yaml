@@ -1,0 +1,39 @@
+replicaCount: 1
+applicationName: tailwindtraders
+
+image:
+  repository:  tailwindtradersacr.azurecr.io/popular-product.api
+  tag: prod
+  pullPolicy: Always
+
+initImage:
+  repository:  tailwindtradersacr.azurecr.io/popular-product-seed.api
+  tag: prod
+  pullPolicy: Always
+
+
+service:
+  type: ClusterIP
+  port: 80
+
+resources: {}
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+env:
+  configmap:
+    - name: ApplicationInsights__InstrumentationKey
+    - name: ConnectionString
+    - name: AzureStorageUrl
+  configmapinit:
+    - name: dbserver
+    - name: dbuser
+    - name: dbpassword
+    - name: dbcatalog
+  values:
+    - name: ASPNETCORE_ENVIRONMENT
+      value: Development

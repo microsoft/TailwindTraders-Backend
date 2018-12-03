@@ -1,0 +1,21 @@
+{{- $name := include "tt-mobilebff.fullname" . -}}
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "cfg-{{ $name }}"
+  labels:
+    app: {{ template "tt-mobilebff.name" . }}
+    chart: {{ template "tt-mobilebff.chart" .}}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+data:
+  ApplicationInsights__InstrumentationKey:  {{ .Values.inf.appinsights.id }}
+  PopularProductsApiUrl: {{ .Values.inf.apiurls.popularproductsapiurl }}
+  ProductsApiUrl: {{ .Values.inf.apiurls.productsapiurl }}
+  ProfileApiUrl: {{ .Values.inf.apiurls.profileapiurl }}
+  CouponsApiUrl: {{ .Values.inf.apiurls.couponsapiurl }}
+  StockApiUrl: {{ .Values.inf.apiurls.stockapiurl }}
+  ImageClassifierApiUrl: {{ .Values.inf.apiurls.imageclassifierapiurl }}
+
+

@@ -1,0 +1,356 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "servicePrincipalId": {
+      "type": "string"
+    },
+    "servicePrincipalSecret": {
+      "type": "securestring"
+    },
+    "sqlServerAdministratorLogin": {
+      "type": "string",
+      "defaultvalue": "sqladmin"
+    },
+    "sqlServerAdministratorLoginPassword": {
+      "type": "securestring"
+    }
+  },
+  "variables": {
+    "acr_name": "[concat('ttacr',uniqueString(resourceGroup().id))]",
+    "storage_name": "[concat('ttstorage',uniqueString(resourceGroup().id))]",
+    "aks_name": "[concat('tailwindtradersaks',uniqueString(resourceGroup().id))]",
+    "function_name": "[concat('ttfunction',uniqueString(resourceGroup().id))]",
+    "sqlserver_name": "[concat('ttsqlserver',uniqueString(resourceGroup().id))]",
+    "cosmosdb_name": "[concat('ttcosmosdb',uniqueString(resourceGroup().id))]",
+    "workspaceName": "[concat('ttoms', uniqueString(resourceGroup().id))]",
+    "omsWorkspaceId": "[concat('/subscriptions/', subscription().subscriptionId,'/resourceGroups/',resourceGroup().name,'/providers/Microsoft.OperationalInsights/workspaces/', variables('workspaceName'))]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.ContainerRegistry/registries",
+      "sku": {
+        "name": "Standard"
+      },
+      "name": "[variables('acr_name')]",
+      "apiVersion": "2017-10-01",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "adminUserEnabled": true
+      }
+    },
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "sku": {
+        "name": "Standard_LRS"
+      },
+      "kind": "StorageV2",
+      "name": "[variables('storage_name')]",
+      "apiVersion": "2018-07-01",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "accessTier": "Hot",
+        "supportsHttpsTrafficOnly": false
+      },
+      "dependsOn": []
+    },
+    {
+      "type": "Microsoft.ContainerService/managedClusters",
+      "name": "[variables('aks_name')]",
+      "apiVersion": "2018-03-31",
+      "location": "[resourceGroup().location]",
+      "tags": {},
+      "properties": {
+        "kubernetesVersion": "1.11.5",
+        "enableRBAC": true,
+        "dnsPrefix": "[variables('aks_name')]",
+        "addonProfiles": {
+          "httpApplicationRouting": {
+            "enabled": true
+          },
+          "omsagent": {
+            "enabled": true,
+            "config": {
+              "logAnalyticsWorkspaceResourceID": "[variables('omsWorkspaceId')]"
+            }
+          }
+        },
+        "agentPoolProfiles": [
+          {
+            "name": "agentpool",
+            "osDiskSizeGB": 0,
+            "count": 3,
+            "vmSize": "Standard_D2_v2",
+            "osType": "Linux",
+            "storageProfile": "ManagedDisks"
+          }
+        ],
+        "servicePrincipalProfile": {
+          "ClientId": "[parameters('servicePrincipalId')]",
+          "Secret": "[parameters('servicePrincipalSecret')]"
+        },
+        "networkProfile": {
+          "networkPlugin": "kubenet"
+        }
+      },
+      "dependsOn": [
+        "[concat('Microsoft.Resources/deployments/', 'WorkspaceDeployment')]"
+      ]
+    },
+    {
+      "type": "Microsoft.Web/sites",
+      "kind": "functionapp",
+      "name": "[variables('function_name')]",
+      "apiVersion": "2016-03-01",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "name": "[variables('function_name')]",
+        "siteConfig": {
+          "appSettings": [
+            {
+              "name": "FUNCTIONS_WORKER_RUNTIME",
+              "value": "dotnet"
+            },
+            {
+              "name": "AzureWebJobsStorage",
+              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storage_name'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storage_name')), '2015-05-01-preview').key1)]"
+            },
+            {
+              "name": "FUNCTIONS_EXTENSION_VERSION",
+              "value": "~2"
+            },
+            {
+              "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
+              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storage_name'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storage_name')), '2015-05-01-preview').key1)]"
+            },
+            {
+              "name": "WEBSITE_NODE_DEFAULT_VERSION",
+              "value": "8.11.1"
+            }
+          ]
+        },
+        "clientAffinityEnabled": false,
+        "reserved": false
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts', variables('storage_name'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Sql/servers",
+      "name": "[variables('sqlserver_name')]",
+      "apiVersion": "2015-05-01-preview",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "administratorLogin": "[parameters('sqlServerAdministratorLogin')]",
+        "administratorLoginPassword": "[parameters('sqlServerAdministratorLoginPassword')]",
+        "version": "12.0"
+      },
+      "resources": [
+        {
+          "type": "databases",
+          "sku": {
+            "name": "S0",
+            "tier": "Standard"
+          },
+          "name": "Products",
+          "apiVersion": "2017-10-01-preview",
+          "location": "[resourceGroup().location]",
+          "properties": {
+            "collation": "SQL_Latin1_General_CP1_CI_AS",
+            "maxSizeBytes": 268435456000,
+            "sampleName": "",
+            "zoneRedundant": false,
+            "licenseType": ""
+          },
+          "dependsOn": [
+            "[concat('Microsoft.Sql/servers/', variables('sqlserver_name'))]"
+          ]
+        },
+        {
+          "type": "databases",
+          "sku": {
+            "name": "S0",
+            "tier": "Standard"
+          },
+          "name": "Profiles",
+          "apiVersion": "2017-10-01-preview",
+          "location": "[resourceGroup().location]",
+          "properties": {
+            "collation": "SQL_Latin1_General_CP1_CI_AS",
+            "maxSizeBytes": 268435456000,
+            "sampleName": "",
+            "zoneRedundant": false,
+            "licenseType": ""
+          },
+          "dependsOn": [
+            "[concat('Microsoft.Sql/servers/', variables('sqlserver_name'))]"
+          ]
+        },
+        {
+          "type": "databases",
+          "sku": {
+            "name": "S0",
+            "tier": "Standard"
+          },
+          "name": "PopularProducts",
+          "apiVersion": "2017-10-01-preview",
+          "location": "[resourceGroup().location]",
+          "properties": {
+            "collation": "SQL_Latin1_General_CP1_CI_AS",
+            "maxSizeBytes": 268435456000,
+            "sampleName": "",
+            "zoneRedundant": false,
+            "licenseType": ""
+          },
+          "dependsOn": [
+            "[concat('Microsoft.Sql/servers/', variables('sqlserver_name'))]"
+          ]
+        },
+        {
+          "type": "firewallrules",
+          "name": "AllowAllWindowsAzureIps",
+          "apiVersion": "2014-04-01-preview",
+          "location": "[resourceGroup().location]",
+          "properties": {
+            "endIpAddress": "255.255.255.255",
+            "startIpAddress": "0.0.0.0"
+          },
+          "dependsOn": [
+            "[concat('Microsoft.Sql/servers/', variables('sqlserver_name'))]"
+          ],
+          "condition": true
+        },
+        {
+          "type": "securityAlertPolicies",
+          "name": "Default",
+          "apiVersion": "2017-03-01-preview",
+          "properties": {
+            "state": "Enabled",
+            "disabledAlerts": [],
+            "emailAddresses": [],
+            "emailAccountAdmins": true
+          },
+          "dependsOn": [
+            "[concat('Microsoft.Sql/servers/', variables('sqlserver_name'))]",
+            "[concat('Microsoft.Sql/servers/', variables('sqlserver_name'), '/databases/', 'Products')]",
+            "[concat('Microsoft.Sql/servers/', variables('sqlserver_name'), '/databases/', 'Profiles')]",
+            "[concat('Microsoft.Sql/servers/', variables('sqlserver_name'), '/databases/', 'PopularProducts')]"
+          ],
+          "condition": false
+        }
+      ]
+    },
+    {
+      "type": "Microsoft.DocumentDb/databaseAccounts",
+      "kind": "GlobalDocumentDB",
+      "name": "[variables('cosmosdb_name')]",
+      "apiVersion": "2015-04-08",
+      "location": "[resourceGroup().location]",
+      "tags": {
+        "defaultExperience": "Core (SQL)"
+      },
+      "properties": {
+        "databaseAccountOfferType": "Standard",
+        "locations": [
+          {
+            "id": "[concat(variables('cosmosdb_name'), '-', resourceGroup().location)]",
+            "failoverPriority": 0,
+            "locationName": "[resourceGroup().location]"
+          }
+        ],
+        "enableMultipleWriteLocations": true,
+        "isVirtualNetworkFilterEnabled": false,
+        "virtualNetworkRules": [],
+        "dependsOn": []
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "name": "SolutionDeployment",
+      "apiVersion": "2017-05-10",
+      "subscriptionId": "[split(variables('omsWorkspaceId'),'/')[2]]",
+      "resourceGroup": "[split(variables('omsWorkspaceId'),'/')[4]]",
+      "properties": {
+        "mode": "Incremental",
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "parameters": {},
+          "variables": {},
+          "resources": [
+            {
+              "apiVersion": "2015-11-01-preview",
+              "type": "Microsoft.OperationsManagement/solutions",
+              "location": "East US",
+              "name": "[concat('ContainerInsights', '(', split(variables('omsWorkspaceId'),'/')[8], ')')]",
+              "properties": {
+                "workspaceResourceId": "[variables('omsWorkspaceId')]"
+              },
+              "plan": {
+                "name": "[concat('ContainerInsights', '(', split(variables('omsWorkspaceId'),'/')[8], ')')]",
+                "product": "[concat('OMSGallery/', 'ContainerInsights')]",
+                "promotionCode": "",
+                "publisher": "Microsoft"
+              }
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[concat('Microsoft.Resources/deployments/', 'WorkspaceDeployment')]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "name": "WorkspaceDeployment",
+      "apiVersion": "2017-05-10",
+      "subscriptionId": "[split(variables('omsWorkspaceId'),'/')[2]]",
+      "resourceGroup": "[split(variables('omsWorkspaceId'),'/')[4]]",
+      "properties": {
+        "mode": "Incremental",
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "parameters": {},
+          "variables": {},
+          "resources": [
+            {
+              "apiVersion": "2015-11-01-preview",
+              "type": "Microsoft.OperationalInsights/workspaces",
+              "location": "East US",
+              "name": "[variables('workspaceName')]",
+              "properties": {
+                "sku": {
+                  "name": "standalone"
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "outputs": {
+    "acr": {
+      "type": "string",
+      "value": "[variables('acr_name')]"
+    },
+    "aks": {
+      "type": "string",
+      "value": "[variables('aks_name')]"
+    },
+    "function": {
+      "type": "string",
+      "value": "[variables('function_name')]"
+    },
+    "sqlserver": {
+      "type": "string",
+      "value": "[variables('sqlserver_name')]"
+    },
+    "cosmos": {
+      "type": "string",
+      "value": "[variables('cosmosdb_name')]"
+    }
+  }
+}

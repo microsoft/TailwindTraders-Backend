@@ -1,0 +1,13 @@
+.dockerignore
+.env
+.git
+.gitignore
+.vs
+.vscode
+**/bin
+**/obj
+**/.toolstarget
+**/appsettings.Development.json
+**/node_modules/
+**/Setup/product-images/
+**/Setup/product-coupons/

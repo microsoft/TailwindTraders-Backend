@@ -1,0 +1,21 @@
+{{- $name := include "tt-popularproducts.fullname" . -}}
+{{- $sqlsrv := .Values.inf.db.popularproducts.host -}}
+{{- $sqlport := .Values.inf.db.popularproducts.port -}}
+{{- $sqldb := .Values.inf.db.popularproducts.catalog -}}
+{{- $sqluser := .Values.inf.db.popularproducts.user -}}
+{{- $sqlpwd := .Values.inf.db.popularproducts.pwd -}}
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "cfg-{{ $name }}"
+  labels:
+    app: {{ template "tt-popularproducts.name" . }}
+    chart: {{ template "tt-popularproducts.chart" .}}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+data:
+#  ConnectionString: Server={{ $sqlsrv }},{{ $sqlport }};Initial Catalog={{ $sqldb }};Persist Security Info=False;User ID={{ $sqluser }};Password={{ $sqlpwd }};MultipleActiveResultSets=False;Connection Timeout=30;
+  ApplicationInsights__InstrumentationKey:  {{ .Values.inf.appinsights.id }}
+  ConnectionString: Server={{ $sqlsrv }};Port={{ $sqlport }};Initial Catalog={{ $sqldb }};Persist Security Info=False;User ID={{ $sqluser }};Password={{ $sqlpwd }};MultipleActiveResultSets=False;Connection Timeout=30;
+  AzureStorageUrl: {{ .Values.inf.storage.productimages }}

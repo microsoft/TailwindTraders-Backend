@@ -1,0 +1,56 @@
+<Project>
+  <PropertyGroup Label="SDK Versions">
+    <NetStandardTargetVersion>netstandard2.0</NetStandardTargetVersion>
+  </PropertyGroup>
+  <PropertyGroup Label="Global csproj settings">
+    <LangVersion>latest</LangVersion>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <AspNetCoreHostingModel>inprocess</AspNetCoreHostingModel>
+  </PropertyGroup>
+
+  <Choose>
+    <When Condition=" '$(NetCoreToTarget)' == 'net22-preview3' ">
+      <PropertyGroup Label="Netcore Versions">
+          <NetCoreTargetVersion>netcoreapp2.2</NetCoreTargetVersion>
+          <MicrosoftAspNetCoreRazorDesign>2.2.0-preview3-35497</MicrosoftAspNetCoreRazorDesign>
+          <MicrosoftAspNetCoreHttpFeatures>2.2.0-preview3-35497</MicrosoftAspNetCoreHttpFeatures>
+          <MicrosoftEntityFrameworkCore>2.2.0-preview3-35497</MicrosoftEntityFrameworkCore>
+          <MicrosoftEntityFrameworkCoreSqlServer>2.2.0-preview3-35497</MicrosoftEntityFrameworkCoreSqlServer>
+          <MicrosoftVisualStudioWebCodeGenerationDesign>2.2.0-preview3-35497</MicrosoftVisualStudioWebCodeGenerationDesign>
+      </PropertyGroup>
+    </When>
+    <When Condition=" '$(NetCoreToTarget)' == 'net22' ">
+      <PropertyGroup Label="Netcore Versions">
+          <NetCoreTargetVersion>netcoreapp2.2</NetCoreTargetVersion>
+          <MicrosoftAspNetCoreRazorDesign>2.2.0</MicrosoftAspNetCoreRazorDesign>
+          <MicrosoftAspNetCoreHttpFeatures>2.2.0</MicrosoftAspNetCoreHttpFeatures>
+          <MicrosoftEntityFrameworkCore>2.2.0</MicrosoftEntityFrameworkCore>
+          <MicrosoftEntityFrameworkCoreSqlServer>2.2.0</MicrosoftEntityFrameworkCoreSqlServer>
+          <MicrosoftVisualStudioWebCodeGenerationDesign>2.2.0-preview3-35497</MicrosoftVisualStudioWebCodeGenerationDesign>
+      </PropertyGroup>
+    </When>
+    <When Condition=" '$(NetCoreToTarget)' == 'net21' ">
+      <PropertyGroup Label="Netcore Versions">
+          <NetCoreTargetVersion>netcoreapp2.1</NetCoreTargetVersion>
+          <MicrosoftAspNetCoreRazorDesign>2.1.2</MicrosoftAspNetCoreRazorDesign>
+          <MicrosoftAspNetCoreHttpFeatures>2.1.1</MicrosoftAspNetCoreHttpFeatures>
+          <MicrosoftEntityFrameworkCore>2.1.2</MicrosoftEntityFrameworkCore>
+          <MicrosoftEntityFrameworkCoreSqlServer>2.1.2</MicrosoftEntityFrameworkCoreSqlServer>
+          <MicrosoftVisualStudioWebCodeGenerationDesign>2.1.3</MicrosoftVisualStudioWebCodeGenerationDesign>
+      </PropertyGroup>
+     </When>
+  </Choose>
+
+
+  <PropertyGroup Label="External Package Versions">
+    <CsvHelper>7.1.1</CsvHelper> 
+    <MicrosoftApplicationInsightsAspNetCore>2.5.1</MicrosoftApplicationInsightsAspNetCore>
+    <MicrosoftAspNetCoreMvcVersioning>2.3.0</MicrosoftAspNetCoreMvcVersioning>
+    <MicrosoftAspNetCoreMvcVersioningApiExplorer>2.2.0</MicrosoftAspNetCoreMvcVersioningApiExplorer>
+    <MicrosoftML>0.7.0</MicrosoftML>
+    <MicrosoftMLImageAnalytics>0.7.0</MicrosoftMLImageAnalytics>
+    <MicrosoftMLTensorFlow>0.7.0</MicrosoftMLTensorFlow>
+    <MicrosoftVisualStudioAzureContainersToolsTargets>1.1.1</MicrosoftVisualStudioAzureContainersToolsTargets>
+    <SwashbuckleAspNetCore>3.0.0</SwashbuckleAspNetCore>
+  </PropertyGroup>
+</Project>

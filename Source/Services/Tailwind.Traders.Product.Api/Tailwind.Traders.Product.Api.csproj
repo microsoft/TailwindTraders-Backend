@@ -1,0 +1,38 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>$(NetCoreTargetVersion)</TargetFramework>
+    <DockerDefaultTargetOS>$(DockerDefaultTargetOS)</DockerDefaultTargetOS>
+    <UserSecretsId>f2fcf537-652a-4a9e-840e-ab5f0651520f</UserSecretsId>
+    <AssemblyName>Tailwind.Traders.Product.Api</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Setup\ProductTags.csv" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Setup\ProductBrands.csv" />
+    <Content Include="Setup\ProductTags.csv" />
+    <Content Include="Setup\ProductFeatures.csv" />
+    <Content Include="Setup\ProductItems.csv" />
+    <Content Include="Setup\ProductTypes.csv" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Migrations\" />
+    <Folder Include="wwwroot\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CsvHelper" Version="$(CsvHelper)" />
+    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="$(MicrosoftApplicationInsightsAspNetCore)" />
+    <PackageReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="$(MicrosoftAspNetCoreMvcVersioning)" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="$(MicrosoftEntityFrameworkCore)" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="$(MicrosoftEntityFrameworkCoreSqlServer)" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="$(MicrosoftVisualStudioAzureContainersToolsTargets)" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="$(MicrosoftVisualStudioWebCodeGenerationDesign)" />
+  </ItemGroup>
+
+</Project>

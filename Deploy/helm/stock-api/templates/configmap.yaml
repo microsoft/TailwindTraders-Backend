@@ -1,0 +1,14 @@
+{{- $name := include "tt-stock.fullname" . -}}
+
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "cfg-{{ $name }}"
+  labels:
+    app: {{ template "tt-stock.name" . }}
+    chart: {{ template "tt-stock.chart" .}}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+data:
+  ApplicationInsights:  {{ .Values.inf.appinsights.id }}

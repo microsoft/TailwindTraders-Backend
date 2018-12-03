@@ -1,0 +1,23 @@
+﻿<Project>
+  <PropertyGroup>
+    <NetCoreToTarget></NetCoreToTarget>
+  </PropertyGroup>
+  <Choose>
+    <When Condition=" '$(NetCoreVersion)' == 'netcore22' ">
+      <PropertyGroup>
+        <NetCoreToTarget>net22</NetCoreToTarget>
+      </PropertyGroup>
+    </When>
+    <When Condition=" '$(NetCoreVersion)' == 'netcore22-preview3' ">
+      <PropertyGroup>
+        <NetCoreToTarget>net22-preview3</NetCoreToTarget>
+      </PropertyGroup>
+    </When>    
+    <When Condition=" '$(NetCoreVersion)' == 'netcore21' Or '$(NetCoreVersion)' == '' ">
+      <PropertyGroup>
+        <NetCoreToTarget>net21</NetCoreToTarget>
+      </PropertyGroup>
+     </When>
+  </Choose>
+  <Import Project="build/dependencies.props" /> 
+</Project>

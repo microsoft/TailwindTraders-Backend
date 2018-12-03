@@ -1,0 +1,92 @@
+{
+    "swagger": "2.0",
+    "info": {
+      "version": "1.0.0",
+      "title": "Stock API",
+      "description": "Stock API",
+      "license": {
+        "name": "MIT",
+        "url": "https://opensource.org/licenses/MIT"
+      }
+    },
+    "host": "localhost:3000",
+    "basePath": "/v1",
+    "tags": [
+      {
+        "name": "Coupons",
+        "description": "API for users in the system"
+      }
+    ],
+    "schemes": [
+      "http"
+    ],
+    "consumes": [
+      "application/json"
+    ],
+    "produces": [
+      "application/json"
+    ],
+    "paths": {
+      "/allCoupons": {
+        "get": {
+          "tags": [
+            "Coupon"
+          ],
+          "summary": "Get all coupons for customer",
+          "responses": {
+            "200": {
+              "description": "OK",
+              "schema": {
+                "$ref": "#/definitions/Coupons"
+              }
+            }
+          }
+        }
+      }
+    },
+    "definitions": {
+      "Coupon": {
+        "required": [
+          "email",
+          "_id"
+        ],
+        "properties": {
+          "_id": {
+            "type": "string",
+            "uniqueItems": true
+          },
+          "coupons": {
+            "type": "array",
+            "items":{
+              "id":{
+                "type": "number",
+                "uniqueItems": true
+              },
+              "image":{
+                "type": "string"
+              },
+              "discount":{
+                "type": "string"
+              },
+              "title": {
+                "type": "string"
+              },
+              "until": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              }
+            }
+          },
+          "couponBig": {
+            "type": "string"
+          }
+        }
+      },
+      "Coupons": {
+        "type": "array",
+        "$ref": "#/definitions/Coupon"
+      }
+    }
+  }

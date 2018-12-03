@@ -1,0 +1,15 @@
+{{- $name := include "tt-cart.fullname" . -}}
+
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "cfg-{{ $name }}"
+  labels:
+    app: {{ template "tt-cart.name" . }}
+    chart: {{ template "tt-cart.chart" .}}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+data:
+  AUTHKEY: {{ .Values.inf.db.cart.auth }}
+  HOST: {{ .Values.inf.db.cart.host }}

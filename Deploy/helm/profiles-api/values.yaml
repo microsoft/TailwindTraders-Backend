@@ -1,0 +1,28 @@
+replicaCount: 1
+applicationName: tailwindtraders
+
+image:
+  repository: tailwindtradersacr.azurecr.io/profile.api
+  tag: prod
+  pullPolicy: Always
+
+service:
+  type: ClusterIP
+  port: 80
+
+resources: {}
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+env:
+  configmap:
+    - name: ApplicationInsights__InstrumentationKey
+    - name: ConnectionString
+    - name: ProfilesImageUrl
+  values:
+    - name: ASPNETCORE_ENVIRONMENT
+      value: Development

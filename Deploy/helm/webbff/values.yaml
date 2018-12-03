@@ -1,0 +1,31 @@
+replicaCount: 1
+applicationName: tailwindtraders
+
+image:
+  repository: tailwindtradersacr.azurecr.io/webapigw.api
+  tag: prod
+  pullPolicy: Always
+
+service:
+  type: ClusterIP
+  port: 80
+
+resources: {}
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+env:
+  configmap:
+    - name: ApplicationInsights__InstrumentationKey
+    - name: PopularProductsApiUrl
+    - name: ProductsApiUrl
+    - name: ProfileApiUrl
+    - name: CouponsApiUrl
+    - name: ImageClassifierApiUrl
+  values:
+    - name: ASPNETCORE_ENVIRONMENT
+      value: Development

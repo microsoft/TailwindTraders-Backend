@@ -1,0 +1,15 @@
+{{- $name := include "tt-imageclassifier.fullname" . -}}
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "cfg-{{ $name }}"
+  labels:
+    app: {{ template "tt-imageclassifier.name" . }}
+    chart: {{ template "tt-imageclassifier.chart" .}}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+data:
+  ApplicationInsights__InstrumentationKey:  {{ .Values.inf.appinsights.id }}
+
+
