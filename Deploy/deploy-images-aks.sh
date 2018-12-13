@@ -4,7 +4,7 @@ aksRg=${TT_AKS_RG}
 acrName=${TT_ACR_NAME}
 aksHost=""
 acrLogin=""
-tag="c2018"
+tag="latest"
 charts="*"
 valuesFile=gvalues.yaml
 
