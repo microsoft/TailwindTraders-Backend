@@ -7,8 +7,6 @@ services:
   nosql.data:
     image: mongo
   
-  cart-cosmosdb:
-    image: microsoft/azure-cosmosdb-emulator
 
   cart.api:
     image: ${REGISTRY:-tailwindtraders}/cart.api:${TAG:-latest}
