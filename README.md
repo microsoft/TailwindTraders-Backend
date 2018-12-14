@@ -8,6 +8,8 @@ We have added an ARM template so you can automate the creation of the resources 
 
 Please, note that **this only deploys the needed infrastructure**. You need to deploy the services to your infrastructure, following these [instructions](./Documents/DeploymentGuide.md)
 
+* To run the backend locally on your computer follow these [instructions](./Documents/RunLocally.md)
+
 # Running the backend services
 
 Please refer to the [deployment guide](Documents/DeploymentGuide.md) for the required steps to run the backend services.
