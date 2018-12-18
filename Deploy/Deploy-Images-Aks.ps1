@@ -6,7 +6,7 @@ Param(
     [parameter(Mandatory=$false)][string]$acrLogin,
     [parameter(Mandatory=$false)][string]$tag="latest",
     [parameter(Mandatory=$false)][string]$charts = "*",
-    [parameter(Mandatory=$false)][string]$valueSFile = "gvalues.yml",
+    [parameter(Mandatory=$false)][string]$valueSFile = "gvalues.yaml",
     [parameter(Mandatory=$false)][string]$afHost = "http://your-product-visits-af-here"
 )
 
@@ -59,47 +59,47 @@ Write-Host "Deploying charts $charts" -ForegroundColor Yellow
 
 if ($charts.Contains("pr") -or  $charts.Equals("*")) {
     Write-Host "Products chart - pr" -ForegroundColor Yellow
-    helm install --name $name-product -f $valuesFile --set az.productvisitsurl=$afHost --set ingress.hosts={$aksHost} --set image.repository=$acrLogin/product.api --set image.tag=$tag  products-api
+    cmd /c "helm install --name $name-product -f $valuesFile --set az.productvisitsurl=$afHost --set ingress.hosts={$aksHost} --set image.repository=$acrLogin/product.api --set image.tag=$tag  products-api"
 }
 
 if ($charts.Contains("cp") -or  $charts.Equals("*")) {
     Write-Host "Coupons chart - cp" -ForegroundColor Yellow
-    helm install --name $name-coupon -f $valuesFile --set ingress.hosts={$aksHost} --set image.repository=$acrLogin/coupon.api --set image.tag=$tag coupons-api
+    cmd /c "helm install --name $name-coupon -f $valuesFile --set ingress.hosts={$aksHost} --set image.repository=$acrLogin/coupon.api --set image.tag=$tag coupons-api"
 }
 
 if ($charts.Contains("pf") -or  $charts.Equals("*")) {
     Write-Host "Profile chart - pf " -ForegroundColor Yellow
-    helm install --name $name-profile -f $valuesFile --set ingress.hosts={$aksHost} --set image.repository=$acrLogin/profile.api --set image.tag=$tag profiles-api
+    cmd /c "helm install --name $name-profile -f $valuesFile --set ingress.hosts={$aksHost} --set image.repository=$acrLogin/profile.api --set image.tag=$tag profiles-api"
 }
 
 if ($charts.Contains("pp") -or  $charts.Equals("*")) {
     Write-Host "Popular products chart - pp" -ForegroundColor Yellow
-    helm install --name $name-popular-product -f $valuesFile --set ingress.hosts={$aksHost} --set image.repository=$acrLogin/popular-product.api --set image.tag=$tag --set initImage.repository=$acrLogin/popular-product-seed.api  --set initImage.tag=$tag popular-products-api 
+    cmd /c "helm install --name $name-popular-product -f $valuesFile --set ingress.hosts={$aksHost} --set image.repository=$acrLogin/popular-product.api --set image.tag=$tag --set initImage.repository=$acrLogin/popular-product-seed.api  --set initImage.tag=$tag popular-products-api "
 }
 
 if ($charts.Contains("st") -or  $charts.Equals("*")) {
     Write-Host "Stock -st" -ForegroundColor Yellow
-    helm  install --name $name-stock -f $valuesFile --set ingress.hosts={$aksHost} --set image.repository=$acrLogin/stock.api --set image.tag=$tag stock-api
+    cmd /c "helm  install --name $name-stock -f $valuesFile --set ingress.hosts={$aksHost} --set image.repository=$acrLogin/stock.api --set image.tag=$tag stock-api"
 }
 
 if ($charts.Contains("ic") -or  $charts.Equals("*")) {
     Write-Host "Image Classifier -ic" -ForegroundColor Yellow
-    helm  install --name $name-image-classifier -f $valuesFile --set ingress.hosts={$aksHost} --set image.repository=$acrLogin/image-classifier.api --set image.tag=$tag image-classifier-api
+    cmd /c "helm  install --name $name-image-classifier -f $valuesFile --set ingress.hosts={$aksHost} --set image.repository=$acrLogin/image-classifier.api --set image.tag=$tag image-classifier-api"
 }
 
 if ($charts.Contains("ct") -or  $charts.Equals("*")) {
     Write-Host "Cart (Basket) -ct" -ForegroundColor Yellow
-    helm  install --name $name-cart -f $valuesFile --set ingress.hosts={$aksHost} --set image.repository=$acrLogin/cart.api --set image.tag=$tag cart-api
+    cmd /c "helm  install --name $name-cart -f $valuesFile --set ingress.hosts={$aksHost} --set image.repository=$acrLogin/cart.api --set image.tag=$tag cart-api"
 }
 
 if ($charts.Contains("mgw") -or  $charts.Equals("*")) {
     Write-Host "mobilebff -mgw" -ForegroundColor Yellow 
-    helm  install --name $name-mobilebff -f $valuesFile --set ingress.hosts={$aksHost} --set image.repository=$acrLogin/mobileapigw --set image.tag=$tag mobilebff
+    cmd /c "helm  install --name $name-mobilebff -f $valuesFile --set ingress.hosts={$aksHost} --set image.repository=$acrLogin/mobileapigw --set image.tag=$tag mobilebff"
 }
 
 if ($charts.Contains("wgw") -or  $charts.Equals("*")) {
     Write-Host "webbff -wgw" -ForegroundColor Yellow
-    helm  install --name $name-webbff -f $valuesFile --set ingress.hosts={$aksHost} --set image.repository=$acrLogin/webapigw --set image.tag=$tag webbff
+    cmd /c "helm  install --name $name-webbff -f $valuesFile --set ingress.hosts={$aksHost} --set image.repository=$acrLogin/webapigw --set image.tag=$tag webbff"
 }
 
 popd
