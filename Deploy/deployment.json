@@ -22,7 +22,8 @@
     "aks_name": "[concat('tailwindtradersaks',uniqueString(resourceGroup().id))]",
     "function_name": "[concat('ttfunction',uniqueString(resourceGroup().id))]",
     "sqlserver_name": "[concat('ttsqlserver',uniqueString(resourceGroup().id))]",
-    "cosmosdb_name": "[concat('ttcosmosdb',uniqueString(resourceGroup().id))]",
+    "cuopons_cosmosdb_name": "[concat('ttcuoponsdb',uniqueString(resourceGroup().id))]",
+    "shopping_cosmosdb_name": "[concat('ttshoppingdb',uniqueString(resourceGroup().id))]",
     "workspaceName": "[concat('ttoms', uniqueString(resourceGroup().id))]",
     "omsWorkspaceId": "[concat('/subscriptions/', subscription().subscriptionId,'/resourceGroups/',resourceGroup().name,'/providers/Microsoft.OperationalInsights/workspaces/', variables('workspaceName'))]"
   },
@@ -244,7 +245,7 @@
     {
       "type": "Microsoft.DocumentDb/databaseAccounts",
       "kind": "GlobalDocumentDB",
-      "name": "[variables('cosmosdb_name')]",
+      "name": "[variables('shopping_cosmosdb_name')]",
       "apiVersion": "2015-04-08",
       "location": "[resourceGroup().location]",
       "tags": {
@@ -254,7 +255,7 @@
         "databaseAccountOfferType": "Standard",
         "locations": [
           {
-            "id": "[concat(variables('cosmosdb_name'), '-', resourceGroup().location)]",
+            "id": "[concat(variables('shopping_cosmosdb_name'), '-', resourceGroup().location)]",
             "failoverPriority": 0,
             "locationName": "[resourceGroup().location]"
           }
@@ -263,6 +264,30 @@
         "isVirtualNetworkFilterEnabled": false,
         "virtualNetworkRules": [],
         "dependsOn": []
+      }
+    },
+    {
+      "apiVersion": "2015-04-08",
+      "kind": "MongoDB",
+      "type": "Microsoft.DocumentDb/databaseAccounts",
+      "name": "[variables('cuopons_cosmosdb_name')]",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "databaseAccountOfferType": "Standard",
+        "locations": [
+          {
+            "id": "[concat(variables('cuopons_cosmosdb_name'), '-', resourceGroup().location)]",
+            "failoverPriority": 0,
+            "locationName": "[resourceGroup().location]"
+          }
+        ],
+        "enableMultipleWriteLocations": true,
+        "isVirtualNetworkFilterEnabled": false,
+        "virtualNetworkRules": [],
+        "dependsOn": []
+      },
+      "tags": {
+        "defaultExperience": "Azure Cosmos DB for MongoDB API"
       }
     },
     {
@@ -348,9 +373,13 @@
       "type": "string",
       "value": "[variables('sqlserver_name')]"
     },
-    "cosmos": {
+    "cuoponsdb": {
       "type": "string",
-      "value": "[variables('cosmosdb_name')]"
+      "value": "[variables('cuopons_cosmosdb_name')]"
+    },
+    "shoppingdb": {
+      "type": "string",
+      "value": "[variables('shopping_cosmosdb_name')]"
     }
   }
 }
