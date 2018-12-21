@@ -66,6 +66,8 @@ Run `docker-compose build` and then manually tag and push the images to your ACR
 
 ## Deploying services
 
+>**Note**: If you want to add SSL/TLS support on the cluster (needed to use https on the web) plase read following section **before installing the backend**.
+
 To deploy the services from a Bash terminal run the `./deploy-images-aks.sh` script with the following parameters:
 
 * `-n <name>` Name of the deployment. Defaults to  `my-tt`
@@ -83,6 +85,7 @@ If using Powershell, have to run `./Deploy-Images-Aks.ps1` with following parame
 * `-acrName <name>` Name of the ACR
 * `-tag <tag>` Docker images tag to use. Defaults to  `latest`
 * `-charts <charts>` List of comma-separated values with charts to install. Defaults to `*` (all)
+* `-tlsEnv prod|staging` If **SSL/TLS support has been installed**, you have to use this parameter to enable https endpoints. Value must be `staging` or `prod` and must be the same value used when you installed SSL/TLS support. If SSL/TLS is not installed, you can omit this parameter.
 
 This script will install all services using Helm and your custom configuration from file `gvalues.yaml`
 
@@ -99,3 +102,90 @@ The parameter `charts` allow for a selective installation of charts. Is a list o
 * `wgw` Web Api Gateway
 
 So, using `charts pp,st` will only install the popular products and the stock api.
+
+## Enabling SSL/TLS on the cluster
+
+SSL/TLS support is provided by [cert-manager](https://github.com/jetstack/cert-manager) that allows auto-provisioning of TLS certificates using [Let's Encrypt](https://letsencrypt.org/) and [ACME](https://en.wikipedia.org/wiki/Automated_Certificate_Management_Environment) protocol. 
+
+
+To enable SSL/TLS support you must do it **before deploying your images**. The first step is to add cert-manager to the cluster by running `./add-cert-manager.sh` or `./Add-Cert-Manager.ps1`. Both scripts accept no parameters and they use helm to configure cert-manager in the cluster. **This needs to be done only once**
+
+Then you should run `./Enable-Ssl.ps1` with following parameters:
+
+* `sslSupport`: Use `staging` or `prod` to use the staging or production environments of Let's Encrypt
+* `aksName`: The name of the AKS to use
+* `resourceGroup`: Name of the resource group where AKS is
+* `domain`: Domain to use for the SSL/TLS certificates. Is **optional** and if not used it defaults to the public domain of the AKS. Only need to use this parameter if using custom domains
+
+Output of the script will be something like following:
+
+``` 
+NAME:   my-tt-ssl
+LAST DEPLOYED: Fri Dec 21 11:32:00 2018
+NAMESPACE: default
+STATUS: DEPLOYED
+
+RESOURCES:
+==> v1alpha1/Certificate
+NAME             AGE
+tt-cert-staging  0s
+
+==> v1alpha1/Issuer
+NAME                 AGE
+letsencrypt-staging  0s
+```
+
+You can verify that the _issuer_ object is created using `kubectl get issuers`:
+
+```
+PS> kubectl get issuers
+NAME                  AGE
+letsencrypt-staging   4m
+```
+
+You can verify that the _certificate_ object is created using `kubectl get certificates`:
+
+```
+PS> kubectl get certificates
+NAME              AGE
+tt-cert-staging   4m
+```
+
+The _certificate_ object is not the real SSL/TLS certificate but a definition on how get one from Let's Encrypt. The certificate itself is stored in a secret, called `letsencrypt-staging` (or `letsencrypt-prod`). You should see a secret named `tt-letsencrypt-xxxx` (where `xxxx` is either `staging` or `prod`).
+
+```
+PS> kubectl get secrets
+NAME                  TYPE                                  DATA      AGE
+acr-auth              kubernetes.io/dockerconfigjson        1         2d
+default-token-6tm9t   kubernetes.io/service-account-token   3         3d
+letsencrypt-prod      Opaque                                1         3h
+letsencrypt-staging   Opaque                                1         4h
+tt-letsencrypt-prod   kubernetes.io/tls                     2         5m
+ttsa-token-rkjlg      kubernetes.io/service-account-token   3         2d
+```
+
+The SSL/TLS secret names are:
+
+* `letsencrypt-staging`: Secret for the staging _issuer_. This is NOT the SSL/TLS certificate
+* `tt-letsencrypt-staging`: Secret for the staging SSL/TLS certificate.
+* `letsencrypt-prod`: Secret for the prod _issuer_. This is NOT the SSL/TLS certificate
+* `tt-letsencrypt-prod`: Secret for the prod SSL/TLS certificate.
+
+At this point **the support for SSL/TLS is installed, and you can install Tailwind Traders Backend on the repo**.
+
+>**Note:** You don't need to do this again, unless you want to change the domain of the SSL/TLS certificate. In this case you need to remove the issuer and certificate objects (using `helm delete my-tt-ssl --purge` and then reinstall again)
+
+>**Note** Staging certificates **are not trust**, so browsers will complain about it, exactly in the same way that they complain about a self-signed certificate. The only purpose is to test all the deployment works, but in any production environment you must use the `prod` environment. Main difference is the Let's Encrypt API call rates are more limited than the staging ones.
+
+Another way to validate your certificate deployment is doing a `kubectl describe cert tt-cert-staging` (or `tt-cert-prod`). In the `Events` section you should see that the certificate has been obtained:
+
+```
+Events:
+  Type    Reason          Age   From          Message
+  ----    ------          ----  ----          -------
+  Normal  CreateOrder     10m   cert-manager  Created new ACME order, attempting validation...
+  Normal  DomainVerified  9m    cert-manager  Domain "e43cd6ae16f344a093dc.eastus.aksapp.io" verified with "http-01" validation
+  Normal  IssueCert       9m    cert-manager  Issuing certificate...
+  Normal  CertObtained    9m    cert-manager  Obtained certificate from ACME server
+  Normal  CertIssued      9m    cert-manager  Certificate issued successfully
+```
