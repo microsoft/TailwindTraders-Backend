@@ -4,39 +4,39 @@ inf:
   sa: ttsa
   db:
     products:
-      host: # DB HOST LIKE tailwindtradersserver-dev.database.windows.net
+      host: ***REMOVED***
       port: "1433"
-      catalog: # DB NAME LIKE  Microsoft.Tailwind.Products-dev
-      user: # ADMIN USERNAME LIKE tailadmin
-      pwd: # ADMIN PWD
+      catalog: Products
+      user: ***REMOVED***
+      pwd: ***REMOVED***
     profile:
-      host: # DB HOST LIKE tailwindtradersserver-dev.database.windows.net
+      host: ***REMOVED***
       port: "1433"
-      catalog: # DB NAME LIKE  Microsoft.Tailwind.Profile-dev
-      user: # ADMIN USERNAME LIKE tailadmin
-      pwd: # ADMIN PWD
+      catalog: Profile
+      user: ***REMOVED***
+      pwd: ***REMOVED***
     coupons:
-      user: # COSMOS USER tailwindtraders-coupons-dev
-      pwd: # COSMOS PWD 
-      host: # COSMOS HOST LIKE tailwindtraders-coupons-dev.documents.azure.com
+      user: ttcosmosdbneajthzpxpysw
+      pwd: ***REMOVED***
+      host: ttcosmosdbneajthzpxpysw.documents.azure.com
       port: "10255"
-      dbName: Coupon
-      constr: # COSMOS CONSTR
+      dbName: Coupons
+      constr: ttcosmosdbneajthzpxpysw:***REMOVED***@ttcosmosdbneajthzpxpysw.documents.azure.com:10255/Coupons/?ssl=true&replicaSet=globaldb
       collection: CouponCollection   
     popularproducts:
-      host: # DB HOST LIKEtailwindtradersserver-dev.database.windows.net
+      host: ***REMOVED***
       port: "1433"
-      catalog: # DB NAME LIKE  Microsoft.Tailwind.PopularProduct-dev
-      user: # ADMIN USERNAME LIKE tailadmin
-      pwd: # ADMIN PWD  
+      catalog: PopularProducts
+      user: ***REMOVED***
+      pwd: ***REMOVED***
     cart:
-      host: # COMSOS HOST FOR THE CART like https://ttwebbasket-dev.documents.azure.com:443/
-      auth: # COSMOS AUTH KEY
+      host: ***REMOVED***
+      auth: ***REMOVED***
   storage:
-    productimages: #URL-OF-STORAGE/product-list
-    productdetailimages: #URL-OF-STORAGE/product-detail
-    couponimage: #URL-OF-STORAGE/coupon-list
-    profileimages: #URL-OF-STORAGE/profiles-list
+    productimages: ***REMOVED***/product-list
+    productdetailimages: ***REMOVED***/product-detail
+    couponimage: ***REMOVED***/coupon-list
+    profileimages: ***REMOVED***/profiles-list
   appinsights:
     id: ""
   ingress:
@@ -78,8 +78,8 @@ ingress:
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
     ingress.kubernetes.io/rewrite-target: /
     nginx.ingress.kubernetes.io/rewrite-target: /
-  hosts:
-    - 81649b4bff174fb6b0d3.westus2.aksapp.io    
+#  hosts:
+#    - HOST_DOMAIN (i. e. <guid>.<region>.aksapp.io). Set by the installation script
 
   tls: []
   #  - secretName: chart-example-tls
