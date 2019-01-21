@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -32,7 +33,7 @@ namespace Tailwind.Traders.Profile.Api.Controllers
         [HttpGet]
         [ProducesResponseType(typeof(List<Profiles>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> GetAllProfiles()
         {
             var result = await _ctx.Profiles
                 .Select(p => p.ToProfileDto(_settings))
@@ -46,14 +47,15 @@ namespace Tailwind.Traders.Profile.Api.Controllers
             return Ok(result);
         }
 
-        // GET v1/profile/5
-        [HttpGet("{id}")]
+        // GET v1/profile/me
+        [HttpGet("me")]
         [ProducesResponseType(typeof(List<Profiles>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> Get(int id)
+        public async Task<IActionResult> GetProfile()
         {
+            var userId = ((ClaimsIdentity)User.Identity).Claims.Single(claim => claim.Type == "emails").Value;
             var result = await _ctx.Profiles
-                .Where(p => p.Id == id)
+                .Where(p => p.Email == userId)
                 .Select(p => p.ToProfileDto(_settings))
                 .SingleOrDefaultAsync();
 
