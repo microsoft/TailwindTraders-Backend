@@ -34,6 +34,8 @@ Once installed, helm commands like `helm ls` should work without any error.
 
 Before deploying services using Helm, you need to setup the configuration by editing the file `helm/gvalues.yaml` and put the secrets, connection strings and all the configuration.
 
+>**Note:** If you don't want to edit the `helm/gvalues.yaml` file you can create a copy and name it whatever you want (i. e. `helm/gvalues-prod1.yaml`). This allows you to mantain various environments. Note that **this file contains secrets so do not push into the repo!**. 
+
 Please refer to the comments of the file for its usage. Just ignore (but not delete) the `tls` section as, currently, TLS is not supported (its on the roadmap).
 
 ## Create secrets on the AKS
@@ -101,6 +103,7 @@ To deploy the services from a Bash terminal run the `./deploy-images-aks.sh` scr
 * `--acr-name <name>` Name of the ACR
 * `--tag <tag>` Docker images tag to use. Defaults to  `latest`
 * `--charts <charts>` List of comma-separated values with charts to install. Defaults to `*` (all)
+* `-f <values-file>`: Values file to use (defaults to `gvalues.yaml`)
 
 If using Powershell, have to run `./Deploy-Images-Aks.ps1` with following parameters:
 
@@ -110,6 +113,7 @@ If using Powershell, have to run `./Deploy-Images-Aks.ps1` with following parame
 * `-acrName <name>` Name of the ACR
 * `-tag <tag>` Docker images tag to use. Defaults to  `latest`
 * `-charts <charts>` List of comma-separated values with charts to install. Defaults to `*` (all)
+* `-valueSFile <values-file>`: Values file to use (defaults to `gvalues.yaml`)
 * `-tlsEnv prod|staging` If **SSL/TLS support has been installed**, you have to use this parameter to enable https endpoints. Value must be `staging` or `prod` and must be the same value used when you installed SSL/TLS support. If SSL/TLS is not installed, you can omit this parameter.
 
 This script will install all services using Helm and your custom configuration from file `gvalues.yaml`
