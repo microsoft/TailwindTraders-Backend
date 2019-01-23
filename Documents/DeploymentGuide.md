@@ -60,9 +60,34 @@ Please, note that the Service principal must be already exist. To create a servi
 
 ## Build & deploy images to ACR
 
-Run `docker-compose build` and then manually tag and push the images to your ACR.
+You can **manually use docker-compose** to build and push the images to the ACR. If using compose you can set following environment variables:
 
-**Note**: Under WSL docker daemon do not run, so you won't be able to use `docker-compose build` unless you configure docker client to use the Docker CE for Windows daemon. You can always build docker images using Docker CE for Windows, from a Windows command prompt, and run all scripts from WSL.
+* `TAG`: Will contain the generated docker images tag
+* `REPOSITORY`: Repository to use. This variable should be set to the login server of the ACR
+
+Once set, you can use `docker-compose build` and `docker-compose push` to build and push the images.
+
+Additionaly there is a Powershell script in the `Deploy` folder, named `Build-Push.ps1`. You can use this script for building and pushing ALL images to ACR. Parameters of this script are:
+
+* `resourceGroup`: Resource group where ACR is. Mandatory.
+* `acrName`: ACR name (not login server). Mandatory.
+* `dockerTag`: Tag to use for generated images (defaults to `latest`)
+* `dockerBuild`: If `$true` (default value) docker images will be built using `docker-compose build`.
+* `dockerPush`: If `$true` (default value) docker images will be push to ACR using `docker-compose push`.
+
+This script uses `az` CLI to get ACR information, and then uses `docker-compose` to build and push the images to ACR.
+
+To build an push images tagged with v1 to a ACR named my-acr in resource group named my-rg:
+
+```
+.\Build-Push.ps1 -resourceGroup my-rg -dockerTag v1 -acrName my-acr
+```
+
+To just push the images (without building them before):
+
+```
+.\Build-Push.ps1 -resourceGroup my-rg -dockerTag v1 -acrName my-acr -dockerBuild $false
+```
 
 ## Deploying services
 
