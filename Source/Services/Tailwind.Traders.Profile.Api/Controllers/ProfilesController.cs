@@ -61,10 +61,25 @@ namespace Tailwind.Traders.Profile.Api.Controllers
 
             if (result == null)
             {
-                return BadRequest();
+                var defaultUser = GetDefaultUserProfile(userId);
+                return Ok(defaultUser);
             }
 
             return Ok(result);
+        }
+
+        private ProfileDto GetDefaultUserProfile(string userId)
+        {
+            return new ProfileDto
+            {
+                Email = userId,
+                Address = "7711 W. Pawnee Ave. Beachwood, OH 44122",
+                Name = userId,
+                PhoneNumber = "+1-202-555-0155",
+                Id = 0,
+                ImageUrlMedium = "defaultImage-m.jpg",
+                ImageUrlSmall = "defaultImage-s.jpg"
+            };
         }
 
         // POST v1/profile
