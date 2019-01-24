@@ -8,7 +8,8 @@ exports.allCoupons = (req, res) => {
     Coupon.findOne({ 'id': user })
         .then(coupons => {
             if (!coupons) {
-                res.status(404).send({ message: "Not found" });
+                res.status(204).send({ message: "Coupons not found" });
+                return;
             }
             res.json(coupons);
         })
