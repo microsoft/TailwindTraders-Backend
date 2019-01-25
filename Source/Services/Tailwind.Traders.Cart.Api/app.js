@@ -5,6 +5,7 @@ const CartController = require("./routes/cartController");
 const ShoppingCartDao = require("./models/shoppingCartDao");
 const RecommededDao = require("./models/recommendedDao");
 
+const ensureAuthenticated = require('./middlewares/authorization');
 const createError = require('http-errors');
 const cors = require('cors');
 const express = require('express');
@@ -23,6 +24,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cors());
 app.use(cookieParser());
+app.use(ensureAuthenticated);
 app.use('/', indexRouter);
 
 console.log(`Cosmos to use is ${config.host}`)

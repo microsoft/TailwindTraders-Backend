@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -8,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Threading;
 using Tailwind.Traders.WebBff.Infrastructure;
+using Tailwind.Traders.WebBff.Security;
 
 namespace Tailwind.Traders.WebBff
 {
@@ -46,7 +48,10 @@ namespace Tailwind.Traders.WebBff
             });
 
             services.AddMvc()
-                .SetCompatibilityVersion(CompatibilityVersion.Latest);
+                .SetCompatibilityVersion(CompatibilityVersion.Latest)
+                .Services
+                .AddAuthentication("BasicAuthentication")
+                .AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>("BasicAuthentication", null);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -65,6 +70,7 @@ namespace Tailwind.Traders.WebBff
                 .AllowAnyMethod();
             });
 
+            app.UseAuthentication();
             app.UseMvc();
         }
     }

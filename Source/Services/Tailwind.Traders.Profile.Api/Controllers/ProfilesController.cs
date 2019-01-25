@@ -14,10 +14,10 @@ using Tailwind.Traders.Profile.Api.Models;
 
 namespace Tailwind.Traders.Profile.Api.Controllers
 {
+    [Authorize]
     [Route("v{version:apiVersion}/[controller]")]
     [ApiController]
     [ApiVersion("1.0")]
-    [Authorize]
     public class ProfileController : ControllerBase
     {
         private readonly ProfileDbContext _ctx;
@@ -27,7 +27,7 @@ namespace Tailwind.Traders.Profile.Api.Controllers
         {
             _ctx = ctx;
             _settings = options.Value;
-        }   
+        }
 
         // GET v1/profile
         [HttpGet]

@@ -8,7 +8,7 @@ using System.Security.Claims;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 
-namespace Tailwind.Traders.Product.Api.Security
+namespace Tailwind.Traders.WebBff.Security
 {
     public class BasicAuthenticationHandler : AuthenticationHandler<AuthenticationSchemeOptions>
     {
@@ -25,7 +25,7 @@ namespace Tailwind.Traders.Product.Api.Security
         }
 
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
-        {
+        {            
             if (!Request.Headers.ContainsKey(AuthorizationHeaderName))
             {
                 return await Task.FromResult(AuthenticateResult.Fail("No Authorization Header Provided"));
@@ -55,7 +55,7 @@ namespace Tailwind.Traders.Product.Api.Security
                 new Claim("nonce", Guid.NewGuid().ToString()),
                 new Claim("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname","User"),
                 new Claim("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname","Microsoft")};
-
+            
                 var identity = new ClaimsIdentity(claims, Scheme.Name);
                 var principal = new ClaimsPrincipal(identity);
                 var ticket = new AuthenticationTicket(principal, Scheme.Name);
@@ -63,7 +63,7 @@ namespace Tailwind.Traders.Product.Api.Security
                 return await Task.FromResult(AuthenticateResult.Success(ticket));
             }
 
-            return await Task.FromResult(AuthenticateResult.Fail("Invalid UserId"));
+            return await Task.FromResult(AuthenticateResult.Fail("Invalid UserId"));            
         }
     }
 }
