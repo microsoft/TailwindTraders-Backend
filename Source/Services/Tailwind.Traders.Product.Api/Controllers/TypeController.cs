@@ -12,7 +12,6 @@ namespace Tailwind.Traders.Product.Api.Controllers
     [Route("v{version:apiVersion}/[controller]")]
     [ApiController]
     [ApiVersion("1.0")]
-    [Authorize]
     public class TypeController : ControllerBase
     {
         private readonly ProductContext _productContext;

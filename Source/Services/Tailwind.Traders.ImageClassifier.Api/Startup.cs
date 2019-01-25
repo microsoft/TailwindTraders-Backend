@@ -53,8 +53,7 @@ namespace Tailwind.Traders.ImageClassifier.Api
                 .SetCompatibilityVersion(CompatibilityVersion.Latest)
                 .Services
                 .AddApplicationInsightsTelemetry(Configuration)
-                .AddModulesService(Configuration)
-                .AddSecurity();
+                .AddModulesService(Configuration);
 
             services.AddApiVersioning(options =>
             {
@@ -97,7 +96,6 @@ namespace Tailwind.Traders.ImageClassifier.Api
                   c.RoutePrefix = string.Empty;
               });
 
-            app.UseAuthentication();
             app.UseHttpsRedirection();
             app.UseMvc();
         }

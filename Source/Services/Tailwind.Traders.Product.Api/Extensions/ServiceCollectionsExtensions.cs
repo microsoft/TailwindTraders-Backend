@@ -8,7 +8,6 @@ using System;
 using System.Reflection;
 using Tailwind.Traders.Product.Api.Infrastructure;
 using Tailwind.Traders.Product.Api.Mappers;
-using Tailwind.Traders.Product.Api.Security;
 
 namespace Tailwind.Traders.Product.Api.Extensions
 {
@@ -46,14 +45,6 @@ namespace Tailwind.Traders.Product.Api.Extensions
                 .AddHttpMessageHandler<HttpClientAuthorizationDelegatingHandler>();
 
             service.Configure<AppSettings>(configuration);
-
-            return service;
-        }
-
-        public static IServiceCollection AddSecurity(this IServiceCollection service)
-        {
-            service.AddAuthentication("BasicAuthentication")
-                .AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>("BasicAuthentication", null);
 
             return service;
         }
