@@ -31,6 +31,15 @@ services:
       - ProfilesImageUrl=
     ports:
       - "5001:80"
+
+  login.api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://0.0.0.0:80
+      - ConnectionString=Server=sql.data;Database=Microsoft.TailWindTraders.Profile;User Id=sa;Password=Pass@word
+      - ProfilesImageUrl=
+    ports:
+      - "5008:80"
       
   coupon.api:
     environment:
@@ -93,6 +102,7 @@ services:
       - PopularProductsApiUrl=http://popular-product.api
       - ProductsApiUrl=http://product.api
       - ProfileApiUrl=http://profile.api
+      - LoginApiUrl=http://login.api
       - CouponsApiUrl=http://coupon.api
       - ImageClassifierApiUrl=http://image-classifier.api
     ports:

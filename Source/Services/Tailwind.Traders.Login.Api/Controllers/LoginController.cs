@@ -10,8 +10,10 @@ using Newtonsoft.Json;
 
 namespace NetCoreJWTAuth.App.Controllers
 {
-    [Produces("application/json")]
-    [Route("api")]
+
+    [Route("v{version:apiVersion}/")]
+    [ApiController]
+    [ApiVersion("1.0")]
     public class LoginController : Controller
     {
         private readonly IConfiguration _configuration;
@@ -21,9 +23,17 @@ namespace NetCoreJWTAuth.App.Controllers
             _configuration = configuration;
         }
 
+           
+        // GEt
+        [HttpGet("oauth2/token")]
+        public IActionResult Login()
+        {
+            return Ok("hello");
+        }
+
         // POST
         [HttpPost("oauth2/token")]
-        public IActionResult Login([FromForm] TokenRequest request)
+        public IActionResult Login([FromBody] TokenRequest request)
         {
             if(request.Username == string.Empty || request.Password == string.Empty || request.GrantType != "password")
             {
@@ -50,12 +60,14 @@ namespace NetCoreJWTAuth.App.Controllers
                 expires: DateTime.Now.AddMinutes(30),
                 signingCredentials: creds);
 
-            return Ok(new
+            var response = new TokenResponse()
             {
-                access_token = new JwtSecurityTokenHandler().WriteToken(token),
-                token_type = "Bearer",
-                expiration = token.ValidTo
-            });
+                AccessToken = new JwtSecurityTokenHandler().WriteToken(token),
+                TokenType = "Bearer",
+                Expiration = token.ValidTo
+            };
+
+            return Ok(response);
         }
     }
 
@@ -67,5 +79,12 @@ namespace NetCoreJWTAuth.App.Controllers
         public string GrantType { get; set; }
         [JsonProperty(PropertyName = "client_id")]
         public string ClientId { get; set; }
+    }
+
+    public class TokenResponse
+    {
+        public string AccessToken { get; set; }
+        public string TokenType { get; set; }
+        public DateTime Expiration { get; set; }
     }
 }
