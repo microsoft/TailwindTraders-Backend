@@ -10,6 +10,8 @@ Please, note that **this only deploys the needed infrastructure**. You need to d
 
 * To run the backend locally on your computer follow these [instructions](./Documents/RunLocally.md)
 
+[![Build status](https://dev.azure.com/tailwindtraders/Backend/_apis/build/status/Backend-CI-Github)](https://dev.azure.com/tailwindtraders/Backend/_build/latest?definitionId=18)
+
 # Running the backend services
 
 Please refer to the [deployment guide](Documents/DeploymentGuide.md) for the required steps to run the backend services.
