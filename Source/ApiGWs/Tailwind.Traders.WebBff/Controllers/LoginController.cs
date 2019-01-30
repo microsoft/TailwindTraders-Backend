@@ -34,7 +34,7 @@ namespace Tailwind.Traders.WebBff.Controllers
 
         // POST: v1/login
         [HttpPost()]
-        public async Task<IActionResult> Login([FromForm] TokenRequest request)
+        public async Task<IActionResult> Login([FromBody] TokenRequest request)
         {
             var client = _httpClientFactory.CreateClient();
 
@@ -43,26 +43,13 @@ namespace Tailwind.Traders.WebBff.Controllers
 
             var response = await client.PostAsync(API.Login.PostLogin(_settings.LoginApiUrl, VERSION_API), stringContent);
 
-            if (response.IsSuccessStatusCode)
-            {
-                var result = await response.Content.ReadAsStringAsync();
-                var login = JsonConvert.DeserializeObject<LoginResponse>(result);
+            if (response.StatusCode == HttpStatusCode.BadRequest) {
+                return BadRequest();
+            }
 
-                return Ok(login);
-            }
-            else
-            {
-                return StatusCode(500);
-            }
+            var result = await response.Content.ReadAsStringAsync();
+            var login = JsonConvert.DeserializeObject<LoginResponse>(result);
+            return Ok(login);
         }
-    }
-    public class TokenRequest
-    {
-        public string Username { get; set; }
-        public string Password { get; set; }
-        [JsonProperty(PropertyName = "grant_type")]
-        public string GrantType { get; set; }
-        [JsonProperty(PropertyName = "client_id")]
-        public string ClientId { get; set; }
     }
 }
