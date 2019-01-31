@@ -41,7 +41,7 @@ namespace Tailwind.Traders.WebBff.Controllers
             var result = await client.GetStringAsync(API.Profiles.GetProfiles(_settings.ProfileApiUrl, VERSION_API));
             var profiles = JsonConvert.DeserializeObject<IEnumerable<Profile>>(result);
 
-            return Ok();
+            return Ok(profiles);
         }
 
         // GET: v1/profiles/me
