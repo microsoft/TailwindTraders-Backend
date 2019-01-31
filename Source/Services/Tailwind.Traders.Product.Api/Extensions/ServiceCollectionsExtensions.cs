@@ -39,10 +39,8 @@ namespace Tailwind.Traders.Product.Api.Extensions
                 .AddTransient<ClassMap, ProductTagMap>()
                 .AddTransient<MapperDtos>()
                 .AddSingleton<IHttpContextAccessor, HttpContextAccessor>()
-                .AddTransient<HttpClientAuthorizationDelegatingHandler>()
                 .AddHttpClient(configuration["ProductVisitsUrl"])
-                .SetHandlerLifetime(TimeSpan.FromMinutes(5))
-                .AddHttpMessageHandler<HttpClientAuthorizationDelegatingHandler>();
+                .SetHandlerLifetime(TimeSpan.FromMinutes(5));
 
             service.Configure<AppSettings>(configuration);
 

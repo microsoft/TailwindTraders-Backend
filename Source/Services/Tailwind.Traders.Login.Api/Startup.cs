@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using Tailwind.Traders.Login.Api.Models;
 using Tailwind.Traders.Login.Api.Services;
 
 namespace Tailwind.Traders.Login.Api
@@ -34,27 +35,13 @@ namespace Tailwind.Traders.Login.Api
                 options.ApiVersionReader = new QueryStringApiVersionReader();
             });
 
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            .AddJwtBearer(options =>
-            {
-                options.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuer = false,
-                    ValidateAudience = false,
-                    ValidateLifetime = true,
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(
-                        Encoding.UTF8.GetBytes(_configuration["SecurityKey"]))
-                };
-            });
-
-
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -64,7 +51,6 @@ namespace Tailwind.Traders.Login.Api
                 app.UseHsts();
             }
 
-            app.UseAuthentication();
             app.UseHttpsRedirection();
             app.UseMvc();
         }

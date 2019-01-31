@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.IdentityModel.Tokens.Jwt;
@@ -32,6 +33,7 @@ namespace Tailwind.Traders.Login.Api.Services
 
             var token = new JwtSecurityToken(
                 claims: claims,
+                issuer: _configuration["Issuer"],
                 expires: DateTime.Now.AddSeconds(ExpirationTimeInSeconds),
                 signingCredentials: creds);
 

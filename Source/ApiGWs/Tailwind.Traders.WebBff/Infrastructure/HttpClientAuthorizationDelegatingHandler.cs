@@ -13,7 +13,6 @@ namespace Tailwind.Traders.WebBff.Infrastructure
         : DelegatingHandler
     {
         private readonly IHttpContextAccessor _httpContextAccesor;
-        private const string SCHEME = "Email";
 
         public HttpClientAuthorizationDelegatingHandler(IHttpContextAccessor httpContextAccesor)
         {
@@ -27,11 +26,13 @@ namespace Tailwind.Traders.WebBff.Infrastructure
 
             var authHeader = authorizationHeader[0].Split(" ");
 
-            if (!string.IsNullOrEmpty(authorizationHeader) && authHeader[0].Equals(SCHEME))
+            if(string.IsNullOrEmpty(authorizationHeader))
             {
-                request.Headers.Authorization = new AuthenticationHeaderValue(SCHEME, authHeader[1]);
+                throw new ArgumentNullException(nameof(authorizationHeader));
             }
 
+            request.Headers.Authorization = new AuthenticationHeaderValue(authHeader[0], authHeader[1]);
+            
             return await base.SendAsync(request, cancellationToken);
         }      
     }
