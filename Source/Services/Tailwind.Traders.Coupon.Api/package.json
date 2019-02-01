@@ -11,10 +11,13 @@
     "name": "Erik Pique Terron"
   },
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "body-parser": "^1.15.0",
     "cors": "^2.8.4",
     "csvtojson": "^2.0.8",
+    "dotenv": "^6.2.0",
     "express": "^4.14.0",
+    "jsonwebtoken": "^8.4.0",
     "mongoose": "^5.3.9",
     "morgan": "^1.7.0",
     "swagger-node-express": "^2.1.3",

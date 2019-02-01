@@ -13,7 +13,7 @@ namespace Tailwind.Traders.Login.Api.Services
     {
         private readonly IConfiguration _configuration;
 
-        private const int ExpirationTimeInSeconds = 1800;
+        private const int ExpirationTimeInSeconds = 10800;
 
         public LoginGeneratorService(IConfiguration configuration)
         {
@@ -28,7 +28,8 @@ namespace Tailwind.Traders.Login.Api.Services
                 new Claim(ClaimTypes.Name, username)
             };
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["SecurityKey"]));
+            var encoding = Encoding.UTF8.GetBytes(_configuration["SecurityKey"]);
+            var key = new SymmetricSecurityKey(encoding);
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(
