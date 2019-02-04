@@ -1,4 +1,6 @@
-﻿const http = require('http');
+﻿require("dotenv").config();
+
+const http = require('http');
 const mongoose = require('mongoose');
 const app = require('./api/app');
 const seedData = require('./api/config/seedData');

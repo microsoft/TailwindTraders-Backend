@@ -4,6 +4,10 @@ class CartController {
         this.recommendedDao = recommendedDao;
     }
 
+    retrieveEmail(req) {
+        return req.decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'];
+    }
+
     async addProduct(req, res) {
         const item = req.body;
         const doc = await this.shoppingCartDao.addItem(item);
@@ -11,7 +15,10 @@ class CartController {
     }
 
     async getProductsByEmail(req, res) {
-        const items = await this.shoppingCartDao.find(req.query.email);
+
+        const email = this.retrieveEmail(req);
+
+        const items = await this.shoppingCartDao.find(email);
         res.json(items);
     }
 
@@ -39,8 +46,10 @@ class CartController {
     }
 
     async getRelatedProducts(req, res) {
+
+        const email = this.retrieveEmail(req);
+        
         const typeid = req.query.typeid;
-        const email = req.query.email;
         if (!typeid && !email) {
             res.status(400).send({ message: "'email' or 'productType' missing" });
         } else {

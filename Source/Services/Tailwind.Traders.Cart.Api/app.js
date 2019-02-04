@@ -1,15 +1,13 @@
 const CosmosClient = require("@azure/cosmos").CosmosClient;
 const ConnectionPolicy = require("@azure/cosmos").ConnectionPolicy;
-const config = require("./config");
+const config = require("./config/config");
 const CartController = require("./routes/cartController");
 const ShoppingCartDao = require("./models/shoppingCartDao");
 const RecommededDao = require("./models/recommendedDao");
 
 const ensureAuthenticated = require('./middlewares/authorization');
-const createError = require('http-errors');
 const cors = require('cors');
 const express = require('express');
-const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const bodyParser = require("body-parser");

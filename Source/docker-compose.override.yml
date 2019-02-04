@@ -47,6 +47,8 @@ services:
       - PORT=27017
       - COUPON_COLLECTION=CouponCollection
       - URL_BASE=
+      - ISSUER=TTFakeLogin
+      - SECURITYKEY=nEpLzQJGNSCNL5H6DIQCtTdNxf5VgAGcBbtXLms1YDD01KJBAs0WVawaEjn97uwB
     ports:
       - "5002:3000"
 
@@ -80,6 +82,8 @@ services:
     environment:
       - HOST=${COSMOSDB_HOST:-https://10.0.75.1:8081}   # Emulator URI
       - AUTHKEY=${COSMOSDB_AUTHKEY}  
+      - ISSUER=TTFakeLogin
+      - SECURITYKEY=nEpLzQJGNSCNL5H6DIQCtTdNxf5VgAGcBbtXLms1YDD01KJBAs0WVawaEjn97uwB
     ports:
       - "5007:3001"      
 
