@@ -3,13 +3,11 @@ package Tailwind.Traders.Stock.Api;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Base64;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.bind.DatatypeConverter;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -53,7 +51,7 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 			
 		String token =  header.replace(TOKEN_BEARER_PREFIX, "");
 		if(token == null) {
-			res.sendError(403, "No Authorization Header Provided");
+			chain.doFilter(req, res);
 			return;
 		}
 		
@@ -65,7 +63,7 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 			chain.doFilter(req, res);			
 		}
 		else {
-			res.sendError(401, "Invalid Authorization Header");
+			res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 		}	
 	}
 	
@@ -82,23 +80,27 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 	private boolean IsValidToken(String token) throws UnsupportedEncodingException {
 
 		byte[] secretKey;
-		
+
 		try {
 			secretKey = config.getSecretKey().getBytes("UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			log.error("Invalidd secret key configured. UnsupportedEncoding exception {}", e.getMessage());
-			throw e;
+		} catch (UnsupportedEncodingException encodingException) {
+			log.error("Invalid secret key configured. UnsupportedEncoding exception {}", encodingException.getMessage());
+			throw encodingException;
 		}
-		
+
 		JwtParser parser = Jwts.parser().setSigningKey(secretKey);
-		
-		if(parser.isSigned(token)) {
-			String claimIssuer = parser.parseClaimsJws(token).getBody().getIssuer();
-			String validIssuer = config.getIssuer();
 
-			return claimIssuer.equals(validIssuer); 
-		}						 
+		try {
+			if(parser.isSigned(token)) {
+				String claimIssuer = parser.parseClaimsJws(token).getBody().getIssuer();
+				String validIssuer = config.getIssuer();
 
+				return claimIssuer.equals(validIssuer); 
+			}						 
+		}catch(SignatureException signatureEx)
+		{
+			log.error("The token signature is invalid. SignaturException {}", signatureEx.getMessage());
+		}
 		return false;
 	}
 }
