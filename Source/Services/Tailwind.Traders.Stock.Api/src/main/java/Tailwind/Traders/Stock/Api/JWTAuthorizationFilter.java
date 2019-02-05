@@ -17,7 +17,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtParser;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureException;
@@ -43,6 +43,7 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 	@Override
 	protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain chain)
 			throws IOException, ServletException {		
+		
 		String header = req.getHeader(HEADER_AUTHORIZATION_KEY);
 		if (header == null || !header.startsWith(TOKEN_BEARER_PREFIX)) {
 			chain.doFilter(req, res);
@@ -80,6 +81,7 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 	private boolean IsValidToken(String token) throws UnsupportedEncodingException {
 
 		byte[] secretKey;
+		Claims claims;
 
 		try {
 			secretKey = config.getSecretKey().getBytes("UTF-8");
@@ -88,19 +90,20 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 			throw encodingException;
 		}
 
-		JwtParser parser = Jwts.parser().setSigningKey(secretKey);
-
 		try {
-			if(parser.isSigned(token)) {
-				String claimIssuer = parser.parseClaimsJws(token).getBody().getIssuer();
-				String validIssuer = config.getIssuer();
+			claims = Jwts.parser()         
+				       .setSigningKey(secretKey)
+				       .parseClaimsJws(token).getBody();
+			
+			String claimIssuer = claims.getIssuer();
+			String validIssuer = config.getIssuer();
 
-				return claimIssuer.equals(validIssuer); 
-			}						 
-		}catch(SignatureException signatureEx)
-		{
-			log.error("The token signature is invalid. SignaturException {}", signatureEx.getMessage());
+			return claimIssuer.equals(validIssuer);
+			
+		} catch(JwtException jwtException) {
+			log.error("The token cannot be verified. SignaturException {}", jwtException.getMessage());
 		}
+		
 		return false;
 	}
 }
