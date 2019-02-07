@@ -58,6 +58,8 @@ services:
       - ASPNETCORE_URLS=http://0.0.0.0:80
       - ConnectionString=Server=localhost;Port=5433;User Id=sa;Password=Pass@word;Database=Microsoft.TailWindTraders.PopularProduct;
       - AzureStorageUrl=
+      - ISSUER=TTFakeLogin
+      - SECURITYKEY=nEpLzQJGNSCNL5H6DIQCtTdNxf5VgAGcBbtXLms1YDD01KJBAs0WVawaEjn97uwB
     ports:
       - "5003:80"
       
