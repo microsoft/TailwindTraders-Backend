@@ -22,17 +22,14 @@ namespace Tailwind.Traders.WebBff.Infrastructure
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             var authorizationHeader = _httpContextAccesor.HttpContext
-                .Request.Headers["Authorization"];
-
-            var authHeader = authorizationHeader[0].Split(" ");
-
-            if(string.IsNullOrEmpty(authorizationHeader))
+                .Request.Headers["Authorization"].FirstOrDefault();
+            
+            if (!string.IsNullOrWhiteSpace(authorizationHeader))
             {
-                throw new ArgumentNullException(nameof(authorizationHeader));
+                request.Headers.Add("Authorization", authorizationHeader);
             }
 
-            request.Headers.Authorization = new AuthenticationHeaderValue(authHeader[0], authHeader[1]);
-            
+
             return await base.SendAsync(request, cancellationToken);
         }      
     }

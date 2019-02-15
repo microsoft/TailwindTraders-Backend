@@ -24,7 +24,7 @@ func AuthenticationMiddleware(next http.Handler) http.Handler {
 		}
 
 		if len(r.Header.Get("Authorization")) == 0 {
-			http.Error(w, "Auth token is not supplied", http.StatusBadRequest)
+			http.Error(w, "Auth token is not supplied", http.StatusUnauthorized)
 			return
 		}
 

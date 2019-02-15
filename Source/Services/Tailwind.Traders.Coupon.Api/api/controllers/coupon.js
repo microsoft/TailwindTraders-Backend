@@ -6,7 +6,7 @@ exports.allCoupons = (req, res) => {
 
     // Retrieve user from token
     const user = req.decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'];
-
+    
     Coupon.findOne({ 'id': user })
         .then(coupons => {
             if (!coupons) {

@@ -4,6 +4,7 @@ const config = require('../config/authConfig');
 module.exports = (req, res, next) => {
     const BEARER = 'Bearer ';
     let token = req.headers['x-access-token'] || req.headers['authorization'];
+    
 
     if (token && token.startsWith(BEARER)) {
         // Remove Bearer from string

@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -42,7 +43,7 @@ namespace Tailwind.Traders.WebBff.Controllers
         [ProducesResponseType((int)HttpStatusCode.OK)]
         public async Task<IActionResult> Get()
         {
-            var client = _httpClientFactory.CreateClient();
+            var client = _httpClientFactory.CreateClient(HttpClients.ApiGW);
             var result = await client.GetStringAsync(API.PopularProducts.GetProducts(_settings.PopularProductsApiUrl, VERSION_API));
             var popularProducts = JsonConvert.DeserializeObject<IEnumerable<PopularProduct>>(result);
 
@@ -70,7 +71,7 @@ namespace Tailwind.Traders.WebBff.Controllers
         [ProducesResponseType((int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetProducts([FromQuery] int[] brand = null, [FromQuery] string[] type = null)
         {
-            var client = _httpClientFactory.CreateClient();
+            var client = _httpClientFactory.CreateClient(HttpClients.ApiGW);
 
             var result = await client.GetStringAsync(API.Products.GetTypes(_settings.ProductsApiUrl, VERSION_API));
             var types = JsonConvert.DeserializeObject<IEnumerable<ProductType>>(result);
@@ -99,7 +100,7 @@ namespace Tailwind.Traders.WebBff.Controllers
 
         private async Task<ClassificationResult> DoMlNetClassifierAction(IFormFile file)
         {
-            var client = _httpClientFactory.CreateClient();
+            var client = _httpClientFactory.CreateClient(HttpClients.ApiGW);
 
             var fileContent = new StreamContent(file.OpenReadStream())
             {
@@ -132,7 +133,7 @@ namespace Tailwind.Traders.WebBff.Controllers
 
         private async Task<ClassificationResult> DoCognitiveClassifierAction(IFormFile file)
         {
-            var client = _httpClientFactory.CreateClient();
+            var client = _httpClientFactory.CreateClient(HttpClients.ApiGW);
             var response = await client.PostAsync(COGNITIVE_CONTAINER, new StreamContent(file.OpenReadStream()));
 
             if (response.IsSuccessStatusCode)
@@ -178,7 +179,7 @@ namespace Tailwind.Traders.WebBff.Controllers
 
             _logger.LogInformation($"Classification ended up with tag {result.Label} with a prob (0-1) of {result.Probability}");
 
-            var client = _httpClientFactory.CreateClient();
+            var client = _httpClientFactory.CreateClient(HttpClients.ApiGW);
             // Need to query products API for tag
             var ptagsResponse = await client.GetAsync(API.Products.GetByTag(_settings.ProductsApiUrl, VERSION_API, result.Label));
 

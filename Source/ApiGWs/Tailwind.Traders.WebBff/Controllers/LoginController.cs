@@ -15,6 +15,7 @@ using Tailwind.Traders.WebBff.Models;
 
 namespace Tailwind.Traders.WebBff.Controllers
 {
+    [AllowAnonymous]
     [Route("v{version:apiVersion}/[controller]")]
     [ApiController]
     [ApiVersion("1.0")]

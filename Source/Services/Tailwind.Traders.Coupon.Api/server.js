@@ -9,7 +9,6 @@ mongoose.Promise = global.Promise;
 mongoose.connect(`mongodb://${process.env.CONNECTIONSTRING}`, { useNewUrlParser: true })
     .then(() => {
         console.log('Connection to CosmosDB successful');
-        
         seedData().then(() => {
             http.createServer(app).listen(process.env.PORT || 3000);
         });
