@@ -67,16 +67,16 @@ services:
     ports:
       - "5003:80"
       
- stock.api:
-   ports:
-     - "5004:80"  
+  stock.api:
+    ports:
+      - "5004:80"  
 
- product-visits.function:
-   environment:
-     - CONNECTIONSTRING=127.0.0.1:27017/ProductVisitsDb
-     - VISITCOLLECTION=ProductVisitsCollection
-   ports:
-     - "5005:3000"
+  product-visits.function:
+    environment:
+      - CONNECTIONSTRING=127.0.0.1:27017/ProductVisitsDb
+      - VISITCOLLECTION=ProductVisitsCollection
+    ports:
+      - "5005:3000"
 
   image-classifier.api:
     environment:
@@ -86,26 +86,26 @@ services:
     ports:
       - "5006:80"
 
- cart.api:
-   environment:
-     - HOST=${COSMOSDB_HOST:-https://10.0.75.1:8081}   # Emulator URI
-     - AUTHKEY=${COSMOSDB_AUTHKEY}  
-     - ISSUER=TTFakeLogin
-     - SECURITYKEY=nEpLzQJGNSCNL5H6DIQCtTdNxf5VgAGcBbtXLms1YDD01KJBAs0WVawaEjn97uwB
-   ports:
-     - "5007:3001"      
+  cart.api:
+    environment:
+      - HOST=${COSMOSDB_HOST:-https://10.0.75.1:8081}   # Emulator URI
+      - AUTHKEY=${COSMOSDB_AUTHKEY}  
+      - ISSUER=TTFakeLogin
+      - SECURITYKEY=nEpLzQJGNSCNL5H6DIQCtTdNxf5VgAGcBbtXLms1YDD01KJBAs0WVawaEjn97uwB
+    ports:
+      - "5007:3001"      
 
- mobileapigw:
-   environment:
-     - ASPNETCORE_ENVIRONMENT=Development
-     - ASPNETCORE_URLS=http://0.0.0.0:80
-     - PopularProductsApiUrl=http://popular-product.api
-     - ProductsApiUrl=http://product.api
-     - ProfileApiUrl=http://profile.api
-     - CouponsApiUrl=http://coupon.api
-     - ImageClassifierApiUrl=http://image-classifier.api
-   ports:
-     - "5100:80"
+  mobileapigw:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://0.0.0.0:80
+      - PopularProductsApiUrl=http://popular-product.api
+      - ProductsApiUrl=http://product.api
+      - ProfileApiUrl=http://profile.api
+      - CouponsApiUrl=http://coupon.api
+      - ImageClassifierApiUrl=http://image-classifier.api
+    ports:
+      - "5100:80"
 
   webapigw:
     environment:
