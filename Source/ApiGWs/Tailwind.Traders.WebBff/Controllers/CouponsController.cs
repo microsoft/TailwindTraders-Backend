@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using System.Collections.Generic;
@@ -21,18 +22,21 @@ namespace Tailwind.Traders.WebBff.Controllers
     public class CouponsController : Controller
     {
         private readonly IHttpClientFactory _httpClientFactory;
+        private readonly ILogger<CouponsController> _logger;
         private readonly AppSettings _settings;
         private const string VERSION_API = "v1";
 
         public CouponsController(
             IHttpClientFactory httpClientFactory,
-            IOptions<AppSettings> options)
+            IOptions<AppSettings> options,
+            ILogger<CouponsController> logger)
         {
             _httpClientFactory = httpClientFactory;
+            _logger = logger;
             _settings = options.Value;
         }
 
-        // GET: v1/coupon
+        // GET: v1/coupons
         [HttpGet()]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetCoupons()

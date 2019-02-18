@@ -6,7 +6,6 @@ services:
 
   nosql.data:
     image: mongo
-  
 
   cart.api:
     image: ${REGISTRY:-tailwindtraders}/cart.api:${TAG:-latest}
@@ -29,6 +28,12 @@ services:
       dockerfile: Services/Tailwind.Traders.Profile.Api/Dockerfile    
     depends_on:
       - sql.data
+
+  login.api:
+    image: ${REGISTRY:-tailwindtraders}/login.api:${TAG:-latest}
+    build:
+      context: .
+      dockerfile: Services/Tailwind.Traders.Login.Api/Dockerfile    
 
   coupon.api:
     image: ${REGISTRY:-tailwindtraders}/coupon.api:${TAG:-latest}

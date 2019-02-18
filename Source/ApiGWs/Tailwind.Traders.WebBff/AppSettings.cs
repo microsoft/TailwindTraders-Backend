@@ -12,7 +12,7 @@ namespace Tailwind.Traders.WebBff
         public string ProfileApiUrl { get; set; }
         public string CouponsApiUrl { get; set; }
         public string ImageClassifierApiUrl { get; set; }
-
+        public string LoginApiUrl { get; set; }
         public bool UseMlNetClassifier { get; set; }
     }
 }

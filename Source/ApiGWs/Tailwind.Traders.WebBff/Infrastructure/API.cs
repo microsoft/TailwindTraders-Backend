@@ -42,6 +42,11 @@ namespace Tailwind.Traders.WebBff.Infrastructure
         public static class Coupons
         {
             public static string GetCoupons(string baseUri, string version) => $"{baseUri}/{version}/coupon";
-        }        
+        }
+        
+        public static class Login
+        {
+            public static string PostLogin(string baseUri, string version) => $"{baseUri}/{version}/oauth2/token";
+        }
     }
 }

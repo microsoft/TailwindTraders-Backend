@@ -53,7 +53,10 @@ namespace Tailwind.Traders.Profile.Api.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> GetProfile()
         {
-            var userId = ((ClaimsIdentity)User.Identity).Claims.Single(claim => claim.Type == "emails").Value;
+            var currentUser = HttpContext.User;
+
+            var userId = currentUser.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value;
+
             var result = await _ctx.Profiles
                 .Where(p => p.Email == userId)
                 .Select(p => p.ToProfileDto(_settings))
