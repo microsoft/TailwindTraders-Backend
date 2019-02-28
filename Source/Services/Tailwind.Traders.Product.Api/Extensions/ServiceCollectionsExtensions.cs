@@ -8,7 +8,6 @@ using System;
 using System.Reflection;
 using Tailwind.Traders.Product.Api.Infrastructure;
 using Tailwind.Traders.Product.Api.Mappers;
-using Tailwind.Traders.Product.Api.Security;
 
 namespace Tailwind.Traders.Product.Api.Extensions
 {
@@ -40,20 +39,10 @@ namespace Tailwind.Traders.Product.Api.Extensions
                 .AddTransient<ClassMap, ProductTagMap>()
                 .AddTransient<MapperDtos>()
                 .AddSingleton<IHttpContextAccessor, HttpContextAccessor>()
-                .AddTransient<HttpClientAuthorizationDelegatingHandler>()
                 .AddHttpClient(configuration["ProductVisitsUrl"])
-                .SetHandlerLifetime(TimeSpan.FromMinutes(5))
-                .AddHttpMessageHandler<HttpClientAuthorizationDelegatingHandler>();
+                .SetHandlerLifetime(TimeSpan.FromMinutes(5));
 
             service.Configure<AppSettings>(configuration);
-
-            return service;
-        }
-
-        public static IServiceCollection AddSecurity(this IServiceCollection service)
-        {
-            service.AddAuthentication("BasicAuthentication")
-                .AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>("BasicAuthentication", null);
 
             return service;
         }

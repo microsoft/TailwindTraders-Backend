@@ -24,8 +24,7 @@ namespace Tailwind.Traders.Product.Api
                 .Services
                 .AddApplicationInsightsTelemetry(Configuration)
                 .AddProductsContext(Configuration)
-                .AddModulesProducts(Configuration)
-                .AddSecurity();
+                .AddModulesProducts(Configuration);
 
             services.AddApiVersioning(options =>
             {
@@ -52,7 +51,7 @@ namespace Tailwind.Traders.Product.Api
                     .AllowAnyHeader()
                     .AllowAnyMethod();
             });
-            app.UseAuthentication();
+
             app.UseHttpsRedirection();
             app.UseMvc();
         }

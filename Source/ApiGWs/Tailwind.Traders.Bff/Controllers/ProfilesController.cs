@@ -40,14 +40,14 @@ namespace Tailwind.Traders.MobileBff.Controllers
             return Ok(profiles);
         }
 
-        // GET: v1/profiles/id
-        [HttpGet("{userId}")]
+        // GET: v1/profiles/me
+        [HttpGet("me")]
         [ProducesResponseType((int)HttpStatusCode.OK)]
-        public async Task<IActionResult> GetProfile(int userId)
+        public async Task<IActionResult> GetProfile()
         {
             var client = _httpClientFactory.CreateClient(HttpClients.ApiGW);
 
-            var result = await client.GetStringAsync(API.Profiles.GetProfile(_settings.ProfileApiUrl, VERSION_API, userId));
+            var result = await client.GetStringAsync(API.Profiles.GetProfile(_settings.ProfileApiUrl, VERSION_API));
             var profile = JsonConvert.DeserializeObject<Profile>(result);
 
             result = await client.GetStringAsync(API.Coupons.GetCoupons(_settings.CouponsApiUrl, VERSION_API));
@@ -65,14 +65,14 @@ namespace Tailwind.Traders.MobileBff.Controllers
             return Ok(aggresponse);
         }
 
-        // GET: v1/profiles/navbar/id
-        [HttpGet("navbar/{userId}")]
+        // GET: v1/profiles/navbar/me
+        [HttpGet("navbar/me")]
         [ProducesResponseType((int)HttpStatusCode.OK)]
-        public async Task<IActionResult> GetProfileNavBar(int userId)
+        public async Task<IActionResult> GetProfileNavBar()
         {
             var client = _httpClientFactory.CreateClient(HttpClients.ApiGW);
 
-            var result = await client.GetStringAsync(API.Profiles.GetProfile(_settings.ProfileApiUrl, VERSION_API, userId));
+            var result = await client.GetStringAsync(API.Profiles.GetProfile(_settings.ProfileApiUrl, VERSION_API));
             var profile = JsonConvert.DeserializeObject<Profile>(result);
 
             var aggresponse = new

@@ -35,13 +35,18 @@ namespace Tailwind.Traders.WebBff.Infrastructure
 
         public static class Profiles
         {
-            public static string GetProfile(string baseUri, string version, int userId) => $"{baseUri}/{version}/profile/{userId}";
+            public static string GetProfile(string baseUri, string version) => $"{baseUri}/{version}/profile/me";
             public static string GetProfiles(string baseUri, string version) => $"{baseUri}/{version}/profile";
         }
 
         public static class Coupons
         {
             public static string GetCoupons(string baseUri, string version) => $"{baseUri}/{version}/coupon";
-        }        
+        }
+        
+        public static class Login
+        {
+            public static string PostLogin(string baseUri, string version) => $"{baseUri}/{version}/oauth2/token";
+        }
     }
 }

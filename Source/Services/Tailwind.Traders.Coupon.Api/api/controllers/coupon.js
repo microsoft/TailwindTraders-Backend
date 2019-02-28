@@ -3,12 +3,14 @@
 const Coupon = require('../models/coupon');
 
 exports.allCoupons = (req, res) => {
-    let user = req.headers.authorization.split(" ")[1];
+
+    // Retrieve user from token
+    const user = req.decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'];
     
     Coupon.findOne({ 'id': user })
         .then(coupons => {
             if (!coupons) {
-                res.status(404).send({ message: "Not found" });
+                return res.sendStatus(204);
             }
             res.json(coupons);
         })

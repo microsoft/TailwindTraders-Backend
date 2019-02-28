@@ -1,14 +1,13 @@
 const CosmosClient = require("@azure/cosmos").CosmosClient;
 const ConnectionPolicy = require("@azure/cosmos").ConnectionPolicy;
-const config = require("./config");
+const config = require("./config/config");
 const CartController = require("./routes/cartController");
 const ShoppingCartDao = require("./models/shoppingCartDao");
 const RecommededDao = require("./models/recommendedDao");
 
-const createError = require('http-errors');
+const ensureAuthenticated = require('./middlewares/authorization');
 const cors = require('cors');
 const express = require('express');
-const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const bodyParser = require("body-parser");
@@ -23,6 +22,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cors());
 app.use(cookieParser());
+app.use(ensureAuthenticated);
 app.use('/', indexRouter);
 
 console.log(`Cosmos to use is ${config.host}`)
@@ -57,7 +57,7 @@ shoppingCartDao
   })
   .catch(err => {
     console.error(err);
-    console.error("Shutting down because there was an error settinig up the database.");
+    console.error("Shutting down because there was an error setting up the database.");
     process.exit(1);
   });
 
@@ -69,7 +69,7 @@ shoppingCartDao
   })
   .catch(err => {
     console.error(err);
-    console.error("Shutting down because there was an error settinig up the database.");
+    console.error("Shutting down because there was an error setting up the database.");
     process.exit(1);
   });
 
