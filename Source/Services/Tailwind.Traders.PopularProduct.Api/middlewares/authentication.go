@@ -18,7 +18,7 @@ func AuthenticationMiddleware(next http.Handler) http.Handler {
 		issuer := config.Issuer
 
 		type Token struct {
-			*jwt.JWT
+			*jwt.Payload
 			IsLoggedIn bool   `json:"isLoggedIn"`
 			Issuer     string `json:"customField,omitempty"`
 		}
@@ -31,30 +31,34 @@ func AuthenticationMiddleware(next http.Handler) http.Handler {
 		reqToken := r.Header.Get("Authorization")
 		splitToken := strings.Split(reqToken, "Bearer ")
 		reqToken = splitToken[1]
+		token := []byte(reqToken)
 
-		hs256 := jwt.NewHS256(securityKey)
+		hs256 := jwt.NewHMAC(jwt.SHA256, []byte(securityKey))
 
-		payload, sig, err := jwt.Parse(reqToken)
+		raw, err := jwt.Parse(token)
 
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusUnauthorized)
 			return
 		}
-		if err = hs256.Verify(payload, sig); err != nil {
+		if err = raw.Verify(hs256); err != nil {
 			http.Error(w, err.Error(), http.StatusUnauthorized)
 			return
 		}
 
-		jot := &jwt.JWT{
-			Issuer: issuer,
-		}
-		if err = jwt.Unmarshal(payload, &jot); err != nil {
+		var (
+			h jwt.Header
+			p Token
+		)
+
+		if err = raw.Decode(&h, &p); err != nil {
 			http.Error(w, err.Error(), http.StatusUnauthorized)
 			return
 		}
 
 		issValidator := jwt.IssuerValidator(issuer)
-		if err = jot.Validate(issValidator); err != nil {
+
+		if err := p.Validate(issValidator); err != nil {
 			switch err {
 			case jwt.ErrIssValidation:
 				http.Error(w, err.Error(), http.StatusUnauthorized)
