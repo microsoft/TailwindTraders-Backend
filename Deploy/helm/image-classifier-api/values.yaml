@@ -21,6 +21,9 @@ affinity: {}
 env:
   configmap:
     - name: ApplicationInsights__InstrumentationKey
+    - name: ImagePath
+    - name: ISSUER
+    - name: SECURITYKEY
   values:
     - name: ASPNETCORE_ENVIRONMENT
       value: Development

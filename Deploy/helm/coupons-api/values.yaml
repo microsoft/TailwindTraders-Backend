@@ -24,6 +24,8 @@ env:
     - name: CONNECTIONSTRING
     - name: COUPON_COLLECTION
     - name: URL_BASE
+    - name: ISSUER
+    - name: SECURITYKEY
   values:
     - name: ASPNETCORE_ENVIRONMENT
       value: Development

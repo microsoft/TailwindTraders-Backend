@@ -18,3 +18,5 @@ data:
   ConnectionString: Server={{ $sqlsrv }},{{ $sqlport }};Initial Catalog={{ $sqldb }};Persist Security Info=False;User ID={{ $sqluser }};Password={{ $sqlpwd }};MultipleActiveResultSets=False;Connection Timeout=30;
   ApplicationInsights__InstrumentationKey:  {{ .Values.inf.appinsights.id }}
   ProfilesImageUrl: {{ .Values.inf.storage.profileimages }}
+  ISSUER: {{ .Values.sec.issuer }}
+  SECURITYKEY: {{ .Values.sec.securityKey }}

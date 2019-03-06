@@ -19,3 +19,5 @@ data:
   ApplicationInsights__InstrumentationKey:  {{ .Values.inf.appinsights.id }}
   ConnectionString: Server={{ $sqlsrv }};Port={{ $sqlport }};Initial Catalog={{ $sqldb }};Persist Security Info=False;User ID={{ $sqluser }};Password={{ $sqlpwd }};MultipleActiveResultSets=False;Connection Timeout=30;
   AzureStorageUrl: {{ .Values.inf.storage.productimages }}
+  ISSUER: {{ .Values.sec.issuer }}
+  SECURITYKEY: {{ .Values.sec.securityKey }}

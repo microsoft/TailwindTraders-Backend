@@ -17,5 +17,7 @@ data:
   CouponsApiUrl: {{ .Values.inf.apiurls.couponsapiurl }}
   StockApiUrl: {{ .Values.inf.apiurls.stockapiurl }}
   ImageClassifierApiUrl: {{ .Values.inf.apiurls.imageclassifierapiurl }}
+  ISSUER: {{ .Values.sec.issuer }}
+  SECURITYKEY: {{ .Values.sec.securityKey }}
 
 

@@ -23,3 +23,5 @@ data:
   CONNECTIONSTRING: {{ $user }}:{{ $pwd }}@{{ $host }}:{{ $port }}/{{ $dbName }}?ssl=true
   COUPON_COLLECTION: {{ $collection }}
   URL_BASE: {{$imagebaseurl}}
+  ISSUER: {{ .Values.sec.issuer }}
+  SECURITYKEY: {{ .Values.sec.securityKey }}

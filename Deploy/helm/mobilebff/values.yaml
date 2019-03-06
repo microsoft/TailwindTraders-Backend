@@ -26,6 +26,8 @@ env:
     - name: ProfileApiUrl
     - name: CouponsApiUrl
     - name: ImageClassifierApiUrl
+    - name: ISSUER
+    - name: SECURITYKEY
   values:
     - name: ASPNETCORE_ENVIRONMENT
       value: Development

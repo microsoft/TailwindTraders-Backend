@@ -12,3 +12,5 @@ metadata:
     heritage: {{ .Release.Service }}
 data:
   ApplicationInsights:  {{ .Values.inf.appinsights.id }}
+  ISSUER: {{ .Values.sec.issuer }}
+  SECURITYKEY: {{ .Values.sec.securityKey }}
