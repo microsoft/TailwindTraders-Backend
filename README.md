@@ -16,6 +16,10 @@ Please, note that **this only deploys the needed infrastructure**. You need to d
 
 Please refer to the [deployment guide](Documents/DeploymentGuide.md) for the required steps to run the backend services.
 
+# Test image classiffier
+
+Please refer to the [test image classiffier guide](Documents/TestImageClassiffierGuide.md).
+
 # Repositories
 
 For this demo reference, we built several consumer and line-of-business applications and a set of backend services. You can find all repositories in the following locations:
@@ -26,6 +30,8 @@ For this demo reference, we built several consumer and line-of-business applicat
 * [Desktop (WinForms & WPF -.NET Core)](https://github.com/Microsoft/TailwindTraders-Desktop)
 * [Rewards (ASP.NET Framework)](https://github.com/Microsoft/TailwindTraders-Rewards)
 * [Mobile (Xamarin Forms 4.0)](https://github.com/Microsoft/TailwindTraders-Mobile)
+
+
 
 # Contributing
 
