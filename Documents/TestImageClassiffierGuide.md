@@ -11,7 +11,7 @@ The modifier "-v" is for verbose mode.
     * curl YOUR_URL_OF_BACKEND/image-classifier-api/V1/imageclassifier -X POST -F "file=@C:\YOUR_PATH_AND_FILENAME_OF_PHOTO_TO_SEARCH.jpg"  -v
 
 The response should be similar to:
-[{"id":57,"name":"Yellow hard hat with tool bag pack","price":46.0,"imageUrl":"YOUR_URL_OF_STORAGE/images/product-list/59890052.jpg"}]* Connection #0 to host localhost left intact
+* [{"id":57,"name":"Yellow hard hat with tool bag pack","price":46.0,"imageUrl":"YOUR_URL_OF_STORAGE/images/product-list/59890052.jpg"}]* Connection #0 to host localhost left intact
 
 
 You have sample images to test this feature in:
