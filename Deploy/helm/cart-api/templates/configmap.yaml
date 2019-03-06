@@ -13,3 +13,5 @@ metadata:
 data:
   AUTHKEY: {{ .Values.inf.db.cart.auth }}
   HOST: {{ .Values.inf.db.cart.host }}
+  ISSUER: {{ .Values.sec.issuer }}
+  SECURITYKEY: {{ .Values.sec.securityKey }}

@@ -29,6 +29,8 @@ env:
     - name: ApplicationInsights__InstrumentationKey
     - name: ConnectionString
     - name: AzureStorageUrl
+    - name: ISSUER
+    - name: SECURITYKEY
   configmapinit:
     - name: dbserver
     - name: dbuser

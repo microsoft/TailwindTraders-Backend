@@ -22,4 +22,6 @@ env:
   configmap:
     - name: AUTHKEY
     - name: HOST
+    - name: ISSUER
+    - name: SECURITYKEY
   values: {}

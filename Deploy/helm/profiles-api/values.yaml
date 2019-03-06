@@ -23,6 +23,8 @@ env:
     - name: ApplicationInsights__InstrumentationKey
     - name: ConnectionString
     - name: ProfilesImageUrl
+    - name: ISSUER
+    - name: SECURITYKEY
   values:
     - name: ASPNETCORE_ENVIRONMENT
       value: Development

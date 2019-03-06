@@ -25,6 +25,8 @@ env:
     - name: ProductImagesUrl
     - name: ProductDetailImagesUrl
     - name: ProductVisitsUrl
+    - name: ISSUER
+    - name: SECURITYKEY
   values:
     - name: ASPNETCORE_ENVIRONMENT
       value: Development

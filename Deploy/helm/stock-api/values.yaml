@@ -21,4 +21,6 @@ affinity: {}
 env:
   configmap:
     - name: ApplicationInsights
+    - name: ISSUER
+    - name: SECURITYKEY
   values: {}
