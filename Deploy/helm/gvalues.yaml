@@ -56,6 +56,8 @@ inf:
       path: /mobilebff
     webbff:
       path: /webbff    
+    login:
+      path: /login-api
     cart:
       path: /cart-api
   apiurls:
@@ -65,7 +67,7 @@ inf:
     couponsapiurl: http://coupons
     stockapiurl: http://stock
     imageclassifierapiurl: http://imageclassifier
-
+    loginapiurl: http://login
 az:
   productvisitsurl: ""
 

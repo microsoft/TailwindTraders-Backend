@@ -122,6 +122,12 @@ if ($charts.Contains("ct") -or  $charts.Equals("*")) {
     cmd /c "$command"
 }
 
+if ($charts.Contains("lg") -or  $charts.Equals("*")) {
+    Write-Host "Login -lg" -ForegroundColor Yellow
+    $command = createHelmCommand "helm  install --name $name-login -f $valuesFile --set ingress.hosts={$aksHost} --set image.repository=$acrLogin/login.api --set image.tag=$tag" "login-api"
+    cmd /c "$command"
+}
+
 if ($charts.Contains("mgw") -or  $charts.Equals("*")) {
     Write-Host "mobilebff -mgw" -ForegroundColor Yellow 
     $command = createHelmCommand "helm  install --name $name-mobilebff -f $valuesFile --set ingress.hosts={$aksHost} --set image.repository=$acrLogin/mobileapigw --set image.tag=$tag" "mobilebff"

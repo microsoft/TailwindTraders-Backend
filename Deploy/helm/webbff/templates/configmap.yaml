@@ -14,6 +14,7 @@ data:
   PopularProductsApiUrl: {{ .Values.inf.apiurls.popularproductsapiurl }}
   ProductsApiUrl: {{ .Values.inf.apiurls.productsapiurl }}
   ProfileApiUrl: {{ .Values.inf.apiurls.profileapiurl }}
+  LoginApiUrl: {{ .Values.inf.apiurls.loginapiurl }}
   CouponsApiUrl: {{ .Values.inf.apiurls.couponsapiurl }}
   StockApiUrl: {{ .Values.inf.apiurls.stockapiurl }}
   ImageClassifierApiUrl: {{ .Values.inf.apiurls.imageclassifierapiurl }}

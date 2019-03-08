@@ -1,0 +1,21 @@
+{{- $name := include "tt-login.fullname" . -}}
+{{- $sqlsrv := .Values.inf.db.profile.host -}}
+{{- $sqlport := .Values.inf.db.profile.port -}}
+{{- $sqldb := .Values.inf.db.profile.catalog -}}
+{{- $sqluser := .Values.inf.db.profile.user -}}
+{{- $sqlpwd := .Values.inf.db.profile.pwd -}}
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "cfg-{{ $name }}"
+  labels:
+    app: {{ template "tt-login.name" . }}
+    chart: {{ template "tt-login.chart" .}}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+data:
+  ConnectionString: Server={{ $sqlsrv }},{{ $sqlport }};Initial Catalog={{ $sqldb }};Persist Security Info=False;User ID={{ $sqluser }};Password={{ $sqlpwd }};MultipleActiveResultSets=False;Connection Timeout=30;
+  ProfilesImageUrl: {{  .Values.inf.storage.profileimages  }}
+  Issuer: {{ .Values.sec.issuer }}
+  SecurityKey: {{ .Values.sec.securityKey }}
