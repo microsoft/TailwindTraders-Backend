@@ -1,7 +1,7 @@
 package db
 
 import (
-	"app/csv"
+	"github.com/you/tailwindtraderspopularproducts/csv"
 	"database/sql"
 	"strconv"
 

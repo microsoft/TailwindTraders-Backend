@@ -6,7 +6,7 @@ import (
     "context"
     "log"
 	"fmt"
-	"app/config"
+    "github.com/you/tailwindtraderspopularproducts/config"
 )
 
 func CreateConnection() (*sql.DB, context.Context) {

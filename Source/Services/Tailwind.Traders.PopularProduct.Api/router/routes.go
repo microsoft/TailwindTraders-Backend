@@ -3,7 +3,7 @@ package router
 import (
 	"net/http"
 
-	handler "app/handlers"
+	handler "github.com/you/tailwindtraderspopularproducts/handlers"
 )
 
 type Route struct {

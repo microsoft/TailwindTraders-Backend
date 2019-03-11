@@ -1,9 +1,10 @@
 package main
 
 import (
-	configuration "app/config"
-	"app/middlewares"
-	"app/router"
+	
+    configuration "github.com/you/tailwindtraderspopularproducts/config"
+	"github.com/you/tailwindtraderspopularproducts/middlewares"
+	"github.com/you/tailwindtraderspopularproducts/router"
 	"log"
 	"net/http"
 )

@@ -3,11 +3,11 @@ package handler
 import (
 	"encoding/json"
 	"net/http"
-	"app/db"
+	"github.com/you/tailwindtraderspopularproducts/db"
 	"log"
-	dtos "app/dtos"
+	dtos "github.com/you/tailwindtraderspopularproducts/dtos"
 	"fmt"
-	"app/config"
+    "github.com/you/tailwindtraderspopularproducts/config"
 )
 
 // GET /products
