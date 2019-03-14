@@ -1,7 +1,7 @@
 package db
 
 import (
-	models "app/models"
+	models "github.com/you/tailwindtraderspopularproducts/models"
 )
 
 func GetProducts() ([]models.Product, error) {

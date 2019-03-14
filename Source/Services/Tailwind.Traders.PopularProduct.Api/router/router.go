@@ -2,7 +2,7 @@ package router
 
 import (
 	"github.com/gorilla/mux"
-	"app/middlewares"
+	"github.com/you/tailwindtraderspopularproducts/middlewares"
 )
 
 func NewRouter() *mux.Router {

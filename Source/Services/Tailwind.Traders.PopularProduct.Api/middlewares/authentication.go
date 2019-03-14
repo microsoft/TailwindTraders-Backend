@@ -1,11 +1,11 @@
 package middlewares
 
 import (
-	configuration "app/config"
+	configuration "github.com/you/tailwindtraderspopularproducts/config"
 	"net/http"
 	"strings"
 
-	"github.com/gbrlsnchs/jwt"
+	"github.com/gbrlsnchs/jwt/v3"
 )
 
 //AuthenticationMiddleware token
@@ -47,13 +47,13 @@ func AuthenticationMiddleware(next http.Handler) http.Handler {
 		}
 
 		var (
-			h jwt.Header
+			_ jwt.Header
 			p Token
 		)
 
-		if err = raw.Decode(&h, &p); err != nil {
+		if _, err = raw.Decode(&p); err != nil {
 			http.Error(w, err.Error(), http.StatusUnauthorized)
-			return
+				return
 		}
 
 		issValidator := jwt.IssuerValidator(issuer)

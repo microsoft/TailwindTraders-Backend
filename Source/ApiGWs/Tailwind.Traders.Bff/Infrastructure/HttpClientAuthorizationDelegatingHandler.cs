@@ -14,6 +14,7 @@ namespace Tailwind.Traders.MobileBff.Infrastructure
     {
         private readonly IHttpContextAccessor _httpContextAccesor;
         private const string SCHEME = "Email";
+        private const string SCHEME_Bearer = "Bearer";
 
         public HttpClientAuthorizationDelegatingHandler(IHttpContextAccessor httpContextAccesor)
         {
@@ -25,11 +26,15 @@ namespace Tailwind.Traders.MobileBff.Infrastructure
             var authorizationHeader = _httpContextAccesor.HttpContext
                 .Request.Headers["Authorization"];
 
-            var authHeader = authorizationHeader[0].Split(" ");
-
-            if (!string.IsNullOrEmpty(authorizationHeader) && authHeader[0].Equals(SCHEME))
+            if (authorizationHeader.Any())
             {
-                request.Headers.Authorization = new AuthenticationHeaderValue(SCHEME, authHeader[1]);
+                var authHeader = authorizationHeader.FirstOrDefault().Split(" ");
+
+                if (!string.IsNullOrEmpty(authorizationHeader) 
+                    && (authHeader[0].Equals(SCHEME) || authHeader[0].Equals(SCHEME_Bearer)))
+                {
+                    request.Headers.Authorization = new AuthenticationHeaderValue(authHeader[0], authHeader[1]);
+                }
             }
 
             return await base.SendAsync(request, cancellationToken);

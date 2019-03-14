@@ -43,5 +43,10 @@ namespace Tailwind.Traders.MobileBff.Infrastructure
         {
             public static string GetCoupons(string baseUri, string version) => $"{baseUri}/{version}/coupon";
         }
+
+        public static class Login
+        {
+            public static string Authenticate(string baseUri, string version) => $"{baseUri}/{version}/oauth2/token";
+        }
     }
 }
