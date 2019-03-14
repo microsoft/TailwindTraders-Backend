@@ -17,9 +17,7 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://0.0.0.0:80
       - ConnectionString=Server=sql.data;Database=Microsoft.TailWindTraders.Product;User Id=sa;Password=Pass@word
-      - ProductImagesUrl=
-      - ProductDetailImagesUrl=
-      - ProductVisitsUrl=
+     - ProductVisitsUrl=
     ports:
       - "5000:80"   
 
@@ -60,7 +58,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://0.0.0.0:80
-      - ConnectionString=Server=localhost;Port=5433;User Id=sa;Password=Pass@word;Database=Microsoft.TailWindTraders.PopularProduct;
+      - ConnectionString=Server=sql.data;Database=Microsoft.TailWindTraders.PopularProduct;User Id=sa;Password=Pass@word
       - Issuer=TTFakeLogin
       - SecurityKey=nEpLzQJGNSCNL5H6DIQCtTdNxf5VgAGcBbtXLms1YDD01KJBAs0WVawaEjn97uwB
       - AzureStorageUrl=
@@ -104,6 +102,7 @@ services:
       - ProfileApiUrl=http://profile.api
       - CouponsApiUrl=http://coupon.api
       - ImageClassifierApiUrl=http://image-classifier.api
+      - LoginApiUrl=http://login.api
     ports:
       - "5100:80"
 
