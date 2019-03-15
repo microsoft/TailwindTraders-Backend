@@ -65,7 +65,7 @@ Please, note that the Service principal must be already exist. To create a servi
 You can **manually use docker-compose** to build and push the images to the ACR. If using compose you can set following environment variables:
 
 * `TAG`: Will contain the generated docker images tag
-* `REPOSITORY`: Repository to use. This variable should be set to the login server of the ACR
+* `REGISTRY`: Registry to use. This variable should be set to the login server of the ACR
 
 Once set, you can use `docker-compose build` and `docker-compose push` to build and push the images.
 
