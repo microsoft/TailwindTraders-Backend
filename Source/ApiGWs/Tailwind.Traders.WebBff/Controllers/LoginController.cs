@@ -45,9 +45,29 @@ namespace Tailwind.Traders.WebBff.Controllers
             }
 
             var result = await response.Content.ReadAsStringAsync();
-            var login = JsonConvert.DeserializeObject<LoginResponse>(result);
-            return Ok(login);
+            var authResponse = JsonConvert.DeserializeObject<AuthResponse>(result);
+            return Ok(authResponse);
         }
+
+        //// POST: v1/login
+        //[HttpPost("/login/refresh")]
+        //public async Task<IActionResult> LoginRefresh([FromBody] string refreshToken)
+        //{
+        //    var client = _httpClientFactory.CreateClient();
+
+        //    var stringContent = new StringContent(refreshToken, UnicodeEncoding.UTF8, "application/json");
+
+        //    var response = await client.PostAsync(API.Login.PostRefreshToken(_settings.LoginApiUrl, VERSION_API), stringContent);
+
+        //    if (response.StatusCode == HttpStatusCode.BadRequest)
+        //    {
+        //        return BadRequest();
+        //    }
+
+        //    var result = await response.Content.ReadAsStringAsync();
+        //    var login = JsonConvert.DeserializeObject<LoginResponse>(result);
+        //    return Ok(login);
+        //}
 
 
     }

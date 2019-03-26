@@ -7,9 +7,9 @@
         public string expires_in { get; set; }
     }
 
-    public class LoginResponse
+    public class AuthResponse
     {
         public TokenResponse access_token { get; set; }
-        public TokenResponse refresh_token { get; set; }
+        public string refresh_token { get; set; }
     }
 }

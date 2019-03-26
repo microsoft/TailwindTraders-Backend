@@ -43,7 +43,7 @@ namespace Tailwind.Traders.MobileBff.Infrastructure
 
         public static class Login
         {
-            public static string Authenticate(string baseUri, string version) => $"{baseUri}/{version}/auth";
+            public static string Authenticate(string baseUri, string version) => $"{baseUri}/{version}/oauth2/token";
         }
     }
 }

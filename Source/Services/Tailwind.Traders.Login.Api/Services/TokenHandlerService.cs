@@ -43,7 +43,7 @@ namespace Tailwind.Traders.Login.Api.Services
             var response = new TokenResponseModel()
             {
                 AccessToken = accessToken,
-                RefreshToken = refreshToken
+                RefreshToken = refreshToken.Token
             };
 
             return response;
@@ -74,7 +74,7 @@ namespace Tailwind.Traders.Login.Api.Services
                     TokenType = "bearer",
                     ExpiresIn = ExpirationTimeInSeconds
                 },
-                RefreshToken = refreshToken
+                RefreshToken = refreshToken.Token
             };
         }
 

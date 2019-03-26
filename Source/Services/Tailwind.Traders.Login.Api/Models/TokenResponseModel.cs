@@ -32,6 +32,6 @@ namespace Tailwind.Traders.Login.Api.Models
         public AccessTokenModel AccessToken { get; set; }
 
         [JsonProperty(PropertyName = "refresh_token")]
-        public RefreshTokenModel RefreshToken { get; set; }
+        public string RefreshToken { get; set; }
     }
 }

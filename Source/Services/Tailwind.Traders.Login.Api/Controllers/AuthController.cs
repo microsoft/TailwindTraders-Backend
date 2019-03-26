@@ -21,8 +21,8 @@ namespace NetCoreJWTAuth.App.Controllers
             _tokenHandlerService = tokenHandlerService;
         }
 
-        // POST auth
-        [HttpPost("auth")]
+        // POST /oauth2/token
+        [HttpPost("oauth2/token")]
         public IActionResult Login([FromBody] TokenRequestModel request)
         {
 
@@ -36,13 +36,13 @@ namespace NetCoreJWTAuth.App.Controllers
            return Ok(token);
         }
 
-        // POST auth/refresh
-        [HttpPost("auth/refresh")]
-        public IActionResult RefreshAccessToken([FromBody] string token)
+        // PUT /oauth2/refresh
+        [HttpPut("oauth2/refresh")]
+        public IActionResult RefreshAccessToken([FromBody] RefreshTokenRequestModel tokenRequest)
         {
             try
             {
-                var refreshedTokens = _tokenHandlerService.RefreshAccessToken(token);
+                var refreshedTokens = _tokenHandlerService.RefreshAccessToken(tokenRequest.Token);
                 return Ok(refreshedTokens);
             }
             catch (Exception e)
