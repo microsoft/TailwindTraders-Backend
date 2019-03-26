@@ -17,7 +17,9 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://0.0.0.0:80
       - ConnectionString=Server=sql.data;Database=Microsoft.TailWindTraders.Product;User Id=sa;Password=Pass@word
-     - ProductVisitsUrl=
+      - ProductImagesUrl=
+      - ProductDetailImagesUrl=
+      - ProductVisitsUrl=        
     ports:
       - "5000:80"   
 
@@ -61,7 +63,7 @@ services:
       - ConnectionString=Server=sql.data;Database=Microsoft.TailWindTraders.PopularProduct;User Id=sa;Password=Pass@word
       - Issuer=TTFakeLogin
       - SecurityKey=nEpLzQJGNSCNL5H6DIQCtTdNxf5VgAGcBbtXLms1YDD01KJBAs0WVawaEjn97uwB
-      - AzureStorageUrl=
+      - AzureStorageUrl=    
     ports:
       - "5003:80"
       

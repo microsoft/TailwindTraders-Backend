@@ -19,5 +19,5 @@ data:
   ImageClassifierApiUrl: {{ .Values.inf.apiurls.imageclassifierapiurl }}
   ISSUER: {{ .Values.sec.issuer }}
   SECURITYKEY: {{ .Values.sec.securityKey }}
-
+  LoginApiUrl: {{ .Values.inf.apiurls.loginapiurl }}
 
