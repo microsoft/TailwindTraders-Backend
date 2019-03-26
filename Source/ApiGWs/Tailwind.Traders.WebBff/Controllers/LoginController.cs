@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 using Tailwind.Traders.WebBff.Infrastructure;
 using Tailwind.Traders.WebBff.Models;
 
@@ -52,5 +48,7 @@ namespace Tailwind.Traders.WebBff.Controllers
             var login = JsonConvert.DeserializeObject<LoginResponse>(result);
             return Ok(login);
         }
+
+
     }
 }

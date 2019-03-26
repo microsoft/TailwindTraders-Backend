@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Linq;
 
 namespace Tailwind.Traders.MobileBff.Infrastructure
 {
@@ -46,7 +43,7 @@ namespace Tailwind.Traders.MobileBff.Infrastructure
 
         public static class Login
         {
-            public static string Authenticate(string baseUri, string version) => $"{baseUri}/{version}/oauth2/token";
+            public static string Authenticate(string baseUri, string version) => $"{baseUri}/{version}/auth";
         }
     }
 }
