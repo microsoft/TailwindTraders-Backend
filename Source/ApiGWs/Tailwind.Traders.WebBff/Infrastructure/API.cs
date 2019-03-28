@@ -43,16 +43,12 @@ namespace Tailwind.Traders.WebBff.Infrastructure
         
         public static class Login
         {
-            //public static string PostLogin(string baseUri, string version) => $"{baseUri}/{version}/oauth2/token";
-            //public static string PostRefreshToken(string baseUri, string version) => $"{baseUri}/{version}/oauth2/refresh";
-            public static string PostLogin(string baseUri, string version) => $"http://localhost:51667/v1/oauth2/token";
-            public static string PostRefreshToken(string baseUri, string version) => $"http://localhost:51667/v1/oauth2/refresh";
+            public static string PostLogin(string baseUri, string version) => $"{baseUri}/{version}/oauth2/token";
         }
 
         public static class Auth
         {
-            //public static string PostRefreshToken(string baseUri, string version) => $"{baseUri}/{version}/oauth2/refresh";
-            public static string PutRefreshToken(string baseUri, string version) => $"http://localhost:51667/v1/oauth2/refresh";
+            public static string PutRefreshToken(string baseUri, string version) => $"{baseUri}/{version}/oauth2/refresh";
         }
     }
 }

@@ -60,11 +60,8 @@ namespace Tailwind.Traders.Login.Api.Services
             {
                 throw new Exception("Refresh token was revoked");
             }
-            
-            //_refreshTokens.RemoveAll(r => r.Token == refreshToken.Token && r.User == refreshToken.User);
 
             refreshToken.Token = CreateRefreshToken(refreshToken.User);
-            //_refreshTokens.Add(refreshToken);
             
             return new TokenResponseModel()
             {

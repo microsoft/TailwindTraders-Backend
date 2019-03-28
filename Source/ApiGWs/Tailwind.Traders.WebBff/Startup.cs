@@ -78,7 +78,8 @@ namespace Tailwind.Traders.WebBff
                 builder
                 .AllowAnyOrigin()
                 .AllowAnyHeader()
-                .AllowAnyMethod();
+                .AllowAnyMethod()
+                .AllowCredentials();
             });
 
             app.UseAuthentication();
