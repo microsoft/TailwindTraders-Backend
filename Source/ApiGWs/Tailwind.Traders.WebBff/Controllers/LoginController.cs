@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 using Tailwind.Traders.WebBff.Infrastructure;
 using Tailwind.Traders.WebBff.Models;
 
@@ -49,8 +45,30 @@ namespace Tailwind.Traders.WebBff.Controllers
             }
 
             var result = await response.Content.ReadAsStringAsync();
-            var login = JsonConvert.DeserializeObject<LoginResponse>(result);
-            return Ok(login);
+            var authResponse = JsonConvert.DeserializeObject<AuthResponse>(result);
+            return Ok(authResponse);
         }
+
+        //// POST: v1/login
+        //[HttpPost("/login/refresh")]
+        //public async Task<IActionResult> LoginRefresh([FromBody] string refreshToken)
+        //{
+        //    var client = _httpClientFactory.CreateClient();
+
+        //    var stringContent = new StringContent(refreshToken, UnicodeEncoding.UTF8, "application/json");
+
+        //    var response = await client.PostAsync(API.Login.PostRefreshToken(_settings.LoginApiUrl, VERSION_API), stringContent);
+
+        //    if (response.StatusCode == HttpStatusCode.BadRequest)
+        //    {
+        //        return BadRequest();
+        //    }
+
+        //    var result = await response.Content.ReadAsStringAsync();
+        //    var login = JsonConvert.DeserializeObject<LoginResponse>(result);
+        //    return Ok(login);
+        //}
+
+
     }
 }

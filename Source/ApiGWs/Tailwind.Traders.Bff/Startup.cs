@@ -62,7 +62,8 @@ namespace Tailwind.Traders.Bff
                 builder
                 .AllowAnyOrigin()
                 .AllowAnyHeader()
-                .AllowAnyMethod();
+                .AllowAnyMethod()
+                .AllowCredentials();
             });
 
             app.UseSwagger()

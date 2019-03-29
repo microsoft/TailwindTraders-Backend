@@ -1,13 +1,9 @@
-﻿using System.Text;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.Tokens;
-using Tailwind.Traders.Login.Api.Models;
 using Tailwind.Traders.Login.Api.Services;
 
 namespace Tailwind.Traders.Login.Api
@@ -26,7 +22,7 @@ namespace Tailwind.Traders.Login.Api
         {
 
             // Services
-            services.AddTransient<ILoginGeneratorService, LoginGeneratorService>();
+            services.AddSingleton<ITokenHandlerService, TokenHandlerService>();
 
             services.AddApiVersioning(options =>
             {

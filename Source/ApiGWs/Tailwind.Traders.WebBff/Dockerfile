@@ -1,5 +1,5 @@
-ARG sdkTag=2.1-sdk
-ARG runtimeTag=2.1-aspnetcore-runtime
+ARG sdkTag=2.2-sdk
+ARG runtimeTag=2.2-aspnetcore-runtime
 ARG coreversion=netcore21
 ARG image=microsoft/dotnet
 FROM ${image}:${runtimeTag} AS base
