@@ -28,6 +28,7 @@ env:
     - name: ImageClassifierApiUrl
     - name: ISSUER
     - name: SECURITYKEY
+    - name: LoginApiUrl
   values:
     - name: ASPNETCORE_ENVIRONMENT
       value: Development
