@@ -335,3 +335,5 @@ Deploy/helm/__values/*
 !Deploy/helm/__values/readme.txt
 
 Source/Services/Tailwind.Traders.Cart.Api/.env
+
+_gvalues.dev.yaml
