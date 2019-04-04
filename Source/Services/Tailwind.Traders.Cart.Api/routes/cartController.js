@@ -49,7 +49,7 @@ class CartController {
 
         const email = this.retrieveEmail(req);
         
-        const typeid = req.query.typeid;
+        const typeid = req.query.type;
         if (!typeid && !email) {
             res.status(400).send({ message: "'email' or 'productType' missing" });
         } else {
