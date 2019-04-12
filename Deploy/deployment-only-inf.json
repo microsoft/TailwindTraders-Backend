@@ -45,12 +45,6 @@
         "addonProfiles": {
           "httpApplicationRouting": {
             "enabled": true
-          },
-          "omsagent": {
-            "enabled": true,
-            "config": {
-              "logAnalyticsWorkspaceResourceID": "[variables('omsWorkspaceId')]"
-            }
           }
         },
         "agentPoolProfiles": [
@@ -69,74 +63,6 @@
         },
         "networkProfile": {
           "networkPlugin": "kubenet"
-        }
-      },
-      "dependsOn": [
-        "[concat('Microsoft.Resources/deployments/', 'WorkspaceDeployment')]"
-      ]
-    },
-    {
-      "type": "Microsoft.Resources/deployments",
-      "name": "SolutionDeployment",
-      "apiVersion": "2017-05-10",
-      "subscriptionId": "[split(variables('omsWorkspaceId'),'/')[2]]",
-      "resourceGroup": "[split(variables('omsWorkspaceId'),'/')[4]]",
-      "properties": {
-        "mode": "Incremental",
-        "template": {
-          "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-          "contentVersion": "1.0.0.0",
-          "parameters": {},
-          "variables": {},
-          "resources": [
-            {
-              "apiVersion": "2015-11-01-preview",
-              "type": "Microsoft.OperationsManagement/solutions",
-              "location": "East US",
-              "name": "[concat('ContainerInsights', '(', split(variables('omsWorkspaceId'),'/')[8], ')')]",
-              "properties": {
-                "workspaceResourceId": "[variables('omsWorkspaceId')]"
-              },
-              "plan": {
-                "name": "[concat('ContainerInsights', '(', split(variables('omsWorkspaceId'),'/')[8], ')')]",
-                "product": "[concat('OMSGallery/', 'ContainerInsights')]",
-                "promotionCode": "",
-                "publisher": "Microsoft"
-              }
-            }
-          ]
-        }
-      },
-      "dependsOn": [
-        "[concat('Microsoft.Resources/deployments/', 'WorkspaceDeployment')]"
-      ]
-    },
-    {
-      "type": "Microsoft.Resources/deployments",
-      "name": "WorkspaceDeployment",
-      "apiVersion": "2017-05-10",
-      "subscriptionId": "[split(variables('omsWorkspaceId'),'/')[2]]",
-      "resourceGroup": "[split(variables('omsWorkspaceId'),'/')[4]]",
-      "properties": {
-        "mode": "Incremental",
-        "template": {
-          "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-          "contentVersion": "1.0.0.0",
-          "parameters": {},
-          "variables": {},
-          "resources": [
-            {
-              "apiVersion": "2015-11-01-preview",
-              "type": "Microsoft.OperationalInsights/workspaces",
-              "location": "East US",
-              "name": "[variables('workspaceName')]",
-              "properties": {
-                "sku": {
-                  "name": "standalone"
-                }
-              }
-            }
-          ]
         }
       }
     }
