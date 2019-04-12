@@ -10,7 +10,7 @@
     },
     "aksVersion": {
       "type": "string",
-      "defaultValue": "1.12.5"
+      "defaultValue": "1.12.7"
     }
   },
   "variables": {

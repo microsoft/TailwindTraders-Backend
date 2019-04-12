@@ -1,46 +1,49 @@
 # Global values for all helm charts. See comments for usage
+# This file contains passwords and connection strings for the infrastructure running inside the AKS cluster.
 #
-# NOTE: If you update this file beware to not commit/push inside your repo!
-# Instead of updating this file, can place a updated copy of it in helm/__values folder and use the -valuesFile parameter of Deploy-Images-Aks.ps1 script.
-# Everything on helm/__values folder is ignored by .gitignore.
+# Note that all login/pwds/keys here are **not secrets** because:
+#   1. Databases run inside cluster and can be accessed only from inside the cluster
+#   2. External service Azurite uses the hardcoded Azure Storage Emulator values
+#
+# Deploy using this configuration only in development clusters for dev purposes!
 
 inf:
   sa: ttsa
   db:
     products:
-      host: # DB HOST LIKE tailwindtradersserver-dev.database.windows.net
+      host: sql
       port: "1433"
-      catalog: # DB NAME LIKE  Microsoft.Tailwind.Products-dev
-      user: # ADMIN USERNAME LIKE tailadmin
-      pwd: # ADMIN PWD
+      catalog: products
+      user: sa
+      pwd: Passw0rd1!
     profile:
-      host: # DB HOST LIKE tailwindtradersserver-dev.database.windows.net
+      host: sql
       port: "1433"
-      catalog: # DB NAME LIKE  Microsoft.Tailwind.Profile-dev
-      user: # ADMIN USERNAME LIKE tailadmin
-      pwd: # ADMIN PWD
+      catalog: profile
+      user: sa
+      pwd: Passw0rd1!
     coupons:
-      user: # COSMOS USER tailwindtraders-coupons-dev
-      pwd: # COSMOS PWD 
-      host: # COSMOS HOST LIKE tailwindtraders-coupons-dev.documents.azure.com
+      user: tt-user
+      pwd: Passw0rd1!
+      host: mongo
       port: "10255"
       dbName: Coupon
-      constr: # COSMOS CONSTR
-      collection: CouponCollection   
+      constr: mongodb://tt-user:Passw0rd1!@mongo:27017/Coupon
+      collection: CouponCollection 
     popularproducts:
-      host: # DB HOST LIKEtailwindtradersserver-dev.database.windows.net
+      host: sql
       port: "1433"
-      catalog: # DB NAME LIKE  Microsoft.Tailwind.PopularProduct-dev
-      user: # ADMIN USERNAME LIKE tailadmin
-      pwd: # ADMIN PWD  
+      catalog: popularproducts
+      user: sa
+      pwd: Passw0rd1!  
     cart:
-      host: # COMSOS HOST FOR THE CART like https://ttwebbasket-dev.documents.azure.com:443/
-      auth: # COSMOS AUTH KEY
+      host: ""  # Overriden by Deploy-Images-Aks.ps1 when -useInfraInAks is $true
+      auth: C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==    # CosmosDb Emulator Key
   storage:
-    productimages: #URL-OF-STORAGE/product-list
-    productdetailimages: #URL-OF-STORAGE/product-detail
-    couponimage: #URL-OF-STORAGE/coupon-list
-    profileimages: #URL-OF-STORAGE/profiles-list
+    productimages: https://tailwindtraders.blob.core.windows.net/product-list
+    productdetailimages: https://tailwindtraders.blob.core.windows.net/product-detail
+    couponimage: https://tailwindtraders.blob.core.windows.net/coupon-list
+    profileimages: https://tailwindtraders.blob.core.windows.net/profiles-list
   appinsights:
     id: ""
   ingress:
@@ -61,7 +64,7 @@ inf:
     webbff:
       path: /webbff    
     login:
-      path: /login-api
+      path: /login-api      
     cart:
       path: /cart-api
   apiurls:
