@@ -12,6 +12,13 @@ Please, note that **this only deploys the needed infrastructure**. You need to d
 
 [![Build status](https://dev.azure.com/TailwindTraders/Backend/_apis/build/status/Backend-CI)](https://dev.azure.com/TailwindTraders/Backend/_build/latest?definitionId=26)
 
+## Running everything on AKS
+
+For development scenarios everything can be run on a AKS, so **not external dependencies needed**. Click following button to deploy only an AKS:
+<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FMicrosoft%2FTailwindTraders-Backend%2Fmaster%2FDeploy%2Fdeployment-only-inf.json"><img src="/Documents/Images/deploy-to-azure.png" alt="Deploy to Azure"/></a>
+
+Once you have an AKS please follow the documentation to [deploy infrastructure on AKS](./Documents/AKS-infrastructure.md)
+
 # Running the backend services
 
 Please refer to the [deployment guide](Documents/DeploymentGuide.md) for the required steps to run the backend services.
