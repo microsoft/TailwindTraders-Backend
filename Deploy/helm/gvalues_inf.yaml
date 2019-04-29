@@ -26,9 +26,9 @@ inf:
       user: tt-user
       pwd: Passw0rd1!
       host: mongo
-      port: "10255"
-      dbName: Coupon
-      constr: mongodb://tt-user:Passw0rd1!@mongo:27017/Coupon
+      port: "27017"
+      dbName: admin
+      constr: mongodb://tt-user:Passw0rd1!@mongo:27017/admin
       collection: CouponCollection 
     popularproducts:
       host: sql
