@@ -24,4 +24,6 @@ env:
     - name: HOST
     - name: ISSUER
     - name: SECURITYKEY
-  values: {}
+  values:
+    - name: DISABLE_SSL
+      value: "false"  

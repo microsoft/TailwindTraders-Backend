@@ -145,7 +145,8 @@ if ($charts.Contains("ct") -or  $charts.Contains("*")) {
     $command = "helm  install --name $name-cart -f $valuesFile --set ingress.hosts={$aksHost} --set image.repository=$acrLogin/cart.api --set image.tag=$tag"
     if ($useInfraInAks) {
         $fqdn=$cartAci.ipAddress.fqdn
-        $command = "$command --set inf.db.cart.host=https://${fqdn}:8081"
+        $command = "$command --set inf.db.cart.host=https://${fqdn}:8081 -f values_inf_cartapi.yaml"
+        
     }
     $command = createHelmCommand $command "cart-api"
     cmd /c "$command"

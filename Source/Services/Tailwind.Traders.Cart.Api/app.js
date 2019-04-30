@@ -42,6 +42,15 @@ if (locations) {
   cosmosClientOptions.connectionPolicy = connectionPolicy;
 }
 
+const disableSSL = (process.env.DISABLE_SSL || "").toString().toLowerCase() === "true";
+if (disableSSL) {
+  console.log ('Disabling SSL verification! Caution *NEVER* use this in production!');
+  if (cosmosClientOptions.connectionPolicy == undefined) {
+    cosmosClientOptions.connectionPolicy = new ConnectionPolicy();
+  }
+  cosmosClientOptions.connectionPolicy.DisableSSLVerification = true;
+}
+
 const cosmosClient = new CosmosClient(cosmosClientOptions);
 const shoppingCartDao = new ShoppingCartDao(cosmosClient, config.databaseId, config.containerId);
 const recommendedDao = new RecommededDao(cosmosClient, config.databaseId);
