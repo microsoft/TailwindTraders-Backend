@@ -4,7 +4,7 @@ build:
   context: ..\..\
   dockerfile: Dockerfile
 install:
-  chart: ../../../Deploy/helm/webbff
+  chart: ../../../Deploy/helm/coupons-api
   set:
     replicaCount: 1
     image:
@@ -15,7 +15,7 @@ install:
         kubernetes.io/ingress.class: traefik-azds
       hosts:
       # This expands to [space.s.]identity.<guid>.<region>.aksapp.io
-      - $(spacePrefix)webbff$(hostSuffix)
+      - $(spacePrefix)coupons$(hostSuffix)
   values:
   - values.dev.yaml?
   - secrets.dev.yaml?
@@ -29,25 +29,15 @@ configurations:
         BUILD_CONFIGURATION: ${BUILD_CONFIGURATION:-Debug}
     container:
       sync:
-      - '**/Pages/**'
-      - '**/Views/**'
-      - '**/wwwroot/**'
-      - '!**/*.{sln,csproj}'
+      - '**/*.js'
+      - '!**/node_modules/**'
       command:
-      - dotnet
-      - run
-      - --no-restore
-      - --no-build
-      - --no-launch-profile
-      - -c
-      - ${BUILD_CONFIGURATION:-Debug}
+      - node
+      - server.js
       iterate:
         processesToKill:
-        - dotnet
+        - node
         - vsdbg
         buildCommands:
-        - - dotnet
-          - build
-          - --no-restore
-          - -c
-          - ${BUILD_CONFIGURATION:-Debug}
+        - - npm
+          - install 

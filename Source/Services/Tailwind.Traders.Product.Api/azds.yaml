@@ -4,7 +4,7 @@ build:
   context: ..\..\
   dockerfile: Dockerfile
 install:
-  chart: ../../../Deploy/helm/webbff
+  chart: ../../../Deploy/helm/products-api
   set:
     replicaCount: 1
     image:
@@ -15,7 +15,7 @@ install:
         kubernetes.io/ingress.class: traefik-azds
       hosts:
       # This expands to [space.s.]identity.<guid>.<region>.aksapp.io
-      - $(spacePrefix)webbff$(hostSuffix)
+      - $(spacePrefix)products$(hostSuffix)
   values:
   - values.dev.yaml?
   - secrets.dev.yaml?
