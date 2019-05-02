@@ -1,5 +1,3 @@
-# This is to workaround issue #56 - https://github.com/Azure/dev-spaces/issues/56
-
 Param(
     [parameter(Mandatory=$true)][string]$file
 )

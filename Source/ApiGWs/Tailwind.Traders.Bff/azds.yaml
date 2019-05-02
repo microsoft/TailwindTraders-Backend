@@ -4,7 +4,7 @@ build:
   context: ..\..\
   dockerfile: Dockerfile
 install:
-  chart: ../../../Deploy/helm/login-api
+  chart: ../../../Deploy/helm/mobilebff
   set:
     replicaCount: 1
     image:
@@ -15,9 +15,9 @@ install:
         kubernetes.io/ingress.class: traefik-azds
       hosts:
       # This expands to [space.s.]identity.<guid>.<region>.aksapp.io
-      - $(spacePrefix)$(rootSpacePrefix)login$(hostSuffix)
+      - $(spacePrefix)$(rootSpacePrefix)mobilebff$(hostSuffix)
   values:
-  - ../../../Deploy/helm/gvalues.azds.yaml  
+  - ../../../Deploy/helm/gvalues.azds.yaml
   - values.dev.yaml?
   - secrets.dev.yaml?
 configurations:

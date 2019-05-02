@@ -1,10 +1,10 @@
 kind: helm-release
 apiVersion: 1.1
 build:
-  context: .
+  context: ..\..\
   dockerfile: Dockerfile
 install:
-  chart: ../../../Deploy/helm/coupons-api
+  chart: ../../../Deploy/helm/popular-products-api
   set:
     replicaCount: 1
     image:
@@ -15,7 +15,7 @@ install:
         kubernetes.io/ingress.class: traefik-azds
       hosts:
       # This expands to [space.s.]identity.<guid>.<region>.aksapp.io
-      - $(spacePrefix)$(rootSpacePrefix)coupons$(hostSuffix)
+      - $(spacePrefix)$(rootSpacePrefix)popularproducts$(hostSuffix)
   values:
   - ../../../Deploy/helm/gvalues.azds.yaml  
   - values.dev.yaml?
@@ -25,7 +25,5 @@ configurations:
     build:
       useGitIgnore: true
     container:
-      sync:
-      - "!**/package.json"
       iterate:
-        processesToKill: [node]
+        processesToKill: [main]

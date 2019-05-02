@@ -6,9 +6,9 @@ build:
 install:
   chart: ../../../Deploy/helm/stock-api
   values:
+  - ../../../Deploy/helm/gvalues.azds.yaml
   - values.dev.yaml?
   - secrets.dev.yaml?
-  - ../../../Deploy/helm/gvalues.azds.yaml
   set:
     replicaCount: 1
     image:

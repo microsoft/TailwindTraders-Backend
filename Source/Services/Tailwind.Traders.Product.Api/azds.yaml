@@ -15,11 +15,11 @@ install:
         kubernetes.io/ingress.class: traefik-azds
       hosts:
       # This expands to [space.s.]identity.<guid>.<region>.aksapp.io
-      - $(spacePrefix)products$(hostSuffix)
+      - $(spacePrefix)$(rootSpacePrefix)products$(hostSuffix)
   values:
+  - ../../../Deploy/helm/gvalues.azds.yaml  
   - values.dev.yaml?
   - secrets.dev.yaml?
-  - ../../../Deploy/helm/gvalues.azds.yaml
 configurations:
   develop:
     build:
