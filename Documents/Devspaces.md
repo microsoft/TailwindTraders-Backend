@@ -4,7 +4,7 @@ Tailwind Traders supports [Azure Devspaces](https://docs.microsoft.com/en-us/azu
 
 ## Requeriments
 
-* [AKS with Devspaces enabled
+* AKS with Devspaces enabled
 * Devspaces CLI installed
 
 **Note** Tailwind Traders has been tested with Devspaces CLI version:
@@ -49,7 +49,7 @@ Then the devspace is created. You can check that the devspace is created by typi
 *  dev      True
 ```
 
-## Deploying the serviceaccount the the namespace
+## Deploying the serviceaccount in the namespace
 
 All pods created by Helm charts run under the `ttsa` service account. You **must deploy the service account before deploying any DevSpaces workload**. Just apply the file `/Deploy/helm/ttsa.yaml` on the Devspace namespace (i. e. `dev`):
 
@@ -177,7 +177,7 @@ An `azds space list` verifies that she is using the Dev Space `alice`:
 *  dev/alice  True
 ```
 
-Fist **she must deploy the `/Deploy/helm/ttsa.yaml` file using `kubectl apply`. If she fails doing that, the Devspaces deploy will be stuck at "Waiting for container image build..." phase.
+Fist **she must deploy the `/Deploy/helm/ttsa.yaml` file using `kubectl apply`**. If she fails doing that, the Devspaces deploy will be stuck at "Waiting for container image build..." phase.
 
 She can now deploy her version of Stock API, just going to `/Source/Services/Tailwind.Traders.Stock.Api` and use `azds up -d -v`. Once service is deployed a `azds list-up` shows that, for Alice, all APIs runs on `dev` but _Stock API_:
 

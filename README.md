@@ -8,6 +8,8 @@ We have added an ARM template so you can automate the creation of the resources 
 
 Please, note that **this only deploys the needed infrastructure**. You need to deploy the services to your infrastructure, following these [instructions](./Documents/DeploymentGuide.md)
 
+**We have enabled Devspaces support!** Read [the devspaces deploy documentation](./Documents/Devspaces.md) if you want to test Azure Dev Spaces using Tailwind Traders.
+
 * To run the backend locally on your computer follow these [instructions](./Documents/RunLocally.md)
 
 [![Build status](https://dev.azure.com/TailwindTraders/Backend/_apis/build/status/Backend-CI)](https://dev.azure.com/TailwindTraders/Backend/_build/latest?definitionId=26)

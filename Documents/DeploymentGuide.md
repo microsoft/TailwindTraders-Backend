@@ -218,3 +218,7 @@ Events:
   Normal  CertObtained    9m    cert-manager  Obtained certificate from ACME server
   Normal  CertIssued      9m    cert-manager  Certificate issued successfully
 ```
+
+## Using Azure Dev Spaces
+
+We have enabled Devspaces support! Read [the devspaces deploy documentation](./Devspaces.md) if you want to test Azure Dev Spaces using Tailwind Traders.
