@@ -39,8 +39,8 @@ services:
     image: ${REGISTRY:-tailwindtraders}/coupon.api:${TAG:-latest}
     container_name: coupon-node
     build:
-      context: .
-      dockerfile: Services/Tailwind.Traders.Coupon.Api/Dockerfile
+      context: Services/Tailwind.Traders.Coupon.Api
+      dockerfile: Dockerfile
     depends_on:
       - nosql.data
 

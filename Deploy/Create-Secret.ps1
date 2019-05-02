@@ -2,7 +2,8 @@ Param(
     [parameter(Mandatory=$false)][string]$resourceGroup,
     [parameter(Mandatory=$false)][string]$acrName,
     [parameter(Mandatory=$false)][string]$clientId,
-    [parameter(Mandatory=$false)][string]$password
+    [parameter(Mandatory=$false)][string]$password,
+    [parameter(Mandatory=$false)][string]$namespace=""
 )
 
 function validate {

@@ -8,6 +8,7 @@ Param(
     [parameter(Mandatory=$false)][string]$charts = "*",
     [parameter(Mandatory=$false)][string]$valueSFile = "gvalues.yaml",
     [parameter(Mandatory=$false)][string]$afHost = "http://your-product-visits-af-here",
+    [parameter(Mandatory=$false)][string]$namespace = "",
     [parameter(Mandatory=$false)][string][ValidateSet('prod','staging','none', IgnoreCase=$false)]$tlsEnv = "none"
 )
 
@@ -48,11 +49,15 @@ function createHelmCommand([string]$command, $chart) {
 
     $newcmd = $command
 
+    if (-not [string]::IsNullOrEmpty($namespace)) {
+        $newcmd = "$newcmd --namespace $namespace" 
+    }
+
     if (-not [string]::IsNullOrEmpty($tlsSecretName)) {
         $newcmd = "$newcmd --set ingress.tls[0].secretName=$tlsSecretName --set ingress.tls[0].hosts={$aksHost}"
     }
 
-    $newcmd = "$newcmd $chart"
+    $newcmd = "$newcmd --namespace $namespace $chart"
     return $newcmd;
 }
 
@@ -65,6 +70,7 @@ Write-Host " Release Name: $name"  -ForegroundColor Yellow
 Write-Host " AKS to use: $aksName in RG $resourceGroup and ACR $acrName"  -ForegroundColor Yellow
 Write-Host " Images tag: $tag"  -ForegroundColor Red
 Write-Host " TLS/SSL environment to enable: $tlsEnv"  -ForegroundColor Red
+Write-Host " Namespace (empty means the one in .kube/config): $namespace"  -ForegroundColor Yellow
 Write-Host " --------------------------------------------------------" 
 
 $acrLogin=$(az acr show -n $acrName -g $resourceGroup | ConvertFrom-Json).loginServer
@@ -124,7 +130,7 @@ if ($charts.Contains("ct") -or  $charts.Equals("*")) {
 
 if ($charts.Contains("lg") -or  $charts.Equals("*")) {
     Write-Host "Login -lg" -ForegroundColor Yellow
-    $command = createHelmCommand "helm  install --name $name-login -f $valuesFile --set ingress.hosts={$aksHost} --set image.repository=$acrLogin/login.api --set image.tag=$tag" "login-api"
+    $command = createHelmCommand "helm  install --name $name-login -f $valuesFile --set ingress.hosts={$aksHost} --set image.repository=$acrLogin/login.api --set image.tag=$tag" "login-api    "
     cmd /c "$command"
 }
 
