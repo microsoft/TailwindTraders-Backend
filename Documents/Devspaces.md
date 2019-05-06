@@ -113,15 +113,15 @@ Each API has its own _ingress_ created. The command `azds list-uris` will displa
 >  azds list-uris
 Uri                                                                     Status
 ----------------------------------------------------------------------  ---------
-http://dev.cart.xxxxxxxxxs.weu.azds.io/cart-api                         Available
-http://dev.coupons.xxxxxxxxxs.weu.azds.io/coupons-api                   Available
-http://dev.login.xxxxxxxxxs.weu.azds.io/login-api                       Available
-http://dev.mobilebff.xxxxxxxxxs.weu.azds.io/mobilebff                   Available
-http://dev.popularproducts.xxxxxxxxxs.weu.azds.io/popular-products-api  Available
-http://dev.products.xxxxxxxxxs.weu.azds.io/product-api                  Available
-http://dev.profiles.xxxxxxxxxs.weu.azds.io/profile-api                  Available
-http://dev.stock.xxxxxxxxxs.weu.azds.io/stock-api                       Available
-http://dev.webbff.xxxxxxxxxs.weu.azds.io/webbff                         Available
+http://dev.tt.xxxxxxxxxs.weu.azds.io/cart-api                           Available
+http://dev.tt.xxxxxxxxxs.weu.azds.io/coupons-api                        Available
+http://dev.tt.xxxxxxxxxs.weu.azds.io/login-api                          Available
+http://dev.tt.xxxxxxxxxs.weu.azds.io/mobilebff                          Available
+http://dev.tt.xxxxxxxxxs.weu.azds.io/popular-products-api               Available
+http://dev.tt.xxxxxxxxxs.weu.azds.io/product-api                        Available
+http://dev.tt.xxxxxxxxxs.weu.azds.io/profile-api                        Available
+http://dev.tt.xxxxxxxxxs.weu.azds.io/stock-api                          Available
+http://dev.tt.xxxxxxxxxs.weu.azds.io/webbff                             Available
 ```
 
 All pods run in the namespace selected as a Dev Space (`dev` in our case). Using `kubectl get pods` will show all running pods:
@@ -202,15 +202,17 @@ If Alice types `azds list-uris` she will see the URIs for her namespace. These a
 > azds list-uris
 Uri                                                                             Status
 ------------------------------------------------------------------------------  ---------
-http://alice.s.dev.cart.xxxxxxxxxs.weu.azds.io/cart-api                         Available
-http://alice.s.dev.coupons.xxxxxxxxxs.weu.azds.io/coupons-api                   Available
-http://alice.s.dev.login.xxxxxxxxxs.weu.azds.io/login-api                       Available
-http://alice.s.dev.mobilebff.xxxxxxxxxs.weu.azds.io/mobilebff                   Available
-http://alice.s.dev.popularproducts.xxxxxxxxxs.weu.azds.io/popular-products-api  Available
-http://alice.s.dev.products.xxxxxxxxxs.weu.azds.io/product-api                  Available
-http://alice.s.dev.profiles.xxxxxxxxxs.weu.azds.io/profile-api                  Available
-http://alice.s.dev.stock.xxxxxxxxxs.weu.azds.io/stock-api                       Available
-http://alice.s.dev.webbff.xxxxxxxxxs.weu.azds.io/webbff                         Available
+http://alice.s.dev.tt.xxxxxxxxxs.weu.azds.io/cart-api                           Available
+http://alice.s.dev.tt.xxxxxxxxxs.weu.azds.io/coupons-api                        Available
+http://alice.s.dev.tt.xxxxxxxxxs.weu.azds.io/login-api                          Available
+http://alice.s.dev.tt.xxxxxxxxxs.weu.azds.io/mobilebff                          Available
+http://alice.s.dev.tt.xxxxxxxxxs.weu.azds.io/popular-products-api               Available
+http://alice.s.dev.tt.xxxxxxxxxs.weu.azds.io/product-api                        Available
+http://alice.s.dev.tt.xxxxxxxxxs.weu.azds.io/profile-api                        Available
+http://alice.s.dev.tt.xxxxxxxxxs.weu.azds.io/stock-api                          Available
+http://alice.s.dev.tt.xxxxxxxxxs.weu.azds.io/webbff                             Available
 ```
 
-For more information check the [Dev Spaces documentation]().
+Next step is [deploy the website in the devspaces](https://github.com/Microsoft/TailwindTraders-Website/blob/master/Documents/Devspaces.md) too.
+
+>**Note**: The web **must be** deployed in the same AKS that Backend is deployed. Deploy 1st the backend and then the Website.

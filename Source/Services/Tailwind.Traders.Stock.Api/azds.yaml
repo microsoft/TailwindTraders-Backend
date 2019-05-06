@@ -22,7 +22,7 @@ install:
       # This expands to form the service's public URL: [space.s.][rootSpace.]tailwindtradersstockapi.<random suffix>.<region>.azds.io
       # Customize the public URL by changing the 'tailwindtradersstockapi' text between the $(rootSpacePrefix) and $(hostSuffix) tokens
       # For more information see https://aka.ms/devspaces/routing
-      - $(spacePrefix)$(rootSpacePrefix)stock$(hostSuffix)
+      - $(spacePrefix)$(rootSpacePrefix)tt$(hostSuffix)
 configurations:
   develop:
     build:
