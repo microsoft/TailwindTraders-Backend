@@ -30,6 +30,7 @@ inf:
       dbName: admin
       constr: mongodb://tt-user:Passw0rd1!@mongo:27017/admin
       collection: CouponCollection 
+      avoidSsl: true
     popularproducts:
       host: sql
       port: "1433"
@@ -39,11 +40,6 @@ inf:
     cart:
       host: ""  # Overriden by Deploy-Images-Aks.ps1 when -useInfraInAks is $true
       auth: C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==    # CosmosDb Emulator Key
-  storage:
-    productimages: https://tailwindtraders.blob.core.windows.net/product-list
-    productdetailimages: https://tailwindtraders.blob.core.windows.net/product-detail
-    couponimage: https://tailwindtraders.blob.core.windows.net/coupon-list
-    profileimages: https://tailwindtraders.blob.core.windows.net/profiles-list
   appinsights:
     id: ""
   ingress:

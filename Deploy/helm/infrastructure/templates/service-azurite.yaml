@@ -17,3 +17,4 @@ spec:
   selector:
     app: {{ template "infrastructure.name" . }}
     release: {{ .Release.Name }}
+    component: azurite

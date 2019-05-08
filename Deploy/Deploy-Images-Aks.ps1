@@ -76,7 +76,7 @@ Write-Host " TLS/SSL environment to enable: $tlsEnv"  -ForegroundColor Red
 Write-Host " --------------------------------------------------------" 
 
 $acrLogin=$(az acr show -n $acrName -g $resourceGroup | ConvertFrom-Json).loginServer
-$aksHost=$(az aks show -n $aksName -g $resourceGroup | ConvertFrom-Json).addonProfiles.httpApplicationRouting.config.HTTPApplicationRoutingZoneName
+$aksHost=$(az aks show -n $aksName -g $resourceGroup --query addonProfiles.httpapplicationrouting.config.HTTPApplicationRoutingZoneName | ConvertFrom-Json)
 
 Write-Host "acr login server is $acrLogin" -ForegroundColor Yellow
 Write-Host "aksHost is $aksHost" -ForegroundColor Yellow
@@ -88,43 +88,67 @@ Push-Location helm
 Write-Host "Deploying charts $charts" -ForegroundColor Yellow
 
 $cartAci=$null
+$azuriteUrl=$null
+$azuriteProductsUrl=$null
+$azuriteProfilesUrl=$null
+$azuriteProductsDetailsUrl=$null
+$azuriteCouponsUrl=$null
 
 if ($useInfraInAks) {
-    Write-Host "charts $charts will be configured to use internal AKS infrastructure. Value of --valuesFile is ingored" -ForegroundColor Yellow  
+    Write-Host "charts $charts will be configured to use internal AKS infrastructure. Value of -valuesFile is ingored" -ForegroundColor Yellow  
     $valuesFile="gvalues_inf.yaml"
+    $azuriteUrl="http://$aksHost/blobs/devstoreaccount1"
+    $azuriteProductsUrl="$azuriteUrl/product-list"
+    $azuriteProfilesUrl="$azuriteUrl/profiles-list"
+    $azuriteProductsDetailsUrl="$azuriteUrl/product-detail"
+    $azuriteCouponsUrl="$azuriteUrl/coupon-list"
     Write-Host "Getting info of ACI $cartAciGroup/$cartAciName"
     Write-Host "az container show -g $cartAciGroup -n $cartAciName"
     $cartAci=$(az container show -g $cartAciGroup -n $cartAciName | ConvertFrom-Json)
     Write-Host "ACI Cart running CosmosDb emulator is on " $cartAci.ipAddress.fqdn -ForegroundColor Yellow
     if ([String]::IsNullOrEmpty($cartAci.ipAddress.fqdn)) {
         Write-Host "ACI Cart not found or it has no fqdn. Please run Deploy-CosmosDb.ps1"
+        exit 1
     }
-
 }
-
-
 
 if ($charts.Contains("pr") -or  $charts.Contains("*")) {
     Write-Host "Products chart - pr" -ForegroundColor Yellow
-    $command = createHelmCommand "helm install --name $name-product -f $valuesFile --set az.productvisitsurl=$afHost --set ingress.hosts={$aksHost} --set image.repository=$acrLogin/product.api --set image.tag=$tag"  "products-api" 
+    $command = "helm install --name $name-product -f $valuesFile --set az.productvisitsurl=$afHost --set ingress.hosts={$aksHost} --set image.repository=$acrLogin/product.api --set image.tag=$tag"
+    if ($useInfraInAks) {
+        $command = "$command --set inf.storage.productimages=$azuriteProductsUrl= set inf.storage.productdetailimages=$azuriteProductsDetailsUrl"
+    }
+    $command = createHelmCommand $command "products-api" 
     cmd /c "$command"
 }
 
 if ($charts.Contains("cp") -or  $charts.Contains("*")) {
     Write-Host "Coupons chart - cp" -ForegroundColor Yellow
-    $command = createHelmCommand  "helm install --name $name-coupon -f $valuesFile --set ingress.hosts={$aksHost} --set image.repository=$acrLogin/coupon.api --set image.tag=$tag" "coupons-api"
+    $command="helm install --name $name-coupon -f $valuesFile --set ingress.hosts={$aksHost} --set image.repository=$acrLogin/coupon.api --set image.tag=$tag"
+    if ($useInfraInAks) {
+        $command = "$command --set inf.storage.couponimage=$azuriteCouponsUrl"
+    }
+    $command = createHelmCommand $command "coupons-api"
     cmd /c "$command"
 }
 
 if ($charts.Contains("pf") -or  $charts.Contains("*")) {
     Write-Host "Profile chart - pf " -ForegroundColor Yellow
-    $command = createHelmCommand "helm install --name $name-profile -f $valuesFile --set ingress.hosts={$aksHost} --set image.repository=$acrLogin/profile.api --set image.tag=$tag" "profiles-api"
+    $command = "helm install --name $name-profile -f $valuesFile --set ingress.hosts={$aksHost} --set image.repository=$acrLogin/profile.api --set image.tag=$tag"
+    if ($useInfraInAks) {
+        $command = "$command --set inf.storage.profileimages=$azuriteProfilesUrl"
+    }
+    $command = createHelmCommand $command "profiles-api"
     cmd /c "$command"
 }
 
 if ($charts.Contains("pp") -or  $charts.Contains("*")) {
     Write-Host "Popular products chart - pp" -ForegroundColor Yellow
-    $command = createHelmCommand "helm install --name $name-popular-product -f $valuesFile --set ingress.hosts={$aksHost} --set image.repository=$acrLogin/popular-product.api --set image.tag=$tag --set initImage.repository=$acrLogin/popular-product-seed.api  --set initImage.tag=$tag" "popular-products-api"
+    $command = "helm install --name $name-popular-product -f $valuesFile --set ingress.hosts={$aksHost} --set image.repository=$acrLogin/popular-product.api --set image.tag=$tag --set initImage.repository=$acrLogin/popular-product-seed.api  --set initImage.tag=$tag"
+    if ($useInfraInAks) {
+        $command = "$command --set inf.storage.productimages=$azuriteProductsUrl"
+    }
+    $command = createHelmCommand $command "popular-products-api"
     cmd /c "$command"
 }
 
@@ -146,7 +170,6 @@ if ($charts.Contains("ct") -or  $charts.Contains("*")) {
     if ($useInfraInAks) {
         $fqdn=$cartAci.ipAddress.fqdn
         $command = "$command --set inf.db.cart.host=https://${fqdn}:8081 -f values_inf_cartapi.yaml"
-        
     }
     $command = createHelmCommand $command "cart-api"
     cmd /c "$command"
@@ -154,7 +177,11 @@ if ($charts.Contains("ct") -or  $charts.Contains("*")) {
 
 if ($charts.Contains("lg") -or  $charts.Contains("*")) {
     Write-Host "Login -lg" -ForegroundColor Yellow
-    $command = createHelmCommand "helm  install --name $name-login -f $valuesFile --set ingress.hosts={$aksHost} --set image.repository=$acrLogin/login.api --set image.tag=$tag" "login-api"
+    $command = "helm  install --name $name-login -f $valuesFile --set ingress.hosts={$aksHost} --set image.repository=$acrLogin/login.api --set image.tag=$tag"
+    if ($useInfraInAks) {
+        $command = "$command --set inf.storage.profileimages=$azuriteProfilesUrl"
+    }
+    $command = createHelmCommand $command "login-api"
     cmd /c "$command"
 }
 

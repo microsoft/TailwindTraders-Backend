@@ -2,7 +2,7 @@
 apiVersion: apps/v1beta2
 kind: Deployment
 metadata:
-  name: {{ template "infrastructure.fullname" . }}
+  name: "{{ $name }}-mongo"
   labels:
     app: {{ template "infrastructure.name" . }}
     chart: {{ template "infrastructure.chart" . }}
@@ -19,6 +19,7 @@ spec:
       labels:
         app: {{ template "infrastructure.name" . }}
         release: {{ .Release.Name }}
+        component: mongo
     spec:
       containers:
         - name: {{ .Chart.Name }}

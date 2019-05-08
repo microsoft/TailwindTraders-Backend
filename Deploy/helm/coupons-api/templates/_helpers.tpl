@@ -30,3 +30,17 @@ Create chart name and version as used by the chart label.
 {{- define "tt-coupons.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
+
+{{- define "tt-coupons-constr" -}}
+{{- $user := .Values.inf.db.coupons.user -}}
+{{- $pwd := .Values.inf.db.coupons.pwd -}}
+{{- $host := .Values.inf.db.coupons.host -}}
+{{- $port := .Values.inf.db.coupons.port -}}
+{{- $dbName := .Values.inf.db.coupons.dbName -}}
+{{- $constr := printf "%s:%s@%s:%s/%s" $user $pwd $host $port $dbName -}}
+{{- if .Values.inf.db.coupons.avoidSsl -}} 
+{{- printf "%s" $constr -}}
+{{- else -}}
+{{- printf "%s?ssl=true" $constr -}}
+{{- end -}}
+{{- end -}}

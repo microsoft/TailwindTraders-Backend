@@ -19,6 +19,7 @@ spec:
       labels:
         app: {{ template "infrastructure.name" . }}
         release: {{ .Release.Name }}
+        component: sql
     spec:
       containers:
         - name: {{ .Chart.Name }}

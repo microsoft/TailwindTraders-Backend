@@ -1,7 +1,8 @@
-ARG sdkTag=2.1-sdk
-ARG runtimeTag=2.1-aspnetcore-runtime
-ARG coreversion=netcore21
-ARG image=microsoft/dotnet
+ARG sdkTag=2.2
+ARG runtimeTag=2.2
+ARG image=mcr.microsoft.com/dotnet/core/aspnet
+ARG sdkImage=mcr.microsoft.com/dotnet/core/sdk
+
 FROM ${image}:${runtimeTag} AS base
 WORKDIR /app
 EXPOSE 80
@@ -14,20 +15,18 @@ RUN apt-get update \
         libx11-dev \
      && rm -rf /var/lib/apt/lists/*
 
-FROM ${image}:${sdkTag} AS build
-ARG coreversion
+FROM ${sdkImage}:${sdkTag} AS build
 WORKDIR /src
 COPY ./Directory.Build.props .
 COPY ./build ./build
 WORKDIR /src/project
 COPY ./Services/Tailwind.Traders.ImageClassifier.Api/Tailwind.Traders.ImageClassifier.Api.csproj .
-RUN dotnet restore -p:NetCoreVersion=${coreversion} 
+RUN dotnet restore 
 COPY ./Services/Tailwind.Traders.ImageClassifier.Api .
-RUN dotnet build -p:NetCoreVersion=${coreversion} -c Release -o /app
+RUN dotnet build-c Release -o /app
 
 FROM build AS publish
-ARG coreversion
-RUN dotnet publish "Tailwind.Traders.ImageClassifier.Api.csproj" -p:NetCoreVersion=${coreversion} -c Release -o /app
+RUN dotnet publish "Tailwind.Traders.ImageClassifier.Api.csproj" -c Release -o /app
 
 FROM base AS final
 WORKDIR /app

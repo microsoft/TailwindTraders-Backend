@@ -19,6 +19,7 @@ spec:
       labels:
         app: {{ template "infrastructure.name" . }}
         release: {{ .Release.Name }}
+        component: azurite
     spec:
       containers:
         - name: {{ .Chart.Name }}
