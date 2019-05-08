@@ -23,7 +23,7 @@ WORKDIR /src/project
 COPY ./Services/Tailwind.Traders.ImageClassifier.Api/Tailwind.Traders.ImageClassifier.Api.csproj .
 RUN dotnet restore 
 COPY ./Services/Tailwind.Traders.ImageClassifier.Api .
-RUN dotnet build-c Release -o /app
+RUN dotnet build -c Release -o /app
 
 FROM build AS publish
 RUN dotnet publish "Tailwind.Traders.ImageClassifier.Api.csproj" -c Release -o /app
