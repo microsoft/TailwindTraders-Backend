@@ -65,7 +65,7 @@ function createHelmCommand([string]$command, $chart) {
         $newcmd = "$newcmd --set ingress.tls[0].secretName=$tlsSecretName --set ingress.tls[0].hosts={$aksHost}"
     }
 
-    $newcmd = "$newcmd --namespace $namespace $chart"
+    $newcmd = "$newcmd $chart"
     return $newcmd;
 }
 
@@ -122,7 +122,7 @@ if ($charts.Contains("pr") -or  $charts.Contains("*")) {
     Write-Host "Products chart - pr" -ForegroundColor Yellow
     $command = "helm install --name $name-product -f $valuesFile --set az.productvisitsurl=$afHost --set ingress.hosts={$aksHost} --set image.repository=$acrLogin/product.api --set image.tag=$tag"
     if ($useInfraInAks) {
-        $command = "$command --set inf.storage.productimages=$azuriteProductsUrl= set inf.storage.productdetailimages=$azuriteProductsDetailsUrl"
+        $command = "$command --set inf.storage.productimages=$azuriteProductsUrl --set inf.storage.productdetailimages=$azuriteProductsDetailsUrl"
     }
     $command = createHelmCommand $command "products-api" 
     cmd /c "$command"
