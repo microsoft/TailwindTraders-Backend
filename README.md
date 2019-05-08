@@ -1,4 +1,12 @@
-# Deploy to Azure
+# Tailwind Traders Backend Services
+
+This repository contains all code + deployment scripts for the Tailwind Traders Backend.
+
+[![Build status](https://dev.azure.com/TailwindTraders/Backend/_apis/build/status/Backend-CI)](https://dev.azure.com/TailwindTraders/Backend/_build/latest?definitionId=26)
+
+## Deployment scenarios
+
+### Deploy Backend on Azure AKS and Azure resources (SQL Azure, CosmosDb, Storage accounts)
 
 We have added an ARM template so you can automate the creation of the resources required for the backend services.
 
@@ -6,23 +14,29 @@ We have added an ARM template so you can automate the creation of the resources 
 
 > Note: This deployment can take up to 12 minutes.
 
-Please, note that **this only deploys the needed infrastructure**. You need to deploy the services to your infrastructure, following these [instructions](./Documents/DeploymentGuide.md)
+Once the ARM is deployed follow the [deployment guide](./Documents/DeploymentGuide.md) to deploy the services to AKS.
+
+## Deploy everything on AKS (running infrastructure in AKS also)
+
+For development scenarios everything can be run on a AKS, so **not external dependencies needed**. Click following button to deploy only an AKS and an ACR only. No other resources will be created:
+
+<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FMicrosoft%2FTailwindTraders-Backend%2Fmaster%2FDeploy%2Fdeployment-only-inf.json"><img src="/Documents/Images/deploy-to-azure.png" alt="Deploy to Azure"/></a>
+
+Once you have an AKS please follow the documentation to [deploy infrastructure on AKS](./Documents/AKS-infrastructure.md)
+
+### Running services Locally
+
+To run the backend locally on your computer follow these [instructions](./Documents/RunLocally.md)
+
+### Running using Devspaces
 
 **We have enabled Devspaces support!** Read [the devspaces deploy documentation](./Documents/Devspaces.md) if you want to test Azure Dev Spaces using Tailwind Traders.
 
-* To run the backend locally on your computer follow these [instructions](./Documents/RunLocally.md)
-
-[![Build status](https://dev.azure.com/TailwindTraders/Backend/_apis/build/status/Backend-CI)](https://dev.azure.com/TailwindTraders/Backend/_build/latest?definitionId=26)
-
-# Running the backend services
-
-Please refer to the [deployment guide](Documents/DeploymentGuide.md) for the required steps to run the backend services.
-
-# Test image classiffier
+## Test image classiffier
 
 Please refer to the [test image classiffier guide](Documents/TestImageClassiffierGuide.md).
 
-# Repositories
+## Repositories
 
 For this demo reference, we built several consumer and line-of-business applications and a set of backend services. You can find all repositories in the following locations:
 
@@ -33,9 +47,7 @@ For this demo reference, we built several consumer and line-of-business applicat
 * [Rewards (ASP.NET Framework)](https://github.com/Microsoft/TailwindTraders-Rewards)
 * [Mobile (Xamarin Forms 4.0)](https://github.com/Microsoft/TailwindTraders-Mobile)
 
-
-
-# Contributing
+## Contributing
 
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a
 Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us

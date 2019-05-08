@@ -10,8 +10,6 @@ Pre-requisites for this deployment are to have
 * [Kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) installed.
 * Docker installed
 
-**Note**: The easiest way to have a working Bash environment on Windows is [enabling the WSL](https://docs.microsoft.com/en-us/windows/wsl/install-win10) and installing a Linux distro from the Windows Store.
-
 ## Connecting kubectl to AKS
 
 From the terminal type:
@@ -116,7 +114,7 @@ If using Powershell, have to run `./Deploy-Images-Aks.ps1` with following parame
 * `-valueSFile <values-file>`: Values file to use (defaults to `gvalues.yaml`)
 * `-tlsEnv prod|staging` If **SSL/TLS support has been installed**, you have to use this parameter to enable https endpoints. Value must be `staging` or `prod` and must be the same value used when you installed SSL/TLS support. If SSL/TLS is not installed, you can omit this parameter.
 
-This script will install all services using Helm and your custom configuration from file `gvalues.yaml`
+This script will install all services using Helm and your custom configuration from the configuration file set by `-valuesFile` parameter.
 
 The parameter `charts` allow for a selective installation of charts. Is a list of comma-separated values that mandates the services to deploy in the AKS. Values are:
 
@@ -132,19 +130,27 @@ The parameter `charts` allow for a selective installation of charts. Is a list o
 
 So, using `charts pp,st` will only install the popular products and the stock api.
 
+## Deploying the images on the storage
+
+To deploy the needed images on the Azure Storage account just run the `/Deploy/Deploy-Pictures-Azure.ps1` script, with following parameters:
+
+* `-resourceGroup <name>`: Resource group where storage is created
+* `-storageName <name>`: Name of the storage account
+
+Script will create blob containers and copy the images (located in `/Deploy/tt-images` folder) to the storage account.
+
 ## Enabling SSL/TLS on the cluster
 
 SSL/TLS support is provided by [cert-manager](https://github.com/jetstack/cert-manager) that allows auto-provisioning of TLS certificates using [Let's Encrypt](https://letsencrypt.org/) and [ACME](https://en.wikipedia.org/wiki/Automated_Certificate_Management_Environment) protocol. 
-
 
 To enable SSL/TLS support you must do it **before deploying your images**. The first step is to add cert-manager to the cluster by running `./add-cert-manager.sh` or `./Add-Cert-Manager.ps1`. Both scripts accept no parameters and they use helm to configure cert-manager in the cluster. **This needs to be done only once**
 
 Then you should run `./Enable-Ssl.ps1` with following parameters:
 
-* `sslSupport`: Use `staging` or `prod` to use the staging or production environments of Let's Encrypt
-* `aksName`: The name of the AKS to use
-* `resourceGroup`: Name of the resource group where AKS is
-* `domain`: Domain to use for the SSL/TLS certificates. Is **optional** and if not used it defaults to the public domain of the AKS. Only need to use this parameter if using custom domains
+* `-sslSupport`: Use `staging` or `prod` to use the staging or production environments of Let's Encrypt
+* `-aksName`: The name of the AKS to use
+* `-resourceGroup`: Name of the resource group where AKS is
+* `-domain`: Domain to use for the SSL/TLS certificates. Is **optional** and if not used it defaults to the public domain of the AKS. Only need to use this parameter if using custom domains
 
 Output of the script will be something like following:
 
@@ -204,7 +210,7 @@ At this point **the support for SSL/TLS is installed, and you can install Tailwi
 
 >**Note:** You don't need to do this again, unless you want to change the domain of the SSL/TLS certificate. In this case you need to remove the issuer and certificate objects (using `helm delete my-tt-ssl --purge` and then reinstall again)
 
->**Note** Staging certificates **are not trust**, so browsers will complain about it, exactly in the same way that they complain about a self-signed certificate. The only purpose is to test all the deployment works, but in any production environment you must use the `prod` environment. Main difference is the Let's Encrypt API call rates are more limited than the staging ones.
+>**Note** Staging certificates **are not trust**, so browsers will complain about it, exactly in the same way that they complain about a self-signed certificate. The only purpose is to test all the deployment works, but in any production environment you must use the `prod` environment. In **development/test environments** is recommended to install the staging certificates and then trust those certificates in the developers' machines. You can [download the Let's Encrypt staging certificates from their web](https://letsencrypt.org/docs/staging-environment/).
 
 Another way to validate your certificate deployment is doing a `kubectl describe cert tt-cert-staging` (or `tt-cert-prod`). In the `Events` section you should see that the certificate has been obtained:
 

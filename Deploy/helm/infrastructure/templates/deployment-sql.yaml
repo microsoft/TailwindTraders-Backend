@@ -1,0 +1,52 @@
+{{- $name := include "infrastructure.fullname" . -}}
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: "{{ $name }}-sql"
+  labels:
+    app: {{ template "infrastructure.name" . }}
+    chart: {{ template "infrastructure.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "infrastructure.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "infrastructure.name" . }}
+        release: {{ .Release.Name }}
+        component: sql
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.sql.repository }}:{{ .Values.image.sql.tag }}"
+          imagePullPolicy: {{ .Values.image.sql.pullPolicy }}
+          env:
+          - name: ACCEPT_EULA
+            value: "Y"
+          - name: MSSQL_PID
+            value: Developer
+          - name: MSSQL_SA_PASSWORD
+            value: Passw0rd1!
+          ports:
+            - name: http
+              containerPort: 1433
+              protocol: TCP
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+    {{- with .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+    {{- end }}

@@ -1,0 +1,80 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "servicePrincipalId": {
+      "type": "string"
+    },
+    "servicePrincipalSecret": {
+      "type": "securestring"
+    },
+    "aksVersion": {
+      "type": "string",
+      "defaultValue": "1.12.7"
+    }
+  },
+  "variables": {
+    "acr_name": "[concat('ttacr',uniqueString(resourceGroup().id))]",
+    "aks_name": "[concat('tailwindtradersaks',uniqueString(resourceGroup().id))]",
+    "workspaceName": "[concat('ttoms', uniqueString(resourceGroup().id))]",
+    "omsWorkspaceId": "[concat('/subscriptions/', subscription().subscriptionId,'/resourceGroups/',resourceGroup().name,'/providers/Microsoft.OperationalInsights/workspaces/', variables('workspaceName'))]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.ContainerRegistry/registries",
+      "sku": {
+        "name": "Standard"
+      },
+      "name": "[variables('acr_name')]",
+      "apiVersion": "2017-10-01",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "adminUserEnabled": true
+      }
+    },
+    {
+      "type": "Microsoft.ContainerService/managedClusters",
+      "name": "[variables('aks_name')]",
+      "apiVersion": "2018-03-31",
+      "location": "[resourceGroup().location]",
+      "tags": {},
+      "properties": {
+        "kubernetesVersion": "[parameters('aksVersion')]",
+        "enableRBAC": true,
+        "dnsPrefix": "[variables('aks_name')]",
+        "addonProfiles": {
+          "httpApplicationRouting": {
+            "enabled": true
+          }
+        },
+        "agentPoolProfiles": [
+          {
+            "name": "agentpool",
+            "osDiskSizeGB": 0,
+            "count": 3,
+            "vmSize": "Standard_D2_v2",
+            "osType": "Linux",
+            "storageProfile": "ManagedDisks"
+          }
+        ],
+        "servicePrincipalProfile": {
+          "ClientId": "[parameters('servicePrincipalId')]",
+          "Secret": "[parameters('servicePrincipalSecret')]"
+        },
+        "networkProfile": {
+          "networkPlugin": "kubenet"
+        }
+      }
+    }
+  ],
+  "outputs": {
+    "acr": {
+      "type": "string",
+      "value": "[variables('acr_name')]"
+    },
+    "aks": {
+      "type": "string",
+      "value": "[variables('aks_name')]"
+    }
+  }
+}

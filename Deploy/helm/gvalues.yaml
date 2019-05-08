@@ -1,4 +1,8 @@
 # Global values for all helm charts. See comments for usage
+#
+# NOTE: If you update this file beware to not commit/push inside your repo!
+# Instead of updating this file, can place a updated copy of it in helm/__values folder and use the -valuesFile parameter of Deploy-Images-Aks.ps1 script.
+# Everything on helm/__values folder is ignored by .gitignore.
 
 inf:
   sa: ttsa

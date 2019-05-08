@@ -1,13 +1,7 @@
 {{- $name := include "tt-coupons.fullname" . -}}
-
-{{- $user := .Values.inf.db.coupons.user -}}
-{{- $pwd := .Values.inf.db.coupons.pwd -}}
-{{- $host := .Values.inf.db.coupons.host -}}
-{{- $port := .Values.inf.db.coupons.port -}}
-{{- $dbName := .Values.inf.db.coupons.dbName -}}
 {{- $imagebaseurl := .Values.inf.storage.couponimage -}}
-
 {{- $collection := .Values.inf.db.coupons.collection -}}
+{{ $constr := include "tt-coupons-constr" . -}}
 
 apiVersion: v1
 kind: ConfigMap
@@ -20,8 +14,8 @@ metadata:
     heritage: {{ .Release.Service }}
 data:
   ApplicationInsights__InstrumentationKey:  {{ .Values.inf.appinsights.id }}
-  CONNECTIONSTRING: {{ $user }}:{{ $pwd }}@{{ $host }}:{{ $port }}/{{ $dbName }}?ssl=true
+  CONNECTIONSTRING: {{ $constr }}
   COUPON_COLLECTION: {{ $collection }}
-  URL_BASE: {{$imagebaseurl}}
+  URL_BASE: {{ $imagebaseurl }}
   ISSUER: {{ .Values.sec.issuer }}
   SECURITYKEY: {{ .Values.sec.securityKey }}
