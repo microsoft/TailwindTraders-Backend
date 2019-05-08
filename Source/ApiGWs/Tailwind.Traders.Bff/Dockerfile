@@ -1,24 +1,24 @@
-ARG sdkTag=2.1-sdk
-ARG runtimeTag=2.1-aspnetcore-runtime
-ARG coreversion=netcore21
-ARG image=microsoft/dotnet
+ARG sdkTag=2.2
+ARG runtimeTag=2.2
+ARG image=mcr.microsoft.com/dotnet/core/aspnet
+ARG sdkImage=mcr.microsoft.com/dotnet/core/sdk
 FROM ${image}:${runtimeTag} AS base
 WORKDIR /app
 EXPOSE 80
 EXPOSE 443
 
-FROM ${image}:${sdkTag} AS build
+FROM ${sdkImage}:${sdkTag} AS build
 ARG coreversion
 WORKDIR /src
 COPY ./Directory.Build.props .
 COPY ./build ./build
 WORKDIR /src/project
 COPY ./ApiGWs/Tailwind.Traders.Bff .
-RUN dotnet build "Tailwind.Traders.MobileBff.csproj" -p:NetCoreVersion=${coreversion} -c Release -o /app
+RUN dotnet build "Tailwind.Traders.MobileBff.csproj" -c Release -o /app
 
 FROM build AS publish
 ARG coreversion
-RUN dotnet publish "Tailwind.Traders.MobileBff.csproj" -p:NetCoreVersion=${coreversion} -c Release -o /app
+RUN dotnet publish "Tailwind.Traders.MobileBff.csproj"  -c Release -o /app
 
 FROM base AS final
 WORKDIR /app
