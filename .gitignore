@@ -330,7 +330,7 @@ ASALocalRun/
 .mfractor/
 
 
-Deploy/helm/gvalues.azds.yaml
+*.azds.yaml
 Deploy/helm/__values/*
 !Deploy/helm/__values/readme.txt
 
