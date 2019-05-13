@@ -84,6 +84,11 @@ Write-Host " --------------------------------------------------------"
 $acrLogin=$(az acr show -n $acrName -g $resourceGroup | ConvertFrom-Json).loginServer
 $aksHost=$(az aks show -n $aksName -g $resourceGroup --query addonProfiles.httpapplicationrouting.config.HTTPApplicationRoutingZoneName | ConvertFrom-Json)
 
+if (-not $aksHost) {
+    $aksHost=$(az aks show -n $aksName -g $resourceGroup --query addonProfiles.httpApplicationRouting.config.HTTPApplicationRoutingZoneName | ConvertFrom-Json)
+}
+
+
 Write-Host "acr login server is $acrLogin" -ForegroundColor Yellow
 Write-Host "aksHost is $aksHost" -ForegroundColor Yellow
 

@@ -8,7 +8,6 @@ EXPOSE 80
 EXPOSE 443
 
 FROM ${sdkImage}:${sdkTag} AS build
-ARG coreversion
 WORKDIR /src
 COPY ./Directory.Build.props .
 COPY ./build ./build
@@ -17,7 +16,6 @@ COPY ./ApiGWs/Tailwind.Traders.Bff .
 RUN dotnet build "Tailwind.Traders.MobileBff.csproj" -c Release -o /app
 
 FROM build AS publish
-ARG coreversion
 RUN dotnet publish "Tailwind.Traders.MobileBff.csproj"  -c Release -o /app
 
 FROM base AS final

@@ -4,7 +4,11 @@ Param(
 )
 
 $url = $(az aks show -n $aksName -g $resourceGroup  --query addonProfiles.httpapplicationrouting.config.HTTPApplicationRoutingZoneName | ConvertFrom-Json)
- 
+
+if (-not $url) {
+    $url=$(az aks show -n $aksName -g $resourceGroup --query addonProfiles.httpApplicationRouting.config.HTTPApplicationRoutingZoneName | ConvertFrom-Json)
+}
+
 if (-not $url) {
     Write-Host "AKS $aksName not found in RG $resourceGroup or do not have HttpApplicationRouting enabled" -ForegroundColor Red
     exit 1
