@@ -18,21 +18,13 @@ namespace Tailwind.Traders.Profile.Api.Extensions
                 var logger = services.GetRequiredService<ILogger<TContext>>();
 
                 var context = services.GetService<TContext>();
+                
+                logger.LogInformation($"Migrating database associated with context {typeof(TContext).Name}");
 
-                try
-                {
-                    logger.LogInformation($"Migrating database associated with context {typeof(TContext).Name}");
+                context.Database.Migrate();
+                seeder(context, services);
 
-                    context.Database.Migrate();
-
-                    seeder(context, services);
-
-                    logger.LogInformation($"Migrated database associated with context {typeof(TContext).Name}");
-                }
-                catch (Exception exception)
-                {
-                    logger.LogError(exception, $"An error occurred while migrating the database used on context {typeof(TContext).Name}");
-                }
+                logger.LogInformation($"Migrated database associated with context {typeof(TContext).Name}");
             }
 
             return webHost;
