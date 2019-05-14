@@ -16,7 +16,7 @@ namespace Tailwind.Traders.Login.Api.Services
         private readonly IConfiguration _configuration;
         private readonly List<RefreshTokenModel> _refreshTokens = new List<RefreshTokenModel>();
 
-        private const int ExpirationTimeInSeconds = 10;
+        private const int ExpirationTimeInSeconds = 10800;
 
         public TokenHandlerService(IConfiguration configuration)
         {
