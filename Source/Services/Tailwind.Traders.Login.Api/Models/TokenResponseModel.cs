@@ -18,12 +18,6 @@ namespace Tailwind.Traders.Login.Api.Models
     {
         [JsonProperty(PropertyName = "token")]
         public string Token { get; set; }
-
-        [JsonProperty(PropertyName = "is_revoked")]
-        public bool IsRevoked { get; set; }
-
-        [JsonProperty(PropertyName = "user")]
-        public string User { get; set; }
     }
 
     public class TokenResponseModel

@@ -16,7 +16,7 @@ namespace Tailwind.Traders.Login.Api.Services
         private readonly IConfiguration _configuration;
         private readonly List<RefreshTokenModel> _refreshTokens = new List<RefreshTokenModel>();
 
-        private const int ExpirationTimeInSeconds = 10800;
+        private const int ExpirationTimeInSeconds = 10;
 
         public TokenHandlerService(IConfiguration configuration)
         {
@@ -34,9 +34,7 @@ namespace Tailwind.Traders.Login.Api.Services
 
             var refreshToken = new RefreshTokenModel()
             {
-                Token = CreateRefreshToken(username),
-                IsRevoked = false,
-                User = username
+                Token = GetNewRefreshToken(username)
             };
             _refreshTokens.Add(refreshToken);
 
@@ -51,42 +49,53 @@ namespace Tailwind.Traders.Login.Api.Services
 
         public TokenResponseModel RefreshAccessToken(string token)
         {
-            var refreshToken = GetRefreshToken(token);
+            var refreshToken = GetRegisteredRefreshToken(token);
+            String userName;
+            String newRefreshToken;
             if (refreshToken == null)
             {
-                throw new Exception("Refresh token was not found.");
-            }
-            if (refreshToken.IsRevoked)
-            {
-                throw new Exception("Refresh token was revoked");
-            }
+                userName = RetrieveUserFromToken(token);
 
-            refreshToken.Token = CreateRefreshToken(refreshToken.User);
+                if (userName == null)
+                {
+                    throw new Exception("Refresh token is not valid.");
+                }
+
+                newRefreshToken = GetNewRefreshToken(userName);
+                _refreshTokens.Add(new RefreshTokenModel()
+                {
+                    Token = newRefreshToken
+                });                
+            }
+            else
+            {
+                userName = RetrieveUserFromToken(token);
+                newRefreshToken = GetNewRefreshToken(userName);
+            }
             
             return new TokenResponseModel()
             {
                 AccessToken = new AccessTokenModel()
                 {
-                    Token = CreateAccessToken(refreshToken.User),
+                    Token = CreateAccessToken(userName),
                     TokenType = "bearer",
                     ExpiresIn = ExpirationTimeInSeconds
                 },
-                RefreshToken = refreshToken.Token
+                RefreshToken = newRefreshToken
             };
         }
 
-        public void RevokeRefreshToken(string token)
+        private string RetrieveUserFromToken(string token)
         {
-            var refreshToken = GetRefreshToken(token);
-            if (refreshToken == null)
+            var jwtHandler = new JwtSecurityTokenHandler();
+            var isReadableToken = jwtHandler.CanReadToken(token);
+            if(!isReadableToken)
             {
-                throw new Exception("Refresh token was not found.");
+                return null;
             }
-            if (refreshToken.IsRevoked)
-            {
-                throw new Exception("Refresh token was already revoked.");
-            }
-            refreshToken.IsRevoked = true;
+            
+            var claims = jwtHandler.ReadJwtToken(token).Claims;
+            return claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
         }
 
         private string CreateAccessToken(string username)
@@ -110,7 +119,7 @@ namespace Tailwind.Traders.Login.Api.Services
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        private string CreateRefreshToken(string username)
+        private string GetNewRefreshToken(string username)
         {
             var claims = new[]
             {
@@ -141,6 +150,6 @@ namespace Tailwind.Traders.Login.Api.Services
             }
         }
 
-        private RefreshTokenModel GetRefreshToken(string token) => _refreshTokens.SingleOrDefault(x => x.Token == token);
+        private RefreshTokenModel GetRegisteredRefreshToken(string token) => _refreshTokens.SingleOrDefault(x => x.Token == token);
     }
 }
