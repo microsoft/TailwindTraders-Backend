@@ -45,7 +45,10 @@ async function populateDb(){
 
             await Coupon.insertMany(data)
                 .then(() => console.log("End seed success"))
-                .catch(err => console.error(err));
+                .catch(err => {
+                    console.error(err);
+                    process.exit(1);
+                } );
         }
     });
 }

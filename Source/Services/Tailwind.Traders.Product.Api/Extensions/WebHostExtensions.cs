@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using System;
 using Tailwind.Traders.Product.Api.Infrastructure;
 
 namespace Tailwind.Traders.Product.Api.Extensions
@@ -20,21 +19,13 @@ namespace Tailwind.Traders.Product.Api.Extensions
                 var logger = services.GetRequiredService<ILogger<TContext>>();
                 var context = services.GetRequiredService<TContext>();
                 var seed = services.GetRequiredService<IContextSeed<TContext>>();
+                
+                logger.LogInformation($"Migrating database associated with context {typeof(TContext).Name}");
 
-                try
-                {
-                    logger.LogInformation($"Migrating database associated with context {typeof(TContext).Name}");
+                context.Database.Migrate();
+                seed.SeedAsync(context).Wait();
 
-                    context.Database.Migrate();
-
-                    seed.SeedAsync(context).Wait();
-
-                    logger.LogInformation($"Migrated database associated with context {typeof(TContext).Name}");
-                }
-                catch (Exception exception)
-                {
-                    logger.LogError(exception, $"An error occurred while migrating the database used on context {typeof(TContext).Name}");
-                }
+                logger.LogInformation($"Migrated database associated with context {typeof(TContext).Name}");
             }
 
             return webHost;
