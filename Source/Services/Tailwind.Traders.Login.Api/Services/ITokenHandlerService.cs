@@ -7,7 +7,5 @@ namespace Tailwind.Traders.Login.Api.Services
         TokenResponseModel SignIn(string username);
 
         TokenResponseModel RefreshAccessToken(string token);
-
-        void RevokeRefreshToken(string token);
     }
 }
