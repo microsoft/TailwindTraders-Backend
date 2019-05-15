@@ -5,7 +5,7 @@ Param(
     [parameter(Mandatory=$false)][string]$acrName,
     [parameter(Mandatory=$false)][string]$tag="latest",
     [parameter(Mandatory=$false)][string]$charts = "*",
-    [parameter(Mandatory=$false)][string]$valuesFile = "gvalues.yaml",
+    [parameter(Mandatory=$false)][string]$valuesFile = "",
     [parameter(Mandatory=$false)][bool]$useInfraInAks=$false,
     [parameter(Mandatory=$false)][string]$cartAciGroup="",
     [parameter(Mandatory=$false)][string]$cartAciName="",
@@ -76,8 +76,8 @@ Write-Host " "  -ForegroundColor Yellow
 Write-Host " Additional parameters are:"  -ForegroundColor Yellow
 Write-Host " Release Name: $name"  -ForegroundColor Yellow
 Write-Host " AKS to use: $aksName in RG $resourceGroup and ACR $acrName"  -ForegroundColor Yellow
-Write-Host " Images tag: $tag"  -ForegroundColor Red
-Write-Host " TLS/SSL environment to enable: $tlsEnv"  -ForegroundColor Red
+Write-Host " Images tag: $tag"  -ForegroundColor Yellow
+Write-Host " TLS/SSL environment to enable: $tlsEnv"  -ForegroundColor Yellow
 Write-Host " Namespace (empty means the one in .kube/config): $namespace"  -ForegroundColor Yellow
 Write-Host " --------------------------------------------------------" 
 
@@ -106,8 +106,10 @@ $azuriteProductsDetailsUrl=$null
 $azuriteCouponsUrl=$null
 
 if ($useInfraInAks) {
-    Write-Host "charts $charts will be configured to use internal AKS infrastructure. Value of -valuesFile is ingored" -ForegroundColor Yellow  
-    $valuesFile="gvalues_inf.yaml"
+    Write-Host "charts $charts will be configured to use internal AKS infrastructure." -ForegroundColor Yellow  
+    if ([String]::IsNullOrEmpty($valuesFile)) {
+        $valuesFile="gvalues_inf.yaml"
+    }
     $azuriteUrl="http://$aksHost/blobs/devstoreaccount1"
     $azuriteProductsUrl="$azuriteUrl/product-list"
     $azuriteProfilesUrl="$azuriteUrl/profiles-list"
@@ -118,10 +120,17 @@ if ($useInfraInAks) {
     $cartAci=$(az container show -g $cartAciGroup -n $cartAciName | ConvertFrom-Json)
     Write-Host "ACI Cart running CosmosDb emulator is on " $cartAci.ipAddress.fqdn -ForegroundColor Yellow
     if ([String]::IsNullOrEmpty($cartAci.ipAddress.fqdn)) {
-        Write-Host "ACI Cart not found or it has no fqdn. Please run Deploy-CosmosDb.ps1"
+        Write-Host "ACI Cart not found or it has no fqdn. Please run Deploy-CosmosDb.ps1" -ForegroundColor Red
         exit 1
     }
 }
+else {
+    if ([String]::IsNullOrEmpty($valuesFile)) {
+        $valuesFile="gvalues.yaml"
+    }
+}
+
+Write-Host "Configuration file used is $valuesFile" -ForegroundColor Yellow
 
 if ($charts.Contains("pr") -or  $charts.Contains("*")) {
     Write-Host "Products chart - pr" -ForegroundColor Yellow

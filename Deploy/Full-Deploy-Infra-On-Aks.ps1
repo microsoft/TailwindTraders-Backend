@@ -2,7 +2,10 @@ Param (
     [parameter(Mandatory=$true)][string]$resourceGroup,
     [parameter(Mandatory=$false)][string]$dockerTag = "latest",
     [parameter(Mandatory=$false)][string]$name = "my-tt",
-    [parameter(Mandatory=$false)][bool]$buildDocker = $true
+    [parameter(Mandatory=$false)][bool]$buildDocker = $true,
+    [parameter(Mandatory=$false)][string]$namespace = "",
+    [parameter(Mandatory=$false)][string][ValidateSet('prod','staging','none', IgnoreCase=$false)]$sslSupport = "staging",
+    [parameter(Mandatory=$false)][string]$charts = "infra,*"
 )
 
 #############################################################################
@@ -105,12 +108,12 @@ if ($oldReleases) {
 ###################################################################################
 Write-Host "Deploying cert manager on AKS $($aks.name)" -ForegroundColor Yellow
 & .\Add-Cert-Manager.ps1
-& .\Enable-SSl.ps1 -sslSupport "staging" -aksName $aks.name -resourceGroup $resourceGroup -name $name
+& .\Enable-SSl.ps1 -sslSupport $sslSupport -aksName $aks.name -resourceGroup $resourceGroup -name $name
 
 ###################################################################################
 # Deploy Tailwind Traders images on cluster
 ###################################################################################ç
 Write-Host "Deploying Tailwind Traders images on AKS $($aks.name)" -ForegroundColor Yellow
-#& .\Deploy-CosmosDb-Aci.ps1 -resourceGroup $resourceGroup -name "$name-cart"
-& .\Deploy-Images-Aks.ps1 -aksName $aks.name -resourceGroup $resourceGroup -cartAciGroup $resourceGroup -cartAciName "$name-cart" -acrName $acr.name -useInfraInAks $true -charts "infra,*" -name $name
+& .\Deploy-CosmosDb-Aci.ps1 -resourceGroup $resourceGroup -name "$name-cart"
+& .\Deploy-Images-Aks.ps1 -aksName $aks.name -resourceGroup $resourceGroup -cartAciGroup $resourceGroup -cartAciName "$name-cart" -acrName $acr.name -useInfraInAks $true -charts $charts -name $name -namespace $namespace
 & .\Deploy-Pictures-Aks.ps1 -resourceGroup $resourceGroup -aksName $aks.name
