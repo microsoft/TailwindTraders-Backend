@@ -10,17 +10,15 @@ This repository contains all code + deployment scripts for the Tailwind Traders 
 
 We have added an ARM template so you can automate the creation of the resources required for the backend services.
 
-<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FMicrosoft%2FTailwindTraders-Backend%2Fmaster%2FDeploy%2Fdeployment.json"><img src="/Documents/Images/deploy-to-azure.png" alt="Deploy to Azure"/></a>
+Read the [Azure infrastructure deployment guide](./Documents/Azure-Deployment.md) for more information.
 
-> Note: This deployment can take up to 12 minutes.
+Once the Azure infrastructure is deployed follow the [deployment guide](./Documents/DeploymentGuide.md) to deploy the services to AKS.
 
-Once the ARM is deployed follow the [deployment guide](./Documents/DeploymentGuide.md) to deploy the services to AKS.
-
-## Deploy everything on AKS (running infrastructure in AKS also)
+### Deploy everything on AKS (running infrastructure in AKS also)
 
 For development scenarios everything can be run on a AKS, so **not external dependencies needed**. Click following button to deploy only an AKS and an ACR only. No other resources will be created:
 
-<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FMicrosoft%2FTailwindTraders-Backend%2Fmaster%2FDeploy%2Fdeployment-only-inf.json"><img src="/Documents/Images/deploy-to-azure.png" alt="Deploy to Azure"/></a>
+<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FMicrosoft%2FTailwindTraders-Backend%2Fmaster%2FDeploy%2Fdeployment-only-inf.json"><img src="./Documents/Images/deploy-to-azure.png" alt="Deploy to Azure"/></a>
 
 Once you have an AKS please follow the documentation to [deploy infrastructure on AKS](./Documents/AKS-infrastructure.md)
 

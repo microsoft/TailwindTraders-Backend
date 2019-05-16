@@ -10,6 +10,10 @@ Pre-requisites for this deployment are to have
 * [Kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) installed.
 * Docker installed
 
+## Pre-requisite: Azure infrastructure created
+
+Tailwind Traders requires various Azure resources created. Please follow the [Azure infrastructure deployment guide](./Azure-Deployment.md) if you don't have the resources deployed.
+
 ## Connecting kubectl to AKS
 
 From the terminal type:
