@@ -7,6 +7,17 @@ services:
   nosql.data:
     image: mongo
 
+  stock.data:
+    image: postgres:11.3
+
+  adminer:
+    image: adminer
+    ports:
+      - 8080:8080
+    depends_on: 
+    - sql.data
+    - stock.data
+
   cart.api:
     image: ${REGISTRY:-tailwindtraders}/cart.api:${TAG:-latest}
     build:
@@ -54,10 +65,12 @@ services:
 
   stock.api:
     image: ${REGISTRY:-tailwindtraders}/stock.api:${TAG:-latest}
-    container_name: stock-node
+    container_name: stock-java
     build:
       context: ./Services/Tailwind.Traders.Stock.Api/
       dockerfile: Dockerfile  
+    depends_on: 
+    - stock.data
 
   product-visits.function:
     image: ${REGISTRY:-tailwindtraders}/product-visits.function:${TAG:-latest}

@@ -50,5 +50,10 @@ namespace Tailwind.Traders.WebBff.Infrastructure
         {
             public static string PutRefreshToken(string baseUri, string version) => $"{baseUri}/{version}/oauth2/refresh";
         }
+
+        public static class Stock
+        {
+            public static string GetStockProduct(string baseUri, string version, int productid) => $"{baseUri}/{version}/stock/{productid}";
+        }
     }
 }

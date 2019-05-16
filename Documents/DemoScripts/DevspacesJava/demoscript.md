@@ -152,6 +152,8 @@ Once finished a `launch.json` and a `tasks.json` file would be generated in the 
 
 ![Launch option for AZDS in VS Code Debug Pane](./vscode-launch.png)
 
+>**Note** If there is any problem in performing these steps, **just delete the `.vscode` folder and rename the folder `.generated.vscode` to `.vscode`**. The `.generated.vscode` folder contains the final scripts that VS Code needs for using Dev Spaces.
+
 Alice use this option to launch the Tasks API on her own Dev Space. This will take a while, because 1st time VS Code needs to update all code in the Alice dev space (under the hoods a `azds up` is performed).
 
 Visual Studio Code will show a **localhost** address in the status bar:

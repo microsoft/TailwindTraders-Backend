@@ -59,9 +59,26 @@ namespace Tailwind.Traders.WebBff.Controllers
         [ProducesResponseType((int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetProductDetails([FromRoute] int id)
         {
-            var client = _httpClientFactory.CreateClient();
+            var client = _httpClientFactory.CreateClient(HttpClients.ApiGW);
             var result = await client.GetStringAsync(API.Products.GetProduct(_settings.ProductsApiUrl, VERSION_API, id));
             var product = JsonConvert.DeserializeObject<Product>(result);
+
+            // We need to call the stock API to retrieve the stock of the product
+            var stockUrl = API.Stock.GetStockProduct(_settings.StockApiUrl, VERSION_API, id);
+            try
+            {
+                var stockResponse = await client.GetAsync(stockUrl);
+                stockResponse.EnsureSuccessStatusCode();
+                var stockJson = await stockResponse.Content.ReadAsStringAsync();
+                dynamic data = JObject.Parse(stockJson);
+                product.StockUnits = (int)data.productStock;
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogError($"HttpRequestException calling Stock API using {stockUrl}. Message is {ex.Message}");
+                _logger.LogInformation($"Error won't be forwarded to client, instead stock is set to 0.");
+                product.StockUnits = 0;
+            }
 
             return Ok(product);
         }

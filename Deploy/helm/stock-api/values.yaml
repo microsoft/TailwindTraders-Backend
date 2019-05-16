@@ -23,4 +23,7 @@ env:
     - name: ApplicationInsights
     - name: ISSUER
     - name: SECURITYKEY
+    - name: sql_server_url
+    - name: sql_user_name
+    - name: sql_user_password
   values: {}

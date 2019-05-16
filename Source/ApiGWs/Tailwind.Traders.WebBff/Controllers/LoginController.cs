@@ -33,7 +33,7 @@ namespace Tailwind.Traders.WebBff.Controllers
         [HttpPost()]
         public async Task<IActionResult> Login([FromBody] TokenRequest request)
         {
-            var client = _httpClientFactory.CreateClient();
+            var client = _httpClientFactory.CreateClient(HttpClients.ApiGW);
 
             var json = JsonConvert.SerializeObject(request);
             var stringContent = new StringContent(json, UnicodeEncoding.UTF8, "application/json");

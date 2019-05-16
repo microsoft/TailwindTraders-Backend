@@ -28,9 +28,15 @@ inf:
       constr: # COSMOS CONSTR
       collection: CouponCollection   
     popularproducts:
-      host: # DB HOST LIKEtailwindtradersserver-dev.database.windows.net
+      host: # DB HOST LIKE tailwindtradersserver-dev.database.windows.net
       port: "1433"
       catalog: # DB NAME LIKE  Microsoft.Tailwind.PopularProduct-dev
+      user: # ADMIN USERNAME LIKE tailadmin
+      pwd: # ADMIN PWD  
+    stock:
+      host: # PostgreSQL Host LIKE tailwindtradersdev.postgres.database.azure.com
+      port: "5432"
+      catalog: # DB NAME LIKE stockdb
       user: # ADMIN USERNAME LIKE tailadmin
       pwd: # ADMIN PWD  
     cart:

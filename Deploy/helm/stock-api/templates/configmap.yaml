@@ -12,5 +12,8 @@ metadata:
     heritage: {{ .Release.Service }}
 data:
   ApplicationInsights:  {{ .Values.inf.appinsights.id }}
+  sql_server_url: "jdbc:postgresql://{{ .Values.inf.db.stock.host }}:{{ .Values.inf.db.stock.port }}/{{ .Values.inf.db.stock.catalog }}"
+  sql_user_name: {{ .Values.inf.db.stock.user }}
+  sql_user_password: {{ .Values.inf.db.stock.pwd }}
   ISSUER: {{ .Values.sec.issuer }}
   SECURITYKEY: {{ .Values.sec.securityKey }}

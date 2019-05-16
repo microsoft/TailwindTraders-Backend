@@ -21,5 +21,7 @@ namespace Tailwind.Traders.WebBff.Models
         public ProductType Type { get; set; }
 
         public IEnumerable<ProductFeature> Features { get; set; }
+
+        public int StockUnits { get; set; }
     }
 }

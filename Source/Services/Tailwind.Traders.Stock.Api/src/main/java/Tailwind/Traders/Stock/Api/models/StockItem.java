@@ -1,9 +1,11 @@
-package Tailwind.Traders.Stock.Api;
+package Tailwind.Traders.Stock.Api.models;
 
+import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+@Entity
 public class StockItem {
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
@@ -27,6 +29,6 @@ public class StockItem {
         this.productId = pid;
     }
 
-    public Integer getStockCount {return this.stockCount; }
+    public Integer getStockCount() {return this.stockCount; }
     public void setStockCount(Integer sc) { this.stockCount = sc; }
 }
