@@ -27,6 +27,7 @@ env:
     - name: LoginApiUrl
     - name: CouponsApiUrl
     - name: ImageClassifierApiUrl
+    - name: StockApiUrl
     - name: ISSUER
     - name: SECURITYKEY
   values:

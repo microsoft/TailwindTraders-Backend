@@ -12,6 +12,14 @@ services:
     ports:
       - "27017:27017"
 
+  stock.data:
+    environment: 
+      - POSTGRES_PASSWORD=Passw0rd1!
+      - POSTGRES_USER=ttuser
+      - POSTGRES_DB=stockdb
+    ports:
+      - "5432:5432"
+
   product.api:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
@@ -69,7 +77,13 @@ services:
       
   stock.api:
     ports:
-      - "5004:80"  
+      - "5004:8080"  
+    environment:
+      - sql_server_url=jdbc:postgresql://stock.data:5432/stockdb
+      - sql_user_name=ttuser
+      - sql_user_password=Passw0rd!
+      - Issuer=TTFakeLogin
+      - SecurityKey=nEpLzQJGNSCNL5H6DIQCtTdNxf5VgAGcBbtXLms1YDD01KJBAs0WVawaEjn97uwB    
 
   product-visits.function:
     environment:
@@ -118,6 +132,7 @@ services:
       - LoginApiUrl=http://login.api
       - CouponsApiUrl=http://coupon.api:3000
       - ImageClassifierApiUrl=http://image-classifier.api
+      - StockApiUrl=http://stock.api
       - SECURITYKEY=nEpLzQJGNSCNL5H6DIQCtTdNxf5VgAGcBbtXLms1YDD01KJBAs0WVawaEjn97uwB
       - ISSUER=TTFakeLogin
       - UseMlNetClassifier=true

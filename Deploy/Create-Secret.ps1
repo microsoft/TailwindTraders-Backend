@@ -19,13 +19,15 @@ function validate {
         $valid=$false
     }
     
-    if ([string]::IsNullOrEmpty($clientId)) {
-        Write-Host "No Client ID. Use -clientid to specify a Client ID" -ForegroundColor Red
+    if ([string]::IsNullOrEmpty($clientId) -and -not [string]::IsNullOrEmpty($password) ) {
+        Write-Host "No Client ID. Use -clientid to specify a Client ID if -password is used" -ForegroundColor Red
+        Write-Host "If want to use ACR credentials instead of service principal do not pass -clientid NOR -password" -ForegroundColor Red
         $valid=$false
     }
-    if ([string]::IsNullOrEmpty($password)) {
+    if ([string]::IsNullOrEmpty($password) -and -not [string]::IsNullOrEmpty($clientId)  ) {
     
-        Write-Host "No Client ID Pwd. Use -password to specify a Client ID Password" -ForegroundColor Red
+        Write-Host "No Client ID Pwd. Use -password to specify a Client ID Password if -clientid is used" -ForegroundColor Red
+        Write-Host "If want to use ACR credentials instead of service principal do not pass -clientid NOR -password" -ForegroundColor Red
         $valid=$false
     }
     if ($valid -eq $false) {
@@ -40,13 +42,25 @@ Write-Host "ACR $acrName in RG $resourceGroup " -ForegroundColor Yellow
 Write-Host "Client Id: $clientId with pwd: $password " -ForegroundColor Yellow
 Write-Host "-------------------------------------------------------- " -ForegroundColor Yellow
 
-$acrLogin=$(az acr show -n $acrName -g $resourceGroup | ConvertFrom-Json).loginServer
-$acrId=$(az acr show -n $acrName -g $resourceGroup | ConvertFrom-Json).id
+$acr=$(az acr show -n $acrName -g $resourceGroup -o json | ConvertFrom-Json)
+$acrLogin=$acr.loginServer
+$acrId=$acr.id
 validate
 
-az role assignment create --assignee $clientId --scope $acrId --role reader
-kubectl delete secret acr-auth
-kubectl create secret docker-registry acr-auth --docker-server $acrLogin --docker-username $clientId --docker-password $password --docker-email not@used.com
+if (-not [string]::IsNullOrEmpty($clientId)) {
+    Write-Host "Creating Service Principal based auth..." -ForegroundColor Yellow
+    az role assignment create --assignee $clientId --scope $acrId --role reader
+    kubectl delete secret acr-auth
+    kubectl create secret docker-registry acr-auth --docker-server $acrLogin --docker-username $clientId --docker-password $password --docker-email not@used.com
+}
+else {
+    Write-Host "Creating ACR auth based secret..." -ForegroundColor Yellow
+    $acrCredentials = $(az acr credential show -n $acrName -g $resourceGroup -o json | ConvertFrom-Json)
+    $acrPwd=$acrCredentials.passwords[0].value
+    $acrUser=$acrCredentials.username
+    kubectl delete secret acr-auth
+    kubectl create secret docker-registry acr-auth --docker-server $acrLogin --docker-username $acrUser --docker-password $acrPwd --docker-email not@used.com
+}
 
 Write-Host "Deploying ServiceAccount ttsa" -ForegroundColor Yellow
 kubectl apply -f helm/ttsa.yaml 

@@ -18,6 +18,10 @@
     "aksVersion": {
       "type": "string",
       "defaultValue": "1.12.5"
+    },
+    "pgversion": {
+      "type": "string",
+      "defaultValue": "10"
     }
   },
   "variables": {
@@ -26,6 +30,7 @@
     "aks_name": "[concat('tailwindtradersaks',uniqueString(resourceGroup().id))]",
     "function_name": "[concat('ttfunction',uniqueString(resourceGroup().id))]",
     "sqlserver_name": "[concat('ttsqlserver',uniqueString(resourceGroup().id))]",
+    "pg_name": "[concat('ttpg',uniqueString(resourceGroup().id))]",
     "cuopons_cosmosdb_name": "[concat('ttcuoponsdb',uniqueString(resourceGroup().id))]",
     "shopping_cosmosdb_name": "[concat('ttshoppingdb',uniqueString(resourceGroup().id))]",
     "workspaceName": "[concat('ttoms', uniqueString(resourceGroup().id))]",
@@ -141,6 +146,29 @@
         "[resourceId('Microsoft.Storage/storageAccounts', variables('storage_name'))]"
       ]
     },
+    {
+      "apiVersion": "2017-12-01",
+      "type": "Microsoft.DBforPostgreSQL/servers",
+      "location": "[resourceGroup().location]",
+      "name": "[variables('pg_name')]",
+      "properties": {
+        "version": "[parameters('pgversion')]",
+        "administratorLogin": "[parameters('sqlServerAdministratorLogin')]",
+        "administratorLoginPassword": "[parameters('sqlServerAdministratorLoginPassword')]",
+        "storageProfile": {
+          "storageMB": "5120",
+          "backupRetentionDays": "7",
+          "geoRedundantBackup": "Disabled"
+        }
+      },
+      "sku": {
+        "name": "GP_Gen5_2",
+        "tier": "GeneralPurpose",
+        "capacity": "2",
+        "size": "5120",
+        "family": "Gen5"
+      }
+    },    
     {
       "type": "Microsoft.Sql/servers",
       "name": "[variables('sqlserver_name')]",

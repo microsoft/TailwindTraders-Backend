@@ -33,7 +33,7 @@ namespace Tailwind.Traders.WebBff.Controllers
         [HttpPut("refresh")]
         public async Task<IActionResult> TokenRefresh([FromBody] TokenRefreshRequest request)
         {
-            var client = _httpClientFactory.CreateClient();
+            var client = _httpClientFactory.CreateClient(HttpClients.ApiGW);
 
             var jsonRequest = JsonConvert.SerializeObject(request);
             var stringContent = new StringContent(jsonRequest, UnicodeEncoding.UTF8, "application/json");

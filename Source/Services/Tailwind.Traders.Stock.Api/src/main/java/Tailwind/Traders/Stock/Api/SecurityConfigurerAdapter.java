@@ -18,7 +18,11 @@ public class SecurityConfigurerAdapter extends  WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception{
 		http.csrf().disable().cors().and()
 			.addFilter(new JWTAuthorizationFilter(authenticationManager(), jwtConfig))
-			.authorizeRequests().anyRequest().authenticated();
+			.authorizeRequests()
+				.antMatchers("/v1/stock/*", "/", "/swagger-ui.html").permitAll()
+				.antMatchers("/").permitAll()
+				.antMatchers("/swagger-ui.html").permitAll()
+				.anyRequest().authenticated();
 	}
 	
 	@Bean

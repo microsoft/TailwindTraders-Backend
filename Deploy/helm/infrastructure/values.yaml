@@ -12,6 +12,10 @@ image:
   azurite:
     repository: arafato/azurite
     tag: "2.6.5"
+    pullPolicy: IfNotPresent
+  pg:
+    repository: postgres
+    tag: "11.9"
     pullPolicy: IfNotPresent   
 
 service:
@@ -24,6 +28,9 @@ service:
   azurite:
     type: ClusterIP
     port: 10000
+  pg:
+    type: ClusterIP
+    port: 5432
 
 resources: {}
 

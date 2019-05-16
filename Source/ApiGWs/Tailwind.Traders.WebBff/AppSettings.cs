@@ -14,5 +14,6 @@ namespace Tailwind.Traders.WebBff
         public string ImageClassifierApiUrl { get; set; }
         public string LoginApiUrl { get; set; }
         public bool UseMlNetClassifier { get; set; }
+        public string StockApiUrl { get; set; }
     }
 }

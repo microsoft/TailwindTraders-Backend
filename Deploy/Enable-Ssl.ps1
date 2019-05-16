@@ -35,7 +35,10 @@ Write-Host " Enabling SSL/TLS support on cluster $aksName in RG $resourceGroup" 
 Write-Host " --------------------------------------------------------" -ForegroundColor Yellow
 
 if ([String]::IsNullOrEmpty($domain)) {
-    $domain = $(az aks show -n $aksName -g $resourceGroup | ConvertFrom-Json).addonProfiles.httpApplicationRouting.config.HTTPApplicationRoutingZoneName
+    $domain = $(az aks show -n $aksName -g $resourceGroup --query addonProfiles.httpApplicationRouting.config.HTTPApplicationRoutingZoneName | ConvertFrom-Json)
+    if (-not $domain) {
+        $domain = $(az aks show -n $aksName -g $resourceGroup --query addonProfiles.httpapplicationrouting.config.HTTPApplicationRoutingZoneName | ConvertFrom-Json)
+    }
 }
 
 if ([String]::IsNullOrEmpty($domain)) {
