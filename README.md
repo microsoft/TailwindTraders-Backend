@@ -30,6 +30,8 @@ To run the backend locally on your computer follow these [instructions](./Docume
 
 **We have enabled Devspaces support!** Read [the devspaces deploy documentation](./Documents/Devspaces.md) if you want to test Azure Dev Spaces using Tailwind Traders.
 
+**Note**: There is an [end-to-end Devspaces demo](./Documents/Demoscripts/DevspacesJava/demoscript.md).
+
 ## Test image classiffier
 
 Please refer to the [test image classiffier guide](Documents/TestImageClassiffierGuide.md).
