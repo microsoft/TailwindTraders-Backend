@@ -1,0 +1,20 @@
+{{- if .Values.hpa -}}
+apiVersion: autoscaling/v2beta2
+kind: HorizontalPodAutoscaler
+metadata:
+  name:  {{ template "tt-products.fullname" . }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ template "tt-products.fullname" . }}
+  minReplicas: 1
+  maxReplicas: 40
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 10
+{{- end -}}

@@ -1,0 +1,98 @@
+# Template for generating a gvalues file
+
+inf:
+  sa: ttsa
+  db:
+    products:
+      host: {{dbhost}}
+      port: "1433"
+      catalog: products
+      user: {{dbuser}}
+      pwd: {{dbpwd}}
+    profile:
+      host: {{dbhost}}
+      port: "1433"
+      catalog: profile
+      user: {{dbuser}}
+      pwd: {{dbpwd}}
+    coupons:
+      user: {{couponsuser}}
+      pwd: {{couponspwd}}
+      host: {{couponshost}}
+      port: "10255"
+      dbName: Coupon
+      collection: CouponCollection   
+    popularproducts:
+      host: {{dbhost}}
+      port: "1433"
+      catalog: popularproducts
+      user: {{dbuser}}
+      pwd: {{dbpwd}}
+    stock:
+      host: {{pghost}}
+      port: "5432"
+      catalog: stockdb
+      user: {{pguser}}
+      pwd: {{pgpwd}}
+    cart:
+      host: {{carthost}}
+      auth: {{cartauth}}
+  storage:
+    productimages: {{storage}}product-list
+    productdetailimages: {{storage}}product-detail
+    couponimage: {{storage}}coupon-list
+    profileimages: {{storage}}profiles-list
+  appinsights:
+    id: ""
+  ingress:
+    products:
+      path: /product-api
+    profile:
+      path: /profile-api
+    coupons:
+      path: /coupons-api
+    popularproducts:
+      path: /popular-products-api
+    stock:
+      path: /stock-api
+    imageclassifier:
+      path: /image-classifier-api
+    mobilebff:
+      path: /mobilebff
+    webbff:
+      path: /webbff    
+    login:
+      path: /login-api      
+    cart:
+      path: /cart-api
+  apiurls:
+    popularproductsapiurl: http://popularproducts
+    productsapiurl: http://product 
+    profileapiurl: http://profile
+    couponsapiurl: http://coupons
+    stockapiurl: http://stock
+    imageclassifierapiurl: http://imageclassifier
+    loginapiurl: http://login
+az:
+  productvisitsurl: ""
+
+# Shared ingress configurations
+ingress:
+  enabled: true
+  annotations:
+    kubernetes.io/ingress.class: {{ingressclass}}
+    ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/rewrite-target: /
+#  hosts:
+#    - <guid>.<region>.aksapp.io   # NOT NEEDED. SET BY SCRIPTS
+
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+sec:
+  issuer: {{secissuer}}
+  securityKey: {{seckey}}

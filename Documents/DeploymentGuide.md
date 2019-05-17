@@ -34,11 +34,33 @@ Once installed, helm commands like `helm ls` should work without any error.
 
 ## Configuring services
 
-Before deploying services using Helm, you need to setup the configuration by editing the file `helm/gvalues.yaml` and put the secrets, connection strings and all the configuration.
+Before deploying services using Helm, you need to setup the configuration. We refer to the configuration file with the name of _gvalues_ file. This file **contains all secrets and connection strings** so beware to not commit in your repo accidentally.
 
->**Note:** If you don't want to edit the `helm/gvalues.yaml` file you can create a copy and name it whatever you want (i. e. `helm/gvalues-prod1.yaml`). This allows you to mantain various environments. Note that **this file contains secrets so do not push into the repo!**, you can put the file in `/Deploy/helm/__values/` folder which is added to `.gitignore` to avoid accidental pushes.
+An example of this file is in `helm/gvalues.yaml`. The deployment scripts use this file by default, **but do not rely on editing this file**. Instead create a copy of it a folder outside the repository and use the `-valuesFile` parameter of the deployment script.
+
+>**Note:** The folder `/Deploy/helm/__values/` is added to `.gitignore`, so you can keep all your configuration files in it, to avoid accidental pushes.
 
 Please refer to the comments of the file for its usage. Just ignore (but not delete) the `tls` section (it is used if TLS is enabled).
+
+### Auto generating the configuration file
+
+Generating a valid _gvalues_ file can be a bit harder, so there is a Powershell script that can do all work by you. This script assumes that all resources are deployed in the same resource group, and this resource group contains only the Tailwind Traders resources. Also assumes the Azure resources have been created using the tools provided in this repo.
+
+To auto-generate your _gvalues_ file just go to `/Deploy` folder and from a Powershell window, type the following:
+
+```
+.\Generate-Config.ps1 -resourceGroup <your-resource-group> -sqlPwd <sql-password> -outputFile helm\__values\<name-of-your-file>
+```
+
+The parameters that `Generate-Config.ps1` accepts are:
+
+* `-resourceGroup`: Resource group where all Azure resources are. **Mandatory**
+* `-sqlPwd`: Password of SQL Servers and PostgreSQL server. This parameter is **mandatory** because can't be read using Azure CLI
+* `-forcePwd`: If `$true`, the scripts updates the SQL Server and PostgreSQ to set their password to the value of `sqlPwd`. Defaults to `$false`.
+* `-outputFile`: Full path of the output file to generate. A good idea is to generate a file in `/Deploy/helm/__values/` folder as this folder is ignored by Git. If not passed the result file is written on screen.
+* `-gvaluesTemplate`: Template of the _gvalues_ file to use. The parameter defaults to the `/Deploy/helm/gvalues.template` which is the only template provided.
+
+The script checks that all needed resources exists in the resource group. If some resource is missing or there is an unexpected resource, the script exits.
 
 ## Create secrets on the AKS
 
@@ -134,6 +156,7 @@ The parameter `charts` allow for a selective installation of charts. Is a list o
 * `st` Stock API
 * `ic` Image classifier API
 * `ct` Shopping cart API
+* `lg` Login API
 * `mgw` Mobile Api Gateway
 * `wgw` Web Api Gateway
 

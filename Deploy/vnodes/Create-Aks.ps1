@@ -40,6 +40,9 @@ az aks create --resource-group $resourceGroup --name $aksName --node-count 3 --n
 Write-Host "Enabling vnodes in the AKS..." -ForegroundColor Yellow
 az aks enable-addons --resource-group $resourceGroup --name $aksName --addons virtual-node  --subnet-name $vnodesSubnetName
 
+Write-Host "Enabling http application rotuing"
+az aks enable-addons --addons http_application_routing -n $aksName -g $resourceGroup
+
 Write-Host "Adding credentials to kubectl..."
 az aks get-credentials -n $aksName  -g $resourceGroup
 
