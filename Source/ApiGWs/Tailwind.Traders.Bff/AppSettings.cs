@@ -13,7 +13,6 @@ namespace Tailwind.Traders.MobileBff
         public string CouponsApiUrl { get; set; }
         public string LoginApiUrl { get; set; }
         public string ImageClassifierApiUrl { get; set; }
-
         public bool UseMlNetClassifier { get; set; }
     }
 }
