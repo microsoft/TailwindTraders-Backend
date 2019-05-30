@@ -29,6 +29,12 @@ namespace Tailwind.Traders.WebBff
         {
             services.AddHttpClientServices(Configuration);
 
+            var useB2C = UseB2CToBoolean();
+            if (useB2C == true)
+            {
+                Console.Write("Use this condition to B2C flow");
+            }
+
             services.Configure<AppSettings>(Configuration);
 
             services.AddSwaggerGen(options =>
@@ -36,7 +42,7 @@ namespace Tailwind.Traders.WebBff
                 options.DescribeAllEnumsAsStrings();
                 options.SwaggerDoc("v1", new Swashbuckle.AspNetCore.Swagger.Info
                 {
-                    Title = "Tailwind Traders - Mobile BFF HTTP API",
+                    Title = "Tailwind Traders - Web BFF HTTP API",
                     Version = "v1"
                 });
             });
@@ -84,6 +90,24 @@ namespace Tailwind.Traders.WebBff
 
             app.UseAuthentication();
             app.UseMvc();
+        }
+
+        public bool UseB2CToBoolean()
+        {
+            string UseB2C = Configuration["UseB2C"];
+            bool parsedUseB2C;
+
+            if (UseB2C == null)
+            {
+                return false;
+            }
+
+            if (bool.TryParse(UseB2C, out parsedUseB2C))
+            {
+                return parsedUseB2C;
+            }
+
+            return false;
         }
     }
 
