@@ -29,7 +29,7 @@ namespace Tailwind.Traders.WebBff
         {
             services.AddHttpClientServices(Configuration);
 
-            var useB2C = UseB2CToBoolean();
+            var useB2C = GetUseB2CBoolean();
             if (useB2C == true)
             {
                 Console.Write("Use this condition to B2C flow");
@@ -92,17 +92,16 @@ namespace Tailwind.Traders.WebBff
             app.UseMvc();
         }
 
-        public bool UseB2CToBoolean()
+        private bool GetUseB2CBoolean()
         {
-            string UseB2C = Configuration["UseB2C"];
-            bool parsedUseB2C;
+            string useB2C = Configuration["UseB2C"];
 
-            if (UseB2C == null)
+            if (useB2C == null)
             {
                 return false;
             }
 
-            if (bool.TryParse(UseB2C, out parsedUseB2C))
+            if (bool.TryParse(useB2C, out bool parsedUseB2C))
             {
                 return parsedUseB2C;
             }
