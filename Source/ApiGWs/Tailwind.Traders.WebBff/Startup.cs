@@ -27,13 +27,9 @@ namespace Tailwind.Traders.WebBff
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddHttpClientServices(Configuration);
-
             var useB2C = GetUseB2CBoolean();
-            if (useB2C == true)
-            {
-                Console.Write("Use this condition to B2C flow");
-            }
+
+            services.AddHttpClientServices(Configuration);
 
             services.Configure<AppSettings>(Configuration);
 
@@ -60,14 +56,22 @@ namespace Tailwind.Traders.WebBff
                 .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
-                    options.TokenValidationParameters = new TokenValidationParameters
+                    if (useB2C == true)
                     {
-                        ValidateIssuer = true,
-                        ValidateAudience = false,
-                        ValidIssuer = Configuration["Issuer"],
-                        ValidateLifetime = true,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["SecurityKey"]))
-                    };
+                        options.Authority = $"https://login.microsoftonline.com/tfp/tailwindtradersB2cTenantdev.onmicrosoft.com/B2C_1_tailwindtraderssigninv1/v2.0/";
+                        options.TokenValidationParameters.ValidateAudience = false;
+                    }
+                    else
+                    {
+                        options.TokenValidationParameters = new TokenValidationParameters
+                        {
+                            ValidateIssuer = true,
+                            ValidateAudience = false,
+                            ValidIssuer = Configuration["Issuer"],
+                            ValidateLifetime = true,
+                            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["SecurityKey"]))
+                        };
+                    }
                 });
         }
 

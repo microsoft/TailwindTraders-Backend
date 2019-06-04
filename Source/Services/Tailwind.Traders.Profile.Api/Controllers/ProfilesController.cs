@@ -39,7 +39,7 @@ namespace Tailwind.Traders.Profile.Api.Controllers
                 .Select(p => p.ToProfileDto(_settings))
                 .ToListAsync();
 
-            if(result == null)
+            if (result == null)
             {
                 return NoContent();
             }
@@ -55,29 +55,28 @@ namespace Tailwind.Traders.Profile.Api.Controllers
         {
             var currentUser = HttpContext.User;
 
-            var userId = currentUser.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value;
-
-            var result = await _ctx.Profiles
+            if (currentUser.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null)
+            {
+                var userId = currentUser.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value;
+                var result = await _ctx.Profiles
                 .Where(p => p.Email == userId)
                 .Select(p => p.ToProfileDto(_settings))
                 .SingleOrDefaultAsync();
 
-            if (result == null)
-            {
-                var defaultUser = GetDefaultUserProfile(userId);
-                return Ok(defaultUser);
+                return Ok(result);
             }
 
-            return Ok(result);
+            var defaultUser = GetDefaultUserProfile();
+            return Ok(defaultUser);
         }
 
-        private ProfileDto GetDefaultUserProfile(string userId)
+        private ProfileDto GetDefaultUserProfile(string userId = null)
         {
             return new ProfileDto
             {
                 Email = userId,
                 Address = "7711 W. Pawnee Ave. Beachwood, OH 44122",
-                Name = userId,
+                Name = "John Doe",
                 PhoneNumber = "+1-202-555-0155",
                 Id = 0,
                 ImageUrlMedium = "defaultImage-m.jpg",
@@ -100,6 +99,6 @@ namespace Tailwind.Traders.Profile.Api.Controllers
             await _ctx.SaveChangesAsync();
 
             return Ok();
-        }        
+        }
     }
 }

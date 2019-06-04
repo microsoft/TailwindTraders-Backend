@@ -23,6 +23,8 @@ namespace Tailwind.Traders.Profile.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var useB2C = GetUseB2CBoolean();
+
             services
                 .AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Latest)
@@ -32,16 +34,24 @@ namespace Tailwind.Traders.Profile.Api
                 .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
-                    options.TokenValidationParameters = new TokenValidationParameters
+                    if (useB2C == true)
                     {
-                        ValidateIssuer = true,
-                        ValidateAudience = false,
-                        ValidIssuer = Configuration["Issuer"],
-                        ValidateLifetime = true,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["SecurityKey"]))
-                    };
+                        options.Authority = $"https://login.microsoftonline.com/tfp/tailwindtradersB2cTenantdev.onmicrosoft.com/B2C_1_tailwindtraderssigninv1/v2.0/";
+                        options.TokenValidationParameters.ValidateAudience = false;
+                    }
+                    else
+                    {
+                        options.TokenValidationParameters = new TokenValidationParameters
+                        {
+                            ValidateIssuer = true,
+                            ValidateAudience = false,
+                            ValidIssuer = Configuration["Issuer"],
+                            ValidateLifetime = true,
+                            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["SecurityKey"]))
+                        };
+                    }
                 });
-                
+
             services.AddApiVersioning(options =>
             {
                 options.ReportApiVersions = true;
@@ -74,6 +84,22 @@ namespace Tailwind.Traders.Profile.Api
             app.UseAuthentication();
             app.UseHttpsRedirection();
             app.UseMvc();
+        }
+        private bool GetUseB2CBoolean()
+        {
+            string useB2C = Configuration["UseB2C"];
+
+            if (useB2C == null)
+            {
+                return false;
+            }
+
+            if (bool.TryParse(useB2C, out bool parsedUseB2C))
+            {
+                return parsedUseB2C;
+            }
+
+            return false;
         }
     }
 }
