@@ -8,7 +8,7 @@ namespace Tailwind.Traders.ImageClassifier.Api
 {
     public interface IImageScoringService
     {
-        ImagePredictedLabelWithProbability Score(string imageName);
+        ImagePredictedLabelWithProbability Score(ImageInputData imageName);
         void Init();
 
         string ImagesFolder { get; }

@@ -1,7 +1,8 @@
 ﻿using Microsoft.ML;
-using Microsoft.ML.Runtime.Api;
-using Microsoft.ML.Runtime.Data;
-using Microsoft.ML.Runtime.ImageAnalytics;
+using Microsoft.ML.Data;
+using Microsoft.ML.Data.IO;
+using Microsoft.ML.Trainers;
+using Microsoft.ML.Transforms.Image;
 using Microsoft.ML.Transforms;
 using System;
 using System.Collections.Generic;
@@ -18,8 +19,8 @@ namespace Tailwind.Traders.ImageClassifier.Api.Mlnet
         private readonly string _modelLocation;
         private readonly string[] _labels;
         private readonly string _contentRoot;
-        private PredictionFunction<ImageInputData, ImageNetPrediction> _model;
-
+        private PredictionEngine<ImageInputData, ImageNetPrediction> _model;
+        private static string LabelTokey = nameof(LabelTokey);
 
         public ImageScoringService(string contentRoot, string rootImagesFolder)
         {
@@ -33,7 +34,7 @@ namespace Tailwind.Traders.ImageClassifier.Api.Mlnet
 
         public string ImagesFolder => _imagesFolder;
 
-        public ImagePredictedLabelWithProbability Score(string imageName)
+        public ImagePredictedLabelWithProbability Score(ImageInputData imageName)
         {
             if (_model == null)
             {
@@ -48,19 +49,20 @@ namespace Tailwind.Traders.ImageClassifier.Api.Mlnet
             _model = CreatePredictionFunction();
         }
 
-
-        private PredictionFunction<ImageInputData, ImageNetPrediction> CreatePredictionFunction()
+        private PredictionEngine<ImageInputData, ImageNetPrediction> CreatePredictionFunction()
         {
             try
             {
-                var pipeline = ImageEstimatorsCatalog.LoadImages(catalog: _mlContext.Transforms, imageFolder: _imagesFolder, columns: ("ImagePath", "ImageReal"))
-                                .Append(ImageEstimatorsCatalog.Resize(_mlContext.Transforms, "ImageReal", "ImageReal", ImageNetSettings.imageHeight, ImageNetSettings.imageWidth))
-                                .Append(ImageEstimatorsCatalog.ExtractPixels(_mlContext.Transforms, new[] { new ImagePixelExtractorTransform.ColumnInfo("ImageReal", InceptionSettings.InputTensorName, interleave: ImageNetSettings.channelsLast, offset: ImageNetSettings.mean) }))
-                                .Append(new TensorFlowEstimator(_mlContext, _modelLocation, new[] { InceptionSettings.InputTensorName }, new[] { InceptionSettings.OutputTensorName }));
-                var model = pipeline.Fit(CreateDataView());
-                var predictionFunction = model.MakePredictionFunction<ImageInputData, ImageNetPrediction>(_mlContext);
-                return predictionFunction;
+   
+               var pipeline = _mlContext.Transforms.ResizeImages(outputColumnName: TensorFlowModelSettings.inputTensorName, imageWidth: ImageSettings.imageWidth, imageHeight: ImageSettings.imageHeight, inputColumnName: nameof(ImageInputData.Image))
+               .Append(_mlContext.Transforms.ExtractPixels(outputColumnName: TensorFlowModelSettings.inputTensorName, interleavePixelColors: ImageSettings.channelsLast, offsetImage: ImageSettings.mean))
+               .Append(_mlContext.Model.LoadTensorFlowModel(_modelLocation).
+               ScoreTensorFlowModel(outputColumnNames: new[] { TensorFlowModelSettings.outputTensorName },
+                                   inputColumnNames: new[] { TensorFlowModelSettings.inputTensorName }, addBatchDimensionInput: false));
 
+                ITransformer model = pipeline.Fit(CreateEmptyDataView());
+
+                return _mlContext.Model.CreatePredictionEngine<ImageInputData, ImageNetPrediction>(model);
             }
             catch (Exception e)
             {
@@ -68,29 +70,24 @@ namespace Tailwind.Traders.ImageClassifier.Api.Mlnet
             }
         }
 
-
-        private IDataView CreateDataView()
+        private IDataView CreateEmptyDataView()
         {
             //Create empty DataView. We just need the schema to call fit()
-            var list = new List<ImageInputData>
-            {
-                new ImageInputData() { ImagePath = "" }
-            };
-            IEnumerable<ImageInputData> enumerableData = list;
-            var dv = _mlContext.CreateStreamingDataView(enumerableData);
+            List<ImageInputData> list = new List<ImageInputData>();
+            list.Add(new ImageInputData() { Image = new System.Drawing.Bitmap(ImageSettings.imageWidth, ImageSettings.imageHeight) }); //Test: Might not need to create the Bitmap.. = null; ?
+
+            var dv = _mlContext.Data.LoadFromEnumerable(list);
             return dv;
         }
 
-        private ImagePredictedLabelWithProbability PredictDataUsingModel(string imageName)
+        private ImagePredictedLabelWithProbability PredictDataUsingModel(ImageInputData imageName)
         {
 
-            var inputImage = new ImageInputData { ImagePath = imageName };
-            var image1Probabilities = _model.Predict(inputImage).PredictedLabels;
+            var image1Probabilities = _model.Predict(imageName).PredictedLabels;
 
-            //Set a single label as predicted or even none if probabilities were lower than 70%
             var bestLabelPrediction = new ImagePredictedLabelWithProbability()
             {
-                ImagePath = inputImage.ImagePath,
+                ImagePath = imageName.GetHashCode().ToString(), //This ID is not really needed, it could come from the application itself, etc
             };
             (bestLabelPrediction.PredictedLabel, bestLabelPrediction.Probability) = ModelHelpers.GetBestLabel(_labels, image1Probabilities);
 
