@@ -3,10 +3,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Drawing;
 using System.IO;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Tailwind.Traders.ImageClassifier.Api.Dtos;
+using Tailwind.Traders.ImageClassifier.Api.Mlnet.ImageDataStructures;
 
 namespace Tailwind.Traders.ImageClassifier.Api.Controllers
 {
@@ -39,14 +41,19 @@ namespace Tailwind.Traders.ImageClassifier.Api.Controllers
 
             try
             {
-                using (var fs = new FileStream(fullPath, FileMode.OpenOrCreate, FileAccess.ReadWrite))
-                {
-                    await file.CopyToAsync(fs);
-                }
+
+                MemoryStream imageMemoryStream = new MemoryStream();
+                await file.CopyToAsync(imageMemoryStream);
+
+                //Convert to Bitmap
+                Bitmap bitmapImage = (Bitmap)Image.FromStream(imageMemoryStream);
+
+                //Set the specific image data into the ImageInputData type used in the DataView
+                ImageInputData imageInputData = new ImageInputData { Image = bitmapImage };
 
                 _logger.LogInformation($"Start processing image file { fullPath }");
 
-                var scoring = _scoringSvc.Score(fileName);
+                var scoring = _scoringSvc.Score(imageInputData);
 
                 _logger.LogInformation($"Image processed");
 
