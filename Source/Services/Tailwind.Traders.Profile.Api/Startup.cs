@@ -23,34 +23,35 @@ namespace Tailwind.Traders.Profile.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var useB2C = GetUseB2CBoolean();
+            //var useB2C = GetUseB2CBoolean();
 
             services
                 .AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Latest)
                 .Services
                 .AddProfileContext(Configuration)
-                .AddModulesProfile()
-                .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(options =>
-                {
-                    if (useB2C == true)
-                    {
-                        options.Authority = $"https://login.microsoftonline.com/tfp/tailwindtradersB2cTenantdev.onmicrosoft.com/B2C_1_tailwindtraderssigninv1/v2.0/";
-                        options.TokenValidationParameters.ValidateAudience = false;
-                    }
-                    else
-                    {
-                        options.TokenValidationParameters = new TokenValidationParameters
-                        {
-                            ValidateIssuer = true,
-                            ValidateAudience = false,
-                            ValidIssuer = Configuration["Issuer"],
-                            ValidateLifetime = true,
-                            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["SecurityKey"]))
-                        };
-                    }
-                });
+                .AddModulesProfile();
+
+                //.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                //.AddJwtBearer(options =>
+                //{
+                //    if (useB2C == true)
+                //    {
+                //        options.Authority = $"https://login.microsoftonline.com/tfp/tailwindtradersB2cTenantdev.onmicrosoft.com/B2C_1_tailwindtraderssigninv1/v2.0/";
+                //        options.TokenValidationParameters.ValidateAudience = false;
+                //    }
+                //    else
+                //    {
+                //        options.TokenValidationParameters = new TokenValidationParameters
+                //        {
+                //            ValidateIssuer = true,
+                //            ValidateAudience = false,
+                //            ValidIssuer = Configuration["Issuer"],
+                //            ValidateLifetime = true,
+                //            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["SecurityKey"]))
+                //        };
+                //    }
+                //});
 
             services.AddApiVersioning(options =>
             {
@@ -81,25 +82,25 @@ namespace Tailwind.Traders.Profile.Api
                 .AllowAnyMethod();
             });
 
-            app.UseAuthentication();
+            //app.UseAuthentication();
             app.UseHttpsRedirection();
             app.UseMvc();
         }
-        private bool GetUseB2CBoolean()
-        {
-            string useB2C = Configuration["UseB2C"];
+        //private bool GetUseB2CBoolean()
+        //{
+        //    string useB2C = Configuration["UseB2C"];
 
-            if (useB2C == null)
-            {
-                return false;
-            }
+        //    if (useB2C == null)
+        //    {
+        //        return false;
+        //    }
 
-            if (bool.TryParse(useB2C, out bool parsedUseB2C))
-            {
-                return parsedUseB2C;
-            }
+        //    if (bool.TryParse(useB2C, out bool parsedUseB2C))
+        //    {
+        //        return parsedUseB2C;
+        //    }
 
-            return false;
-        }
+        //    return false;
+        //}
     }
 }

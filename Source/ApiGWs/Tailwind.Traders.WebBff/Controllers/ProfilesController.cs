@@ -35,7 +35,6 @@ namespace Tailwind.Traders.WebBff.Controllers
         [ProducesResponseType((int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetProfiles()
         {
-
             var client = _httpClientFactory.CreateClient(HttpClients.ApiGW);
 
             var result = await client.GetStringAsync(API.Profiles.GetProfiles(_settings.ProfileApiUrl, VERSION_API));

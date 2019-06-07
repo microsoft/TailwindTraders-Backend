@@ -8,13 +8,13 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Primitives;
 using Tailwind.Traders.Profile.Api.DTOs;
 using Tailwind.Traders.Profile.Api.Infrastructure;
 using Tailwind.Traders.Profile.Api.Models;
 
 namespace Tailwind.Traders.Profile.Api.Controllers
 {
-    [Authorize]
     [Route("v{version:apiVersion}/[controller]")]
     [ApiController]
     [ApiVersion("1.0")]
@@ -53,30 +53,35 @@ namespace Tailwind.Traders.Profile.Api.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> GetProfile()
         {
-            var currentUser = HttpContext.User;
+            StringValues headerValues;
+            var nameFilter = string.Empty;
 
-            if (currentUser.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null)
+            if (Request.Headers.TryGetValue("x-tt-name", out headerValues))
             {
-                var userId = currentUser.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value;
-                var result = await _ctx.Profiles
-                .Where(p => p.Email == userId)
-                .Select(p => p.ToProfileDto(_settings))
-                .SingleOrDefaultAsync();
-
-                return Ok(result);
+                nameFilter = headerValues.FirstOrDefault();
             }
 
-            var defaultUser = GetDefaultUserProfile();
-            return Ok(defaultUser);
+            var result = await _ctx.Profiles
+                            .Where(p => p.Email == nameFilter)
+                            .Select(p => p.ToProfileDto(_settings))
+                            .SingleOrDefaultAsync();
+
+            if (result == null)
+            {
+                var defaultUser = GetDefaultUserProfile(nameFilter);
+                return Ok(defaultUser);
+            }
+
+            return Ok(result);
         }
 
-        private ProfileDto GetDefaultUserProfile(string userId = null)
+        private ProfileDto GetDefaultUserProfile(string nameFilter)
         {
             return new ProfileDto
             {
-                Email = userId,
+                Email = $"{nameFilter}@{nameFilter}.com",
                 Address = "7711 W. Pawnee Ave. Beachwood, OH 44122",
-                Name = "John Doe",
+                Name = nameFilter,
                 PhoneNumber = "+1-202-555-0155",
                 Id = 0,
                 ImageUrlMedium = "defaultImage-m.jpg",
