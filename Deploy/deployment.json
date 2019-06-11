@@ -17,7 +17,7 @@
     },
     "aksVersion": {
       "type": "string",
-      "defaultValue": "1.12.5"
+      "defaultValue": "1.12.8"
     },
     "pgversion": {
       "type": "string",
