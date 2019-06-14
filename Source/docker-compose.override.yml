@@ -39,7 +39,6 @@ services:
       - ProfilesImageUrl=
       - SecurityKey=nEpLzQJGNSCNL5H6DIQCtTdNxf5VgAGcBbtXLms1YDD01KJBAs0WVawaEjn97uwB
       - Issuer=TTFakeLogin
-      - UseB2C=${UseB2C:-true}
     ports:
       - "5001:80"
 
@@ -62,7 +61,6 @@ services:
       - URL_BASE=nosql.data:27017/CouponsDb
       - ISSUER=TTFakeLogin
       - SECURITYKEY=nEpLzQJGNSCNL5H6DIQCtTdNxf5VgAGcBbtXLms1YDD01KJBAs0WVawaEjn97uwB
-      - UseB2C=${UseB2C:-true}
     ports:
       - "5002:3000"
       
@@ -83,7 +81,7 @@ services:
     environment:
       - sql_server_url=jdbc:postgresql://stock.data:5432/stockdb
       - sql_user_name=ttuser
-      - sql_user_password=Passw0rd!
+      - sql_user_password=Passw0rd1!
       - Issuer=TTFakeLogin
       - SecurityKey=nEpLzQJGNSCNL5H6DIQCtTdNxf5VgAGcBbtXLms1YDD01KJBAs0WVawaEjn97uwB    
 
@@ -102,28 +100,28 @@ services:
     ports:
       - "5006:80"
 
-#  cart.api:
-#    environment:
-#      - HOST=${COSMOSDB_HOST:-https://10.0.75.1:8081}   # Emulator URI
-#      - AUTHKEY=${COSMOSDB_AUTHKEY}  
-#      - ISSUER=TTFakeLogin
-#      - SECURITYKEY=nEpLzQJGNSCNL5H6DIQCtTdNxf5VgAGcBbtXLms1YDD01KJBAs0WVawaEjn97uwB
-#      - UseB2C=${UseB2C:-true}
-#    ports:
-#      - "5007:3001"      
+  cart.api:
+    environment:
+      - HOST=${COSMOSDB_HOST:-https://10.0.75.1:8081}   # Emulator URI
+      - AUTHKEY=${COSMOSDB_AUTHKEY}  
+      - ISSUER=TTFakeLogin
+      - SECURITYKEY=nEpLzQJGNSCNL5H6DIQCtTdNxf5VgAGcBbtXLms1YDD01KJBAs0WVawaEjn97uwB
+      - UseB2C=${UseB2C:-true}
+    ports:
+      - "5007:3001"      
 
-  # mobileapigw:
-  #   environment:
-  #     - ASPNETCORE_ENVIRONMENT=Development
-  #     - ASPNETCORE_URLS=http://0.0.0.0:80
-  #     - PopularProductsApiUrl=http://popular-product.api
-  #     - ProductsApiUrl=http://product.api
-  #     - ProfileApiUrl=http://profile.api
-  #     - CouponsApiUrl=http://coupon.api
-  #     - ImageClassifierApiUrl=http://image-classifier.api
-  #     - LoginApiUrl=http://login.api
-  #   ports:
-  #     - "5100:80"
+   mobileapigw:
+     environment:
+       - ASPNETCORE_ENVIRONMENT=Development
+       - ASPNETCORE_URLS=http://0.0.0.0:80
+       - PopularProductsApiUrl=http://popular-product.api
+       - ProductsApiUrl=http://product.api
+       - ProfileApiUrl=http://profile.api
+       - CouponsApiUrl=http://coupon.api
+       - ImageClassifierApiUrl=http://image-classifier.api
+       - LoginApiUrl=http://login.api
+     ports:
+       - "5100:80"
 
   webapigw:
     environment:
@@ -135,11 +133,11 @@ services:
       - LoginApiUrl=http://login.api
       - CouponsApiUrl=http://coupon.api:3000
       - ImageClassifierApiUrl=http://image-classifier.api
-      - StockApiUrl=http://stock.api
+      - StockApiUrl=http://stock.api:8080
       - SECURITYKEY=nEpLzQJGNSCNL5H6DIQCtTdNxf5VgAGcBbtXLms1YDD01KJBAs0WVawaEjn97uwB
       - ISSUER=TTFakeLogin
       - UseMlNetClassifier=true
-      - UseB2C=${UseB2C:-true}
+      - UseB2C=${UseB2C:-false}
       - B2CIssuer="https://tailwindtradersB2cTenantdev.onmicrosoft.com.b2clogin.com/9cff5fd8-12a7-4154-842a-14ddbadaf36f/v2.0/"
     ports:
       - "5200:80"

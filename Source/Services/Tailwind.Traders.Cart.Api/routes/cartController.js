@@ -44,7 +44,7 @@ class CartController {
     }
 
     async getRelatedProducts(req, res) {
-        const user = this.retrieveUser(res);
+        const user = this.retrieveUser(req);
         
         const typeid = req.query.type;
         if (!typeid && !user) {

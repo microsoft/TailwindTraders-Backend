@@ -10,23 +10,13 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 @Configuration
 @EnableWebSecurity
 public class SecurityConfigurerAdapter extends  WebSecurityConfigurerAdapter {
-
-	@Autowired
-	private JwtConfig jwtConfig;
-	
 	@Override
 	protected void configure(HttpSecurity http) throws Exception{
 		http.csrf().disable().cors().and()
-			.addFilter(new JWTAuthorizationFilter(authenticationManager(), jwtConfig))
 			.authorizeRequests()
 				.antMatchers("/v1/stock/*", "/", "/swagger-ui.html").permitAll()
 				.antMatchers("/").permitAll()
-				.antMatchers("/swagger-ui.html").permitAll()
-				.anyRequest().authenticated();
-	}
-	
-	@Bean
-	public JwtConfig jwtConfig() {
-        	return new JwtConfig();
+				.antMatchers("/swagger-ui.html").permitAll();
+				//.anyRequest().authenticated();
 	}
 }

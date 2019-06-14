@@ -10,6 +10,7 @@ using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Text;
 using System.Threading;
+using Tailwind.Traders.WebBff.Helpers;
 using Tailwind.Traders.WebBff.Infrastructure;
 
 namespace Tailwind.Traders.WebBff
@@ -27,8 +28,6 @@ namespace Tailwind.Traders.WebBff
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            var useB2C = GetUseB2CBoolean();
-
             services.AddHttpClientServices(Configuration);
 
             services.Configure<AppSettings>(Configuration);
@@ -56,7 +55,7 @@ namespace Tailwind.Traders.WebBff
                 .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
-                    if (useB2C == true)
+                    if (UseBc2.GetUseB2CBoolean(Configuration))
                     {
                         options.Authority = $"https://login.microsoftonline.com/tfp/tailwindtradersB2cTenantdev.onmicrosoft.com/B2C_1_tailwindtraderssigninv1/v2.0/";
                         options.TokenValidationParameters.ValidateAudience = false;
@@ -94,23 +93,6 @@ namespace Tailwind.Traders.WebBff
 
             app.UseAuthentication();
             app.UseMvc();
-        }
-
-        private bool GetUseB2CBoolean()
-        {
-            string useB2C = Configuration["UseB2C"];
-
-            if (useB2C == null)
-            {
-                return false;
-            }
-
-            if (bool.TryParse(useB2C, out bool parsedUseB2C))
-            {
-                return parsedUseB2C;
-            }
-
-            return false;
         }
     }
 

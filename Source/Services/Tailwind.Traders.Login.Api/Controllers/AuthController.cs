@@ -47,7 +47,7 @@ namespace NetCoreJWTAuth.App.Controllers
             }
             catch (Exception e)
             {
-                return NotFound();
+                return NotFound(e);
             }
         } 
 

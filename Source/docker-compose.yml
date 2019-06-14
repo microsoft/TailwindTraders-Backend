@@ -18,11 +18,11 @@ services:
     - sql.data
     - stock.data
 
-#  cart.api:
-#    image: ${REGISTRY:-tailwindtraders}/cart.api:${TAG:-latest}
-#    build:
-#      context: Services/Tailwind.Traders.Cart.Api
-#      dockerfile: Dockerfile
+  cart.api:
+    image: ${REGISTRY:-tailwindtraders}/cart.api:${TAG:-latest}
+    build:
+      context: Services/Tailwind.Traders.Cart.Api
+      dockerfile: Dockerfile
 
   product.api:
     image: ${REGISTRY:-tailwindtraders}/product.api:${TAG:-latest}
@@ -85,14 +85,23 @@ services:
       context: .
       dockerfile: Services/Tailwind.Traders.ImageClassifier.Api/Dockerfile
 
-  # mobileapigw:
-  #   image: ${REGISTRY:-tailwindtraders}/mobileapigw:${TAG:-latest}
-  #   build:
-  #     context: .
-  #     dockerfile: ApiGWs/Tailwind.Traders.Bff/Dockerfile 
+  mobileapigw:
+    image: ${REGISTRY:-tailwindtraders}/mobileapigw:${TAG:-latest}
+    build:
+      context: .
+      dockerfile: ApiGWs/Tailwind.Traders.Bff/Dockerfile 
 
   webapigw:
     image: ${REGISTRY:-tailwindtraders}/webapigw:${TAG:-latest}
     build:
       context: .
       dockerfile: ApiGWs/Tailwind.Traders.WebBff/Dockerfile
+    depends_on: 
+      - product.api
+      - profile.api
+      - login.api
+      - coupon.api
+      - popular-product.api
+      - stock.api
+      - product-visits.function
+      - image-classifier.api
