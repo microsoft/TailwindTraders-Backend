@@ -110,18 +110,18 @@ services:
     ports:
       - "5007:3001"      
 
-   mobileapigw:
-     environment:
-       - ASPNETCORE_ENVIRONMENT=Development
-       - ASPNETCORE_URLS=http://0.0.0.0:80
-       - PopularProductsApiUrl=http://popular-product.api
-       - ProductsApiUrl=http://product.api
-       - ProfileApiUrl=http://profile.api
-       - CouponsApiUrl=http://coupon.api
-       - ImageClassifierApiUrl=http://image-classifier.api
-       - LoginApiUrl=http://login.api
-     ports:
-       - "5100:80"
+  mobileapigw:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://0.0.0.0:80
+      - PopularProductsApiUrl=http://popular-product.api
+      - ProductsApiUrl=http://product.api
+      - ProfileApiUrl=http://profile.api
+      - CouponsApiUrl=http://coupon.api
+      - ImageClassifierApiUrl=http://image-classifier.api
+      - LoginApiUrl=http://login.api
+    ports:
+      - "5100:80"
 
   webapigw:
     environment:
