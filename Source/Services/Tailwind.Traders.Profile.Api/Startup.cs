@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -8,6 +9,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Tailwind.Traders.Profile.Api.Extensions;
+using Tailwind.Traders.Profile.Api.Infrastructure;
+using Tailwind.Traders.Profile.Api.Models;
 
 namespace Tailwind.Traders.Profile.Api
 {
@@ -29,6 +32,10 @@ namespace Tailwind.Traders.Profile.Api
                 .Services
                 .AddProfileContext(Configuration)
                 .AddModulesProfile();
+
+            // configure basic authentication 
+            services.AddAuthentication("BasicAuthentication")
+                .AddScheme<BasicAuthenticationOptions, BasicAuthenticationHandler>("BasicAuthentication", null);
 
             services.AddApiVersioning(options =>
             {
@@ -60,6 +67,7 @@ namespace Tailwind.Traders.Profile.Api
             });
 
             app.UseHttpsRedirection();
+            app.UseAuthentication();
             app.UseMvc();
         }
     }

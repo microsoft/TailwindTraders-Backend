@@ -51,6 +51,7 @@ namespace Tailwind.Traders.Profile.Api.Controllers
         [HttpGet("me")]
         [ProducesResponseType(typeof(List<Profiles>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [Authorize]
         public async Task<IActionResult> GetProfile()
         {
             StringValues headerValues;
@@ -60,6 +61,8 @@ namespace Tailwind.Traders.Profile.Api.Controllers
             {
                 nameFilter = headerValues.FirstOrDefault();
             }
+
+            nameFilter = User.Identity.Name;
 
             var result = await _ctx.Profiles
                             .Where(p => p.Email == nameFilter)
