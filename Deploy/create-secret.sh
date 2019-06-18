@@ -59,8 +59,8 @@ echo  ACR $acrName in RG $aksRg
 echo Client Id: $spnClientId with pwd: $spnPw
 echo --------------------------------------------------------
 
-acrLogin=$(az acr show -n $acrName -g $aksRg | jq ".loginServer" | tr -d '"')
-acrId=$(az acr show -n $acrName -g $aksRg | jq ".id" | tr -d '"')
+acrLogin=$(az acr show -n $acrName -g $aksRg -o json | jq ".loginServer" | tr -d '"')
+acrId=$(az acr show -n $acrName -g $aksRg -o json | jq ".id" | tr -d '"')
 validate
 
 az role assignment create --assignee $spnClientId --scope $acrId --role reader
