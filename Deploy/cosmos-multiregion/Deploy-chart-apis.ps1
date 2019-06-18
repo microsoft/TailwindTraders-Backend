@@ -9,10 +9,10 @@ Param(
     [parameter(Mandatory=$false)][string]$imageTag="latest"
 )
 
-$acrLoginServer=$(az acr show -g $resourceGroup -n $acrName | ConvertFrom-Json).loginServer
-$acrCredentials=$(az acr credential show -g $resourceGroup -n $acrName | ConvertFrom-Json)
-$cosmosCredentials=$(az cosmosdb list-keys -g $resourceGroup -n $cartCosmosDbName | ConvertFrom-Json).primaryMasterKey
-$cosmos=$(az cosmosdb show -g $resourceGroup -n $cartCosmosDbName | ConvertFrom-Json)
+$acrLoginServer=$(az acr show -g $resourceGroup -n $acrName -o json | ConvertFrom-Json).loginServer
+$acrCredentials=$(az acr credential show -g $resourceGroup -n $acrName -o json | ConvertFrom-Json)
+$cosmosCredentials=$(az cosmosdb list-keys -g $resourceGroup -n $cartCosmosDbName -o json | ConvertFrom-Json).primaryMasterKey
+$cosmos=$(az cosmosdb show -g $resourceGroup -n $cartCosmosDbName -o json | ConvertFrom-Json)
 $cosmosEndpoint=$cosmos.documentEndpoint
 
 Write-Host "Creating service plan for chart api 1" -ForegroundColor Yellow

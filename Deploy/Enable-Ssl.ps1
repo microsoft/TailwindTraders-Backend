@@ -35,14 +35,14 @@ Write-Host " Enabling SSL/TLS support on cluster $aksName in RG $resourceGroup" 
 Write-Host " --------------------------------------------------------" -ForegroundColor Yellow
 
 if ([String]::IsNullOrEmpty($domain)) {
-    $domain = $(az aks show -n $aksName -g $resourceGroup --query addonProfiles.httpApplicationRouting.config.HTTPApplicationRoutingZoneName | ConvertFrom-Json)
+    $domain = $(az aks show -n $aksName -g $resourceGroup -o json --query addonProfiles.httpApplicationRouting.config.HTTPApplicationRoutingZoneName | ConvertFrom-Json)
     if (-not $domain) {
-        $domain = $(az aks show -n $aksName -g $resourceGroup --query addonProfiles.httpapplicationrouting.config.HTTPApplicationRoutingZoneName | ConvertFrom-Json)
+        $domain = $(az aks show -n $aksName -g $resourceGroup -o json --query addonProfiles.httpapplicationrouting.config.HTTPApplicationRoutingZoneName | ConvertFrom-Json)
     }
 }
 
 if ([String]::IsNullOrEmpty($domain)) {
-    Write-Host "Erorr: domain not passed and can't be inferred from AKS $aksName" -ForegroundColor Red
+    Write-Host "Error: domain not passed and can't be inferred from AKS $aksName" -ForegroundColor Red
     exit 1
 }
 
