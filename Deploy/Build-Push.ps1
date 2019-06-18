@@ -9,8 +9,8 @@ Param(
 Write-Host "---------------------------------------------------" -ForegroundColor Yellow
 Write-Host "Getting info from ACR $resourceGroup/$acrName" -ForegroundColor Yellow
 Write-Host "---------------------------------------------------" -ForegroundColor Yellow
-$acrLoginServer=$(az acr show -g $resourceGroup -n $acrName | ConvertFrom-Json).loginServer
-$acrCredentials=$(az acr credential show -g $resourceGroup -n $acrName | ConvertFrom-Json)
+$acrLoginServer=$(az acr show -g $resourceGroup -n $acrName -o json | ConvertFrom-Json).loginServer
+$acrCredentials=$(az acr credential show -g $resourceGroup -n $acrName -o json | ConvertFrom-Json)
 $acrPwd=$acrCredentials.passwords[0].value
 $acrUser=$acrCredentials.username
 

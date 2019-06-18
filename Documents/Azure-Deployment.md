@@ -51,7 +51,7 @@ There are three additional optional parameters to control some aspects of what i
 * `-dbPassword`: Passwowrd of the user of all databases. Defaults to `Passw0rd1!`
 * `-deployAks`: If set to `$false` AKS and ACR are not created. This is useful if you want to create the AKS yourself or use an existing AKS. Defaults to `$true`. If this parameter is `$true` the resource group can't exist (AKS must be deployed in a new resource group).
 
-Once script finishes, everything is installed. If a service principal has been created, the script will output the service principal details.
+Once script finishes, everything is installed. If a service principal has been created, the script will output the service principal details - _please, take note of the appId and password properties for use them in the AKS deployment_ 
 
 ## Install the Tailwind Traders Backend on the AKS
 

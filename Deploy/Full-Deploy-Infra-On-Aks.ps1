@@ -12,7 +12,7 @@ Param (
 # Check for RG
 #############################################################################
 
-$rg=$(az group show -n $resourceGroup | ConvertFrom-Json)
+$rg=$(az group show -n $resourceGroup -o json | ConvertFrom-Json)
 
 if (-not $rg) {
     Write-Host "Fatal: Resource group not found" -ForegroundColor Red
@@ -23,7 +23,7 @@ if (-not $rg) {
 # Check for AKS and getting AKS credentials
 #############################################################################
 
-$all_aks=$(az aks list -g $resourceGroup --query "[].{name: name, host: addonProfiles.httpapplicationrouting.config.HTTPApplicationRoutingZoneName}" | ConvertFrom-Json)
+$all_aks=$(az aks list -g $resourceGroup -o json --query "[].{name: name, host: addonProfiles.httpapplicationrouting.config.HTTPApplicationRoutingZoneName}" | ConvertFrom-Json)
 
 if ($all_aks.Length -eq 0) {
     Write-Host "Fatal: No AKS found in RG $resourceGroup" -ForegroundColor Red
@@ -57,7 +57,7 @@ else {
 # Check for ACR and installing secret in AKS
 ##############################################################################
 
-$all_acrs=$(az acr list -g $resourceGroup --query "[].{name: name, loginServer: loginServer, adminUserEnabled: adminUserEnabled}" | ConvertFrom-Json)
+$all_acrs=$(az acr list -g $resourceGroup -o json --query "[].{name: name, loginServer: loginServer, adminUserEnabled: adminUserEnabled}" | ConvertFrom-Json)
 if ($all_acrs.Length -eq 0) {
     Write-Host "Fatal: No ACR found in RG $resourceGroup" -ForegroundColor Red 
     exit 1
@@ -88,7 +88,7 @@ if ($buildDocker) {
 # Installing secret on the cluster
 ###################################################################################
 Write-Host "Installing secret on AKS $($aks.name)"
-$acrCredentials=$(az acr credential show -g $resourceGroup -n $acr.name | ConvertFrom-Json)
+$acrCredentials=$(az acr credential show -g $resourceGroup -n $acr.name -o json | ConvertFrom-Json)
 & "kubectl" delete secret acr-auth
 & "kubectl" create secret docker-registry acr-auth --docker-server $($acr.loginServer) --docker-username $($acrCredentials.username) --docker-password $($acrCredentials.passwords[0].value) --docker-email not@used.com
 Write-Host "Deploying ServiceAccount ttsa" -ForegroundColor Yellow

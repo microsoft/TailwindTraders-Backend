@@ -76,8 +76,8 @@ echo AKS to use: $aksName in RG $aksRg and ACR $acrName
 echo Images tag: $tag
 echo --------------------------------------------------------
 
-acrLogin=$(az acr show -n $acrName -g $aksRg | jq ".loginServer" | tr -d '"')
-aksHost=$(az aks show -n $aksName -g $aksRg | jq ".addonProfiles.httpApplicationRouting.config.HTTPApplicationRoutingZoneName" | tr -d '"')
+acrLogin=$(az acr show -n $acrName -g $aksRg -o json | jq ".loginServer" | tr -d '"')
+aksHost=$(az aks show -n $aksName -g $aksRg -o json | jq ".addonProfiles.httpApplicationRouting.config.HTTPApplicationRoutingZoneName" | tr -d '"')
 
 echo "acr login server is $acrLogin"
 echo "aksHost is $aksHost"
