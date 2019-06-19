@@ -82,13 +82,10 @@ namespace Tailwind.Traders.ImageClassifier.Api.Mlnet
 
         private ImagePredictedLabelWithProbability PredictDataUsingModel(ImageInputData imageName)
         {
-
             var image1Probabilities = _model.Predict(imageName).PredictedLabels;
 
-            var bestLabelPrediction = new ImagePredictedLabelWithProbability()
-            {
-                ImagePath = imageName.GetHashCode().ToString(), //This ID is not really needed, it could come from the application itself, etc
-            };
+            var bestLabelPrediction = new ImagePredictedLabelWithProbability();
+   
             (bestLabelPrediction.PredictedLabel, bestLabelPrediction.Probability) = ModelHelpers.GetBestLabel(_labels, image1Probabilities);
 
             return bestLabelPrediction;
