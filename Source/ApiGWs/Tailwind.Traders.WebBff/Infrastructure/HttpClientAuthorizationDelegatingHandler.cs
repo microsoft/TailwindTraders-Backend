@@ -19,8 +19,6 @@ namespace Tailwind.Traders.WebBff.Infrastructure
         private readonly IHttpContextAccessor _httpContextAccesor;
         public IConfiguration _configuration { get; }
 
-        String userName;
-
         public HttpClientAuthorizationDelegatingHandler(IHttpContextAccessor httpContextAccesor, IConfiguration configuration)
         {
             _httpContextAccesor = httpContextAccesor;
@@ -31,34 +29,16 @@ namespace Tailwind.Traders.WebBff.Infrastructure
         {
             var authorizationHeader = _httpContextAccesor.HttpContext
                 .Request.Headers["Authorization"].FirstOrDefault();
-            
-            if (!string.IsNullOrWhiteSpace(authorizationHeader))
+
+            var ctx = _httpContextAccesor.HttpContext;
+
+            if (ctx.User.Identity.IsAuthenticated)
             {
-                userName = RetrieveUserFromToken(authorizationHeader);
+                var userName = ctx.User.HasClaim(c => c.Type == "name") ? ctx.User.Claims.FirstOrDefault(x => x.Type == "name").Value : ctx.User.Identity.Name;
                 request.Headers.Add("x-tt-name", userName);
             }
 
-
             return await base.SendAsync(request, cancellationToken);
-        }
-        private string RetrieveUserFromToken(string token)
-        {
-            token = token.Replace("Bearer ", "");
-            var jwtHandler = new JwtSecurityTokenHandler();
-            var isReadableToken = jwtHandler.CanReadToken(token);
-            if (!isReadableToken)
-            {
-                return null;
-            }
-
-            var claims = jwtHandler.ReadJwtToken(token).Claims;
-
-            if (UseBc2.GetUseB2CBoolean(_configuration))
-            {
-                return claims.FirstOrDefault(c => c.Type == "name")?.Value;
-            }
-
-            return claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
         }
     }
 }

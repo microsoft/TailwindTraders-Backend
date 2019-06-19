@@ -33,6 +33,7 @@ namespace Tailwind.Traders.Profile.Api.Controllers
         [HttpGet]
         [ProducesResponseType(typeof(List<Profiles>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [Authorize]
         public async Task<IActionResult> GetAllProfiles()
         {
             var result = await _ctx.Profiles
@@ -59,10 +60,8 @@ namespace Tailwind.Traders.Profile.Api.Controllers
 
             if (Request.Headers.TryGetValue("x-tt-name", out headerValues))
             {
-                nameFilter = headerValues.FirstOrDefault();
+                nameFilter = User.Identity.Name;
             }
-
-            nameFilter = User.Identity.Name;
 
             var result = await _ctx.Profiles
                             .Where(p => p.Email == nameFilter)
@@ -96,6 +95,7 @@ namespace Tailwind.Traders.Profile.Api.Controllers
         [HttpPost]
         [ProducesResponseType(typeof(List<Profiles>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [Authorize]
         public async Task<IActionResult> Post([FromBody] CreateUser user)
         {
             if (!ModelState.IsValid)

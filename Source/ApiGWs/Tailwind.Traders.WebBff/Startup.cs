@@ -51,13 +51,15 @@ namespace Tailwind.Traders.WebBff
 
             services.AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Latest)
-                .Services
+
+
+            .Services
                 .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
                     if (UseBc2.GetUseB2CBoolean(Configuration))
                     {
-                        options.Authority = $"https://login.microsoftonline.com/tfp/tailwindtradersB2cTenantdev.onmicrosoft.com/B2C_1_tailwindtraderssigninv1/v2.0/";
+                        options.Authority = Configuration["Authority"];
                         options.TokenValidationParameters.ValidateAudience = false;
                     }
                     else

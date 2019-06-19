@@ -16,13 +16,16 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const bodyParser = require("body-parser");
 const indexRouter = require('./routes/index');
-
+ 
 const tenantID = authConfig.tenantID;
 const clientID = authConfig.clientID;
 const policyName = authConfig.policyName;
+const identityMetadata = authConfig.identityMetadata;
+const issuer = authConfig.issuer
 
 const options = {
-  identityMetadata: "https://login.microsoftonline.com/" + tenantID + "/v2.0/.well-known/openid-configuration/",
+  identityMetadata: identityMetadata,
+  issuer: issuer,
   clientID: clientID,
   policyName: policyName,
   isB2C: true,

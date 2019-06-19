@@ -16,7 +16,6 @@ namespace Tailwind.Traders.Profile.Api.Infrastructure
     public class BasicAuthenticationHandler : AuthenticationHandler<BasicAuthenticationOptions>
     {
         private const string AuthorizationHeaderName = "x-tt-name";
-        private const string BasicSchemeName = "Basic";
 
         public BasicAuthenticationHandler(
             IOptionsMonitor<BasicAuthenticationOptions> options,
@@ -32,30 +31,21 @@ namespace Tailwind.Traders.Profile.Api.Infrastructure
         {
             if (!Request.Headers.ContainsKey(AuthorizationHeaderName))
             {
-                //Authorization header not in request
                 return AuthenticateResult.NoResult();
             }
 
             if (!AuthenticationHeaderValue.TryParse(Request.Headers[AuthorizationHeaderName], out AuthenticationHeaderValue headerValue))
             {
-                //Invalid Authorization header
                 return AuthenticateResult.NoResult();
             }
-                
-            //if (!BasicSchemeName.Equals(headerValue.Scheme, StringComparison.OrdinalIgnoreCase))
-            //{
-            //    //Not Basic authentication header
-            //    return AuthenticateResult.NoResult();
-            //}
-
+           
             string user = null;
+
             try
             {
                 var authHeader = AuthenticationHeaderValue.Parse(Request.Headers[AuthorizationHeaderName]);
-                var credential = authHeader.Scheme;
-                var credentials = credential.Split(':');
-                var username = credentials[0];
-                user = username;
+                var credentials = authHeader.Scheme.Split(':');
+                user = credentials[0];
             }
             catch
             {
@@ -74,8 +64,9 @@ namespace Tailwind.Traders.Profile.Api.Infrastructure
             var identity = new ClaimsIdentity(claims, Scheme.Name);
             var principal = new ClaimsPrincipal(identity);
             var ticket = new AuthenticationTicket(principal, Scheme.Name);
+            var result = AuthenticateResult.Success(ticket);
 
-            return AuthenticateResult.Success(ticket);
+            return await Task.FromResult(result);
         }
     }
 }
