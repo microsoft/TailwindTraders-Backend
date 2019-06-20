@@ -1,11 +1,11 @@
-﻿using Microsoft.ML.Runtime.Api;
+﻿using Microsoft.ML.Data;
 
 namespace Tailwind.Traders.ImageClassifier.Api.Mlnet.ImageDataStructures
 {
     public class ImageNetPrediction
     {
 
-        [ColumnName(InceptionSettings.OutputTensorName)]
+        [ColumnName(TensorFlowModelSettings.outputTensorName)]
         public float[] PredictedLabels;
 
     }
