@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Text;
@@ -61,6 +62,7 @@ namespace Tailwind.Traders.WebBff
                     {
                         options.Authority = Configuration["Authority"];
                         options.TokenValidationParameters.ValidateAudience = false;
+                        options.RequireHttpsMetadata = false;
                     }
                     else
                     {
@@ -81,6 +83,7 @@ namespace Tailwind.Traders.WebBff
         {
             if (env.IsDevelopment())
             {
+                IdentityModelEventSource.ShowPII = true;
                 app.UseDeveloperExceptionPage();
             }
 

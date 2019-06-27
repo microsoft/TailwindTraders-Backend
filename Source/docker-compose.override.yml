@@ -137,7 +137,8 @@ services:
       - SECURITYKEY=nEpLzQJGNSCNL5H6DIQCtTdNxf5VgAGcBbtXLms1YDD01KJBAs0WVawaEjn97uwB
       - ISSUER=TTFakeLogin
       - UseMlNetClassifier=true
-      - UseB2C=${UseB2C:-false}
-      - B2CIssuer="https://tailwindtradersB2cTenantdev.onmicrosoft.com.b2clogin.com/9cff5fd8-12a7-4154-842a-14ddbadaf36f/v2.0/"
+      - UseB2C=false
+      - B2CIssuer=
+      - Authority=
     ports:
       - "5200:80"

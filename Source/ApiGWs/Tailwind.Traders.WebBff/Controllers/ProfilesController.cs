@@ -12,10 +12,10 @@ using Tailwind.Traders.WebBff.Models;
 
 namespace Tailwind.Traders.WebBff.Controllers
 {
-    [Authorize]
     [Route("v{version:apiVersion}/[controller]")]
     [ApiController]
     [ApiVersion("1.0")]
+    [Authorize]
     public class ProfilesController : Controller
     {
         private readonly IHttpClientFactory _httpClientFactory;
