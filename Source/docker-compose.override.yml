@@ -81,7 +81,7 @@ services:
     environment:
       - sql_server_url=jdbc:postgresql://stock.data:5432/stockdb
       - sql_user_name=ttuser
-      - sql_user_password=Passw0rd!
+      - sql_user_password=Passw0rd1!
       - Issuer=TTFakeLogin
       - SecurityKey=nEpLzQJGNSCNL5H6DIQCtTdNxf5VgAGcBbtXLms1YDD01KJBAs0WVawaEjn97uwB    
 
@@ -132,7 +132,7 @@ services:
       - LoginApiUrl=http://login.api
       - CouponsApiUrl=http://coupon.api:3000
       - ImageClassifierApiUrl=http://image-classifier.api
-      - StockApiUrl=http://stock.api
+      - StockApiUrl=http://stock.api:8080
       - SECURITYKEY=nEpLzQJGNSCNL5H6DIQCtTdNxf5VgAGcBbtXLms1YDD01KJBAs0WVawaEjn97uwB
       - ISSUER=TTFakeLogin
       - UseMlNetClassifier=true

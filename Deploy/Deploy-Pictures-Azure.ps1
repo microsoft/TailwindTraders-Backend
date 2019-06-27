@@ -3,7 +3,7 @@ Param(
     [parameter(Mandatory=$true)][string]$storageName
 )
 
-$storage = $(az storage account show -n $storageName -g $resourceGroup | ConvertFrom-Json)
+$storage = $(az storage account show -n $storageName -g $resourceGroup -o json | ConvertFrom-Json)
 
 if (-not $storage) {
     Write-Host "Storage $storageName not found in RG $resourceGroup" -ForegroundColor Red
@@ -11,7 +11,7 @@ if (-not $storage) {
 }
 
 $url = $storage.primaryEndpoints.blob
-$constr = $(az storage account show-connection-string -n $storageName -g $resourceGroup | ConvertFrom-Json).connectionString
+$constr = $(az storage account show-connection-string -n $storageName -g $resourceGroup -o json | ConvertFrom-Json).connectionString
 
 Write-Host "Connecting to storage using $constr and creating containers" -ForegroundColor Green
 az storage container create --name "coupon-list" --public-access blob --connection-string "$constr" 
