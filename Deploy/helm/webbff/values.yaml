@@ -30,6 +30,9 @@ env:
     - name: StockApiUrl
     - name: ISSUER
     - name: SECURITYKEY
+    - name: UseB2C
+    - name: B2CIssuer
+    - name: Authority
   values:
     - name: ASPNETCORE_ENVIRONMENT
       value: Development
