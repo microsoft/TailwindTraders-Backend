@@ -89,10 +89,4 @@ Write-Host ($tokens | ConvertTo-Json) -ForegroundColor Yellow
 
 Write-Host "===========================================================" -ForegroundColor Yellow
 
-& TailwindTraders-Backend/Deploy/token-replace.ps1 -inputFile $gvaluesTemplate -outputFile $outputFile -tokens $tokens
-
-
-
-
-
-
+& ~/TailwindTraders-Backend/Deploy/token-replace.ps1 -inputFile $gvaluesTemplate -outputFile $outputFile -tokens $tokens
