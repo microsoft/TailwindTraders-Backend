@@ -14,6 +14,11 @@ Pre-requisites for this deployment are to have
 
 Tailwind Traders requires various Azure resources created. Please follow the [Azure infrastructure deployment guide](./Azure-Deployment.md) if you don't have the resources deployed.
 
+### Service Principal
+A Service Principal is needed for creating the AKS. If you use the [CLI for create the resources](./Azure-Deployment.md#create-the-resources-using-the-cli), you can reuse a SP one passing to the script the id and password as optional parameters; if not, the script will create a new one for you and will print the details (id and password among them).
+
+In case you use [Azure Portal for the resources' creation](./Azure-Deployment.md#creating-infrastructure-using-azure-portal), you can also reuse a SP or create manually a new one for passing the credentials to the template.
+
 ## Connecting kubectl to AKS
 
 From the terminal type:

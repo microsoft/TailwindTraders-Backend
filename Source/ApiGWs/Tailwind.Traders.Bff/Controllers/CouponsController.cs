@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using System.Collections.Generic;
@@ -12,6 +13,7 @@ using Tailwind.Traders.MobileBff.Models;
 
 namespace Tailwind.Traders.MobileBff.Controllers
 {
+    [Authorize]
     [Route("v{version:apiVersion}/[controller]")]
     [ApiController]
     [ApiVersion("1.0")]

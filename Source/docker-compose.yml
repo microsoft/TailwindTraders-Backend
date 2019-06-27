@@ -70,7 +70,7 @@ services:
       context: ./Services/Tailwind.Traders.Stock.Api/
       dockerfile: Dockerfile  
     depends_on: 
-    - stock.data
+      - stock.data
 
   product-visits.function:
     image: ${REGISTRY:-tailwindtraders}/product-visits.function:${TAG:-latest}

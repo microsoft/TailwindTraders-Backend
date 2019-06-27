@@ -19,7 +19,7 @@ namespace Tailwind.Traders.Product.Api.Infrastructure
             _classMaps = classMaps;
         }
 
-        public IEnumerable<TModel> Proccess<TModel>(string root, string fileName, Configuration configuration = null)
+        public IEnumerable<TModel> Process<TModel>(string root, string fileName, Configuration configuration = null)
         {
             try
             {

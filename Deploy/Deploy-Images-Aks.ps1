@@ -82,11 +82,11 @@ Write-Host " TLS/SSL environment to enable: $tlsEnv"  -ForegroundColor Yellow
 Write-Host " Namespace (empty means the one in .kube/config): $namespace"  -ForegroundColor Yellow
 Write-Host " --------------------------------------------------------" 
 
-$acrLogin=$(az acr show -n $acrName -g $resourceGroup | ConvertFrom-Json).loginServer
-$aksHost=$(az aks show -n $aksName -g $resourceGroup --query addonProfiles.httpapplicationrouting.config.HTTPApplicationRoutingZoneName | ConvertFrom-Json)
+$acrLogin=$(az acr show -n $acrName -g $resourceGroup -o json| ConvertFrom-Json).loginServer
+$aksHost=$(az aks show -n $aksName -g $resourceGroup --query addonProfiles.httpapplicationrouting.config.HTTPApplicationRoutingZoneName -o json | ConvertFrom-Json)
 
 if (-not $aksHost) {
-    $aksHost=$(az aks show -n $aksName -g $resourceGroup --query addonProfiles.httpApplicationRouting.config.HTTPApplicationRoutingZoneName | ConvertFrom-Json)
+    $aksHost=$(az aks show -n $aksName -g $resourceGroup --query addonProfiles.httpApplicationRouting.config.HTTPApplicationRoutingZoneName -o json | ConvertFrom-Json)
 }
 
 
@@ -118,7 +118,7 @@ if ($useInfraInAks) {
     $azuriteCouponsUrl="$azuriteUrl/coupon-list"
     Write-Host "Getting info of ACI $cartAciGroup/$cartAciName"
     Write-Host "az container show -g $cartAciGroup -n $cartAciName"
-    $cartAci=$(az container show -g $cartAciGroup -n $cartAciName | ConvertFrom-Json)
+    $cartAci=$(az container show -g $cartAciGroup -n $cartAciName -o json | ConvertFrom-Json)
     Write-Host "ACI Cart running CosmosDb emulator is on " $cartAci.ipAddress.fqdn -ForegroundColor Yellow
     if ([String]::IsNullOrEmpty($cartAci.ipAddress.fqdn)) {
         Write-Host "ACI Cart not found or it has no fqdn. Please run Deploy-CosmosDb.ps1" -ForegroundColor Red

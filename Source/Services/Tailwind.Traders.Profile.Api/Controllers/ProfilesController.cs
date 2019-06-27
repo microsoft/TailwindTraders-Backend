@@ -1,14 +1,12 @@
-﻿using System;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
-using Microsoft.Extensions.Primitives;
 using Tailwind.Traders.Profile.Api.DTOs;
 using Tailwind.Traders.Profile.Api.Infrastructure;
 using Tailwind.Traders.Profile.Api.Models;
@@ -40,7 +38,8 @@ namespace Tailwind.Traders.Profile.Api.Controllers
                 .Select(p => p.ToProfileDto(_settings))
                 .ToListAsync();
 
-            if (result == null)
+
+            if(!result.Any())
             {
                 return NoContent();
             }

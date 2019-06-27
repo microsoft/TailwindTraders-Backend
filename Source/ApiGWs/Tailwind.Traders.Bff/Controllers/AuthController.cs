@@ -11,18 +11,17 @@ using Tailwind.Traders.MobileBff.Models;
 
 namespace Tailwind.Traders.MobileBff.Controllers
 {
-
     [AllowAnonymous]
     [Route("v{version:apiVersion}/[controller]")]
     [ApiController]
     [ApiVersion("1.0")]
-    public class LoginController : Controller
+    public class AuthController : Controller
     {
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly AppSettings _settings;
         private const string VERSION_API = "v1";
 
-        public LoginController(
+        public AuthController(
             IHttpClientFactory httpClientFactory,
             IOptions<AppSettings> options)
         {
@@ -30,18 +29,19 @@ namespace Tailwind.Traders.MobileBff.Controllers
             _settings = options.Value;
         }
 
-        // POST: v1/login
-        [HttpPost()]
-        public async Task<IActionResult> Login([FromBody] TokenRequest request)
+        // PUT: v1/auth/refresh
+        [HttpPut("refresh")]
+        public async Task<IActionResult> TokenRefresh([FromBody] TokenRefreshRequest request)
         {
             var client = _httpClientFactory.CreateClient(HttpClients.ApiGW);
 
-            var json = JsonConvert.SerializeObject(request);
-            var stringContent = new StringContent(json, UnicodeEncoding.UTF8, "application/json");
+            var jsonRequest = JsonConvert.SerializeObject(request);
+            var stringContent = new StringContent(jsonRequest, UnicodeEncoding.UTF8, "application/json");
 
-            var response = await client.PostAsync(API.Login.PostLogin(_settings.LoginApiUrl, VERSION_API), stringContent);
+            var response = await client.PutAsync(API.Auth.PutRefreshToken(_settings.LoginApiUrl, VERSION_API), stringContent);
 
-            if (response.StatusCode == HttpStatusCode.BadRequest) {
+            if (response.StatusCode == HttpStatusCode.BadRequest)
+            {
                 return BadRequest();
             }
 
@@ -49,5 +49,6 @@ namespace Tailwind.Traders.MobileBff.Controllers
             var authResponse = JsonConvert.DeserializeObject<AuthResponse>(result);
             return Ok(authResponse);
         }
+
     }
 }

@@ -22,9 +22,9 @@
     <MicrosoftApplicationInsightsAspNetCore>2.5.1</MicrosoftApplicationInsightsAspNetCore>
     <MicrosoftAspNetCoreMvcVersioning>2.3.0</MicrosoftAspNetCoreMvcVersioning>
     <MicrosoftAspNetCoreMvcVersioningApiExplorer>2.2.0</MicrosoftAspNetCoreMvcVersioningApiExplorer>
-    <MicrosoftML>0.7.0</MicrosoftML>
-    <MicrosoftMLImageAnalytics>0.7.0</MicrosoftMLImageAnalytics>
-    <MicrosoftMLTensorFlow>0.7.0</MicrosoftMLTensorFlow>
+    <MicrosoftML>1.1.0</MicrosoftML>
+    <MicrosoftMLImageAnalytics>1.1.0</MicrosoftMLImageAnalytics>
+    <MicrosoftMLTensorFlow>0.12.0</MicrosoftMLTensorFlow>
     <MicrosoftVisualStudioAzureContainersToolsTargets>1.1.1</MicrosoftVisualStudioAzureContainersToolsTargets>
     <SwashbuckleAspNetCore>3.0.0</SwashbuckleAspNetCore>
   </PropertyGroup>
