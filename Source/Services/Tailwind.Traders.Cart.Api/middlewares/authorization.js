@@ -18,7 +18,6 @@ module.exports = (req, res, next) => {
                 message: 'Auth token is not supplied'
             });
     }
-
     jwt.verify(token, config.SecurityKey, (err, decoded) => {
         if (err || decoded.iss != config.Issuer) {
             return res

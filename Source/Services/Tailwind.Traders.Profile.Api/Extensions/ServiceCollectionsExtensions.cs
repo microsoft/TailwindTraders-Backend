@@ -18,7 +18,7 @@ namespace Tailwind.Traders.Profile.Api.Extensions
                 options.UseSqlServer(configuration["ConnectionString"], sqlOptions =>
                 {
                     sqlOptions.MigrationsAssembly(typeof(Startup).GetTypeInfo().Assembly.GetName().Name);
-                    sqlOptions.EnableRetryOnFailure(maxRetryCount: 10, maxRetryDelay: TimeSpan.FromSeconds(30), errorNumbersToAdd: null);
+                    sqlOptions.EnableRetryOnFailure(maxRetryCount: 15, maxRetryDelay: TimeSpan.FromSeconds(45), errorNumbersToAdd: null);
                 })
                 .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
             },

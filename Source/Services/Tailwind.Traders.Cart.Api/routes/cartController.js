@@ -4,8 +4,8 @@ class CartController {
         this.recommendedDao = recommendedDao;
     }
 
-    retrieveEmail(req) {
-        return req.decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'];
+    retrieveUser(req) {
+        return req.headers["x-tt-name"];
     }
 
     async addProduct(req, res) {
@@ -14,11 +14,9 @@ class CartController {
         res.status(201).send({ message: "Product added on shopping cart", id: doc.id });
     }
 
-    async getProductsByEmail(req, res) {
-
-        const email = this.retrieveEmail(req);
-
-        const items = await this.shoppingCartDao.find(email);
+    async getProductsByUser(req, res) {
+        const user = this.retrieveUser(req);
+        const items = await this.shoppingCartDao.find(user);
         res.json(items);
     }
 
@@ -46,14 +44,13 @@ class CartController {
     }
 
     async getRelatedProducts(req, res) {
-
-        const email = this.retrieveEmail(req);
+        const user = this.retrieveUser(req);
         
         const typeid = req.query.type;
-        if (!typeid && !email) {
-            res.status(400).send({ message: "'email' or 'productType' missing" });
+        if (!typeid && !user) {
+            res.status(400).send({ message: "'user' or 'productType' missing" });
         } else {
-            const items = await this.recommendedDao.findRelated(typeid, email);
+            const items = await this.recommendedDao.findRelated(typeid, user);
             res.json(items);
         }
     }

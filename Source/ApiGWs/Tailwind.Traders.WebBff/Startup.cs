@@ -6,10 +6,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Text;
 using System.Threading;
+using Tailwind.Traders.WebBff.Helpers;
 using Tailwind.Traders.WebBff.Infrastructure;
 
 namespace Tailwind.Traders.WebBff
@@ -28,12 +30,6 @@ namespace Tailwind.Traders.WebBff
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddHttpClientServices(Configuration);
-
-            var useB2C = GetUseB2CBoolean();
-            if (useB2C == true)
-            {
-                Console.Write("Use this condition to B2C flow");
-            }
 
             services.Configure<AppSettings>(Configuration);
 
@@ -56,18 +52,29 @@ namespace Tailwind.Traders.WebBff
 
             services.AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Latest)
-                .Services
+
+
+            .Services
                 .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
-                    options.TokenValidationParameters = new TokenValidationParameters
+                    if (UseBc2.GetUseB2CBoolean(Configuration))
                     {
-                        ValidateIssuer = true,
-                        ValidateAudience = false,
-                        ValidIssuer = Configuration["Issuer"],
-                        ValidateLifetime = true,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["SecurityKey"]))
-                    };
+                        options.Authority = Configuration["Authority"];
+                        options.TokenValidationParameters.ValidateAudience = false;
+                        options.RequireHttpsMetadata = false;
+                    }
+                    else
+                    {
+                        options.TokenValidationParameters = new TokenValidationParameters
+                        {
+                            ValidateIssuer = true,
+                            ValidateAudience = false,
+                            ValidIssuer = Configuration["Issuer"],
+                            ValidateLifetime = true,
+                            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["SecurityKey"]))
+                        };
+                    }
                 });
         }
 
@@ -76,6 +83,7 @@ namespace Tailwind.Traders.WebBff
         {
             if (env.IsDevelopment())
             {
+                IdentityModelEventSource.ShowPII = true;
                 app.UseDeveloperExceptionPage();
             }
 
@@ -90,23 +98,6 @@ namespace Tailwind.Traders.WebBff
 
             app.UseAuthentication();
             app.UseMvc();
-        }
-
-        private bool GetUseB2CBoolean()
-        {
-            string useB2C = Configuration["UseB2C"];
-
-            if (useB2C == null)
-            {
-                return false;
-            }
-
-            if (bool.TryParse(useB2C, out bool parsedUseB2C))
-            {
-                return parsedUseB2C;
-            }
-
-            return false;
         }
     }
 

@@ -1,32 +1,67 @@
 const CosmosClient = require("@azure/cosmos").CosmosClient;
 const ConnectionPolicy = require("@azure/cosmos").ConnectionPolicy;
 const config = require("./config/config");
+const authConfig = require("./config/authConfig");
 const CartController = require("./routes/cartController");
 const ShoppingCartDao = require("./models/shoppingCartDao");
 const RecommededDao = require("./models/recommendedDao");
-
 const ensureAuthenticated = require('./middlewares/authorization');
+const ensureB2cAuthenticated = require('./middlewares/authorizationB2c');
+const setHeaders = require('./middlewares/headers');
 const cors = require('cors');
 const express = require('express');
+const passport = require("passport");
+const BearerStrategy = require('passport-azure-ad').BearerStrategy;
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const bodyParser = require("body-parser");
-
 const indexRouter = require('./routes/index');
+ 
+const tenantID = authConfig.tenantID;
+const clientID = authConfig.clientID;
+const policyName = authConfig.policyName;
+const identityMetadata = authConfig.identityMetadata;
+const issuer = authConfig.issuer
+
+const options = {
+  identityMetadata: identityMetadata,
+  issuer: issuer,
+  clientID: clientID,
+  policyName: policyName,
+  isB2C: true,
+  validateIssuer: true,
+  loggingLevel: 'info',
+  passReqToCallback: false
+};
+
+const bearerStrategy = new BearerStrategy(options,
+  function (token, done) {
+    done(null, {}, token);
+  }
+);
 
 const app = express();
-
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cors());
 app.use(cookieParser());
-app.use(ensureAuthenticated);
+
+if (JSON.parse(authConfig.UseB2C)) {
+  app.use(passport.initialize());
+  passport.use(bearerStrategy);
+
+  app.use(ensureB2cAuthenticated());
+} else {
+  app.use(ensureAuthenticated);
+}
+
+app.use(setHeaders);
+
 app.use('/', indexRouter);
 
-console.log(`Cosmos to use is ${config.host}`)
-
+console.log(`Cosmos to use is ${config.host}`);
 const cosmosClientOptions = {
   endpoint: config.host,
   auth: {
@@ -36,7 +71,7 @@ const cosmosClientOptions = {
 
 const locations = process.env.LOCATIONS;
 if (locations) {
-  console.log(`Preferred locations are set to: '${locations}'`)
+  console.log(`Preferred locations are set to: '${locations}'`);
   const connectionPolicy = new ConnectionPolicy();
   connectionPolicy.PreferredLocations = locations.split(',');
   cosmosClientOptions.connectionPolicy = connectionPolicy;
@@ -44,7 +79,7 @@ if (locations) {
 
 const disableSSL = (process.env.DISABLE_SSL || "").toString().toLowerCase() === "true";
 if (disableSSL) {
-  console.log ('Disabling SSL verification! Caution *NEVER* use this in production!');
+  console.log('Disabling SSL verification! Caution *NEVER* use this in production!');
   if (cosmosClientOptions.connectionPolicy == undefined) {
     cosmosClientOptions.connectionPolicy = new ConnectionPolicy();
   }
@@ -70,9 +105,9 @@ shoppingCartDao
     process.exit(1);
   });
 
-  recommendedDao.init(err => {
-    console.error(err);
-  })
+recommendedDao.init(err => {
+  console.error(err);
+})
   .then(() => {
     console.log(`cosmosdb ${config.host} recommendations initializated`);
   })
@@ -82,7 +117,7 @@ shoppingCartDao
     process.exit(1);
   });
 
-app.get("/shoppingcart", (req, res, next) => cartController.getProductsByEmail(req, res)
+app.get("/shoppingcart", (req, res, next) => cartController.getProductsByUser(req, res)
   .catch(e => { console.log(e); next(e) }));
 app.post("/shoppingcart", (req, res, next) => cartController.addProduct(req, res)
   .catch(e => { console.log(e); next(e) }));

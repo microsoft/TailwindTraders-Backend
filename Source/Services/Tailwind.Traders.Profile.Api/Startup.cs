@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -8,6 +9,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Tailwind.Traders.Profile.Api.Extensions;
+using Tailwind.Traders.Profile.Api.Infrastructure;
+using Tailwind.Traders.Profile.Api.Models;
 
 namespace Tailwind.Traders.Profile.Api
 {
@@ -28,20 +31,12 @@ namespace Tailwind.Traders.Profile.Api
                 .SetCompatibilityVersion(CompatibilityVersion.Latest)
                 .Services
                 .AddProfileContext(Configuration)
-                .AddModulesProfile()
-                .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(options =>
-                {
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuer = true,
-                        ValidateAudience = false,
-                        ValidIssuer = Configuration["Issuer"],
-                        ValidateLifetime = true,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["SecurityKey"]))
-                    };
-                });
-                
+                .AddModulesProfile();
+
+            // configure basic authentication 
+            services.AddAuthentication("BasicAuthentication")
+                .AddScheme<BasicAuthenticationOptions, BasicAuthenticationHandler>("BasicAuthentication", null);
+
             services.AddApiVersioning(options =>
             {
                 options.ReportApiVersions = true;
@@ -71,8 +66,8 @@ namespace Tailwind.Traders.Profile.Api
                 .AllowAnyMethod();
             });
 
-            app.UseAuthentication();
             app.UseHttpsRedirection();
+            app.UseAuthentication();
             app.UseMvc();
         }
     }
