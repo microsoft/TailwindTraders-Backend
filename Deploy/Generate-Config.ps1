@@ -2,7 +2,7 @@ Param (
     [parameter(Mandatory=$true)][string]$resourceGroup,
     [parameter(Mandatory=$true)][string]$sqlPwd,
     [parameter(Mandatory=$false)][string]$outputFile=$null,
-    [parameter(Mandatory=$false)][string]$gvaluesTemplate=".\\helm\\gvalues.template",
+    [parameter(Mandatory=$false)][string]$gvaluesTemplate="TailwindTraders-Backend/Deploy/helm/gvalues.template",
     [parameter(Mandatory=$false)][bool]$forcePwd=$false
 )
 
