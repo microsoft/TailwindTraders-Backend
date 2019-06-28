@@ -88,7 +88,5 @@ $tokens.seckey="nEpLzQJGNSCNL5H6DIQCtTdNxf5VgAGcBbtXLms1YDD01KJBAs0WVawaEjn97uwB
 Write-Host ($tokens | ConvertTo-Json) -ForegroundColor Yellow
 
 Write-Host "===========================================================" -ForegroundColor Yellow
-Write-Host $PSScriptRoot/token-replace.ps1
-Write-Host "===========================================================" -ForegroundColor Yellow
 
 & $PSScriptRoot/token-replace.ps1 -inputFile $gvaluesTemplate -outputFile $outputFile -tokens $tokens
