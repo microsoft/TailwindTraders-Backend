@@ -11,27 +11,27 @@ valuesFile=gvalues.yaml
 function validate {
     valid=1
 
-    if [[ "$aksName" == "" ]] 
+    if [[ "$aksName" == "" ]]
     then
         echo "No AKS name. Use --aks-name to specify name"
         valid=0
     fi
-    if [[ "$aksRg" == "" ]] 
+    if [[ "$aksRg" == "" ]]
     then
         echo "No resource group. Use -g to specify resource group."
         valid=0
-    fi    
-    if [[ "$aksHost" == "" ]] 
+    fi
+    if [[ "$aksHost" == "" ]]
     then
         echo "AKS host of HttpRouting can't be found. Are you using right AKS ($aksName) and RG ($aksRg)?"
         valid=0
-    fi     
-    if [[ "$acrLogin" == "" ]] 
-    then
-        echo "ACR login server can't be found. Are you using right ACR ($acrName) and RG ($aksRg)?"
-        valid=0
-    fi               
-    if (( valid == 0)) 
+    fi
+    # if [[ "$acrLogin" == "" ]]
+    # then
+    #     echo "ACR login server can't be found. Are you using right ACR ($acrName) and RG ($aksRg)?"
+    #     valid=0
+    # fi
+    if (( valid == 0))
     then
         exit 1
     fi
@@ -47,10 +47,10 @@ while [ "$1" != "" ]; do
                                         ;;
         --aks-name)                     shift
                                         aksName=$1
-                                        ;;        
+                                        ;;
         --acr-name)                     shift
                                         acrName=$1
-                                        ;;        
+                                        ;;
         --tag)                          shift
                                         tag=$1
                                         ;;
@@ -69,14 +69,15 @@ done
 
 echo --------------------------------------------------------
 echo Deploying images on cluster $aksName
-echo 
+echo
 echo Additional parameters are:
 echo Release Name: $name
 echo AKS to use: $aksName in RG $aksRg and ACR $acrName
 echo Images tag: $tag
 echo --------------------------------------------------------
 
-acrLogin=$(az acr show -n $acrName -g $aksRg -o json | jq ".loginServer" | tr -d '"')
+# acrLogin=$(az acr show -n $acrName -g $aksRg -o json | jq ".loginServer" | tr -d '"')
+acrLogin="neilpeterson"
 aksHost=$(az aks show -n $aksName -g $aksRg -o json | jq ".addonProfiles.httpApplicationRouting.config.HTTPApplicationRoutingZoneName" | tr -d '"')
 
 echo "acr login server is $acrLogin"
@@ -109,7 +110,7 @@ fi
 if [[ "$charts" == *"pp"* ]]  || [[ "$charts" == "*" ]]
 then
     echo "Popular products chart - pp"
-    helm install --name $name-popular-product -f $valuesFile --set ingress.hosts={$aksHost} --set image.repository=$acrLogin/popular-product.api --set image.tag=$tag --set initImage.repository=$acrLogin/popular-product-seed.api  --set initImage.tag=$tag popular-products-api 
+    helm install --name $name-popular-product -f $valuesFile --set ingress.hosts={$aksHost} --set image.repository=$acrLogin/popular-product.api --set image.tag=$tag --set initImage.repository=$acrLogin/popular-product-seed.api  --set initImage.tag=$tag popular-products-api
 fi
 
 if [[ "$charts" == *"st"* ]]  || [[ "$charts" == "*" ]]
