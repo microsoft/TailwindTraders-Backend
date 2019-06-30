@@ -153,6 +153,7 @@
       "name": "[variables('pg_name')]",
       "properties": {
         "version": "[parameters('pgversion')]",
+        "sslEnforcement": "Enabled",
         "administratorLogin": "[parameters('sqlServerAdministratorLogin')]",
         "administratorLoginPassword": "[parameters('sqlServerAdministratorLoginPassword')]",
         "storageProfile": {
