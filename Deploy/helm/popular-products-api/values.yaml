@@ -16,7 +16,11 @@ service:
   type: ClusterIP
   port: 80
 
-resources: {}
+resources:
+  limits:
+    cpu: "500m"
+  requests:
+    cpu: "100m"
 
 nodeSelector: {}
 

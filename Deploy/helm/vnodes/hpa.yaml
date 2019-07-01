@@ -4,4 +4,4 @@ resources:
   requests:
     cpu: "100m"
     
-hpa: true
+hpa: false
