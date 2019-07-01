@@ -125,6 +125,16 @@ To just push the images (without building them before):
 .\Build-Push.ps1 -resourceGroup my-rg -dockerTag v1 -acrName my-acr -dockerBuild $false
 ```
 
+## Limit the used resources for the services
+You can set the CPU and RAM limit and request consumption values for each one of the services, editing the values in its corresponding `values.yaml`, under the field `resources`:
+```yaml
+resources:
+  limits:
+    cpu: "500m"
+  requests:
+    cpu: "100m"
+```
+
 ## Deploying services
 
 >**Note**: If you want to add SSL/TLS support on the cluster (needed to use https on the web) plase read following section **before installing the backend**.
@@ -150,6 +160,7 @@ If using Powershell, have to run `./Deploy-Images-Aks.ps1` with following parame
 * `-valueSFile <values-file>`: Values file to use (defaults to `gvalues.yaml`)
 * `-b2cValuesFile`: YAML file with the B2C configuration values. Defaults to `values.b2c.yaml`. If B2C login is needed, you must fill the values in the file in order to configure it.
 * `-tlsEnv prod|staging` If **SSL/TLS support has been installed**, you have to use this parameter to enable https endpoints. Value must be `staging` or `prod` and must be the same value used when you installed SSL/TLS support. If SSL/TLS is not installed, you can omit this parameter.
+* `-autoscale <boolean>`: Flag to activate HPA autoscaling. Defaults to `false`.
 
 This script will install all services using Helm and your custom configuration from the configuration file set by `-valuesFile` parameter.
 

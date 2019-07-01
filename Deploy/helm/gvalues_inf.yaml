@@ -100,3 +100,10 @@ ingress:
 sec:
   issuer: TTFakeLogin
   securityKey: nEpLzQJGNSCNL5H6DIQCtTdNxf5VgAGcBbtXLms1YDD01KJBAs0WVawaEjn97uwB
+# Autoscaling global settings
+hpa:
+  activated: false # set to true to deploy HPA for services
+  cpu:
+    averageUtilization: 40 
+  minReplicas: 1
+  maxReplicas: 40

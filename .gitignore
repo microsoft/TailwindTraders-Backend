@@ -339,3 +339,5 @@ Source/Services/Tailwind.Traders.Cart.Api/.env
 /Source/.env
 _gvalues.dev.yaml
 
+.vscode/tasks.json
+.vscode/launch.json
