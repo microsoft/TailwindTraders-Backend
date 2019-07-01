@@ -31,7 +31,7 @@ To activate and configure the HPA feature, follow the following steps:
         minReplicas: 1
         maxReplicas: 40
     ```
-2. Redeploy the services in AKS as explained in [Deploy Backend services on AKS](./DeploymentGuide.md#deploying-services)
+2. Redeploy the services in AKS as explained in [Deploy Backend services on AKS](./DeploymentGuide.md#deploying-services) (don't forget to set the -autoscale parameter in `Deploy-Images-Aks.ps1` script!)
 4. If you type `kubectl get hpa`, the deployed HPAs will be showed:
 
     ![Output of kubectl get hpa showing the all the deployed hpas](./Images/all-hpas-deployed.png)
