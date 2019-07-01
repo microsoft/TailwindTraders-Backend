@@ -6,12 +6,14 @@ Param(
     [parameter(Mandatory=$false)][string]$tag="latest",
     [parameter(Mandatory=$false)][string]$charts = "*",
     [parameter(Mandatory=$false)][string]$valuesFile = "",
+    [parameter(Mandatory=$false)][string]$valuesB2CFile = "values.b2c.yaml",
     [parameter(Mandatory=$false)][bool]$useInfraInAks=$false,
     [parameter(Mandatory=$false)][string]$cartAciGroup="",
     [parameter(Mandatory=$false)][string]$cartAciName="",
     [parameter(Mandatory=$false)][string]$afHost = "http://your-product-visits-af-here",
     [parameter(Mandatory=$false)][string]$namespace = "",
-    [parameter(Mandatory=$false)][string][ValidateSet('prod','staging','none', IgnoreCase=$false)]$tlsEnv = "none"
+    [parameter(Mandatory=$false)][string][ValidateSet('prod','staging','none', IgnoreCase=$false)]$tlsEnv = "none",
+    [parameter(Mandatory=$false)][bool]$autoscale=$false
 )
 
 function validate {
@@ -46,7 +48,7 @@ function validate {
     }
 }
 
-function createHelmCommand([string]$command, $chart) {
+function createHelmCommand([string]$command) {
     $tlsSecretName = ""
     if ($tlsEnv -eq "staging") {
         $tlsSecretName = "tt-letsencrypt-staging"
@@ -65,8 +67,7 @@ function createHelmCommand([string]$command, $chart) {
         $newcmd = "$newcmd --set ingress.tls[0].secretName=$tlsSecretName --set ingress.tls[0].hosts={$aksHost}"
     }
 
-    $newcmd = "$newcmd $chart"
-    return $newcmd;
+    return "$newcmd";
 }
 
 
@@ -134,92 +135,92 @@ Write-Host "Configuration file used is $valuesFile" -ForegroundColor Yellow
 
 if ($charts.Contains("pr") -or  $charts.Contains("*")) {
     Write-Host "Products chart - pr" -ForegroundColor Yellow
-    $command = "helm install --name $name-product -f $valuesFile --set az.productvisitsurl=$afHost --set ingress.hosts={$aksHost} --set image.repository=$acrLogin/product.api --set image.tag=$tag"
+    $command = "helm upgrade --install $name-product products-api -f $valuesFile --set az.productvisitsurl=$afHost --set ingress.hosts={$aksHost} --set image.repository=$acrLogin/product.api --set image.tag=$tag --set hpa.activated=$autoscale"
     if ($useInfraInAks) {
         $command = "$command --set inf.storage.productimages=$azuriteProductsUrl --set inf.storage.productdetailimages=$azuriteProductsDetailsUrl"
     }
-    $command = createHelmCommand $command "products-api" 
+    $command = createHelmCommand $command 
     cmd /c "$command"
 }
 
 if ($charts.Contains("cp") -or  $charts.Contains("*")) {
     Write-Host "Coupons chart - cp" -ForegroundColor Yellow
-    $command="helm install --name $name-coupon -f $valuesFile --set ingress.hosts={$aksHost} --set image.repository=$acrLogin/coupon.api --set image.tag=$tag"
+    $command="helm upgrade --install $name-coupon coupons-api -f $valuesFile --set ingress.hosts={$aksHost} --set image.repository=$acrLogin/coupon.api --set image.tag=$tag  --set hpa.activated=$autoscale"
     if ($useInfraInAks) {
         $command = "$command --set inf.storage.couponimage=$azuriteCouponsUrl"
     }
-    $command = createHelmCommand $command "coupons-api"
+    $command = createHelmCommand $command
     cmd /c "$command"
 }
 
 if ($charts.Contains("pf") -or  $charts.Contains("*")) {
     Write-Host "Profile chart - pf " -ForegroundColor Yellow
-    $command = "helm install --name $name-profile -f $valuesFile --set ingress.hosts={$aksHost} --set image.repository=$acrLogin/profile.api --set image.tag=$tag"
+    $command = "helm upgrade --install $name-profile profiles-api -f $valuesFile --set ingress.hosts={$aksHost} --set image.repository=$acrLogin/profile.api --set image.tag=$tag --set hpa.activated=$autoscale"
     if ($useInfraInAks) {
         $command = "$command --set inf.storage.profileimages=$azuriteProfilesUrl"
     }
-    $command = createHelmCommand $command "profiles-api"
+    $command = createHelmCommand $command 
     cmd /c "$command"
 }
 
 if ($charts.Contains("pp") -or  $charts.Contains("*")) {
     Write-Host "Popular products chart - pp" -ForegroundColor Yellow
-    $command = "helm install --name $name-popular-product -f $valuesFile --set ingress.hosts={$aksHost} --set image.repository=$acrLogin/popular-product.api --set image.tag=$tag --set initImage.repository=$acrLogin/popular-product-seed.api  --set initImage.tag=$tag"
+    $command = "helm upgrade --install $name-popular-product popular-products-api -f $valuesFile --set ingress.hosts={$aksHost} --set image.repository=$acrLogin/popular-product.api --set image.tag=$tag --set initImage.repository=$acrLogin/popular-product-seed.api  --set initImage.tag=$tag --set hpa.activated=$autoscale"
     if ($useInfraInAks) {
         $command = "$command --set inf.storage.productimages=$azuriteProductsUrl"
     }
-    $command = createHelmCommand $command "popular-products-api"
+    $command = createHelmCommand $command
     cmd /c "$command"
 }
 
 if ($charts.Contains("st") -or  $charts.Contains("*")) {
     Write-Host "Stock -st" -ForegroundColor Yellow
-    $command = createHelmCommand "helm  install --name $name-stock -f $valuesFile --set ingress.hosts={$aksHost} --set image.repository=$acrLogin/stock.api --set image.tag=$tag" "stock-api"
+    $command = createHelmCommand "helm  upgrade --install $name-stock stock-api -f $valuesFile --set ingress.hosts={$aksHost} --set image.repository=$acrLogin/stock.api --set image.tag=$tag --set hpa.activated=$autoscale"
     cmd /c "$command"
 }
 
 if ($charts.Contains("ic") -or  $charts.Contains("*")) {
     Write-Host "Image Classifier -ic" -ForegroundColor Yellow
-    $command = createHelmCommand "helm  install --name $name-image-classifier -f $valuesFile --set ingress.hosts={$aksHost} --set image.repository=$acrLogin/image-classifier.api --set image.tag=$tag" "image-classifier-api"
+    $command = createHelmCommand "helm  upgrade --install $name-image-classifier image-classifier-api -f $valuesFile --set ingress.hosts={$aksHost} --set image.repository=$acrLogin/image-classifier.api --set image.tag=$tag --set hpa.activated=$autoscale"
     cmd /c "$command"
 }
 
 if ($charts.Contains("ct") -or  $charts.Contains("*")) {
     Write-Host "Cart (Basket) -ct" -ForegroundColor Yellow
-    $command = "helm  install --name $name-cart -f $valuesFile --set ingress.hosts={$aksHost} --set image.repository=$acrLogin/cart.api --set image.tag=$tag"
+    $command = "helm  upgrade --install $name-cart cart-api -f $valuesFile --set ingress.hosts={$aksHost} --set image.repository=$acrLogin/cart.api --set image.tag=$tag --set hpa.activated=$autoscale"
     if ($useInfraInAks) {
         $fqdn=$cartAci.ipAddress.fqdn
         $command = "$command --set inf.db.cart.host=https://${fqdn}:8081 -f values_inf_cartapi.yaml"
     }
-    $command = createHelmCommand $command "cart-api"
+    $command = createHelmCommand $command
     cmd /c "$command"
 }
 
 if ($charts.Contains("lg") -or  $charts.Contains("*")) {
     Write-Host "Login -lg" -ForegroundColor Yellow
-    $command = "helm  install --name $name-login -f $valuesFile --set ingress.hosts={$aksHost} --set image.repository=$acrLogin/login.api --set image.tag=$tag"
+    $command = "helm  upgrade --install $name-login login-api -f $valuesFile --set ingress.hosts={$aksHost} --set image.repository=$acrLogin/login.api --set image.tag=$tag --set hpa.activated=$autoscale"
     if ($useInfraInAks) {
         $command = "$command --set inf.storage.profileimages=$azuriteProfilesUrl"
     }
-    $command = createHelmCommand $command "login-api"
+    $command = createHelmCommand $command
     cmd /c "$command"
 }
 
 if ($charts.Contains("mgw") -or  $charts.Contains("*")) {
     Write-Host "mobilebff -mgw" -ForegroundColor Yellow 
-    $command = createHelmCommand "helm  install --name $name-mobilebff -f $valuesFile --set ingress.hosts={$aksHost} --set image.repository=$acrLogin/mobileapigw --set image.tag=$tag" "mobilebff"
+    $command = createHelmCommand "helm  upgrade --install $name-mobilebff mobilebff -f $valuesFile --set ingress.hosts={$aksHost} --set image.repository=$acrLogin/mobileapigw --set image.tag=$tag --set hpa.activated=$autoscale"
     cmd /c "$command"
 }
 
 if ($charts.Contains("wgw") -or  $charts.Contains("*")) {
     Write-Host "webbff -wgw" -ForegroundColor Yellow
-    $command = createHelmCommand "helm  install --name $name-webbff -f $valuesFile --set ingress.hosts={$aksHost} --set image.repository=$acrLogin/webapigw --set image.tag=$tag" "webbff"
+    $command = createHelmCommand "helm  upgrade --install $name-webbff webbff -f $valuesFile -f $valuesB2CFile --set ingress.hosts={$aksHost} --set image.repository=$acrLogin/webapigw --set image.tag=$tag --set hpa.activated=$autoscale"
     cmd /c "$command"
 }
 
 if ($charts.Contains("infra")) {
     Write-Host "*** Infrastructure ***" -ForegroundColor Green
-    $command = createHelmCommand "helm  install --name $name-infra -f $valuesFile --set ingress.hosts={$aksHost}" "infrastructure"
+    $command = createHelmCommand "helm  upgrade --install $name-infra infrastructure -f $valuesFile --set ingress.hosts={$aksHost}"
     cmd /c "$command"
 }
 

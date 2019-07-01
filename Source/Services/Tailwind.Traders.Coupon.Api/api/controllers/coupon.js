@@ -1,11 +1,8 @@
 ﻿'use strict';
-
 const Coupon = require('../models/coupon');
 
 exports.allCoupons = (req, res) => {
-
-    // Retrieve user from token
-    const user = req.decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'];
+    const user =  req.headers['x-tt-name'];
     
     Coupon.findOne({ 'id': user })
         .then(coupons => {

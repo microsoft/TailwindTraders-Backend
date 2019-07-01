@@ -12,10 +12,10 @@ using Tailwind.Traders.WebBff.Models;
 
 namespace Tailwind.Traders.WebBff.Controllers
 {
-    [Authorize]
     [Route("v{version:apiVersion}/[controller]")]
     [ApiController]
     [ApiVersion("1.0")]
+    [Authorize]
     public class ProfilesController : Controller
     {
         private readonly IHttpClientFactory _httpClientFactory;
@@ -35,7 +35,6 @@ namespace Tailwind.Traders.WebBff.Controllers
         [ProducesResponseType((int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetProfiles()
         {
-
             var client = _httpClientFactory.CreateClient(HttpClients.ApiGW);
 
             var result = await client.GetStringAsync(API.Profiles.GetProfiles(_settings.ProfileApiUrl, VERSION_API));

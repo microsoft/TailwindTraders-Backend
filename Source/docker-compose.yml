@@ -96,3 +96,12 @@ services:
     build:
       context: .
       dockerfile: ApiGWs/Tailwind.Traders.WebBff/Dockerfile
+    depends_on: 
+      - product.api
+      - profile.api
+      - login.api
+      - coupon.api
+      - popular-product.api
+      - stock.api
+      - product-visits.function
+      - image-classifier.api

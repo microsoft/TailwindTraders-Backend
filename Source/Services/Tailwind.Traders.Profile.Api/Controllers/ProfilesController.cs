@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -13,7 +13,6 @@ using Tailwind.Traders.Profile.Api.Models;
 
 namespace Tailwind.Traders.Profile.Api.Controllers
 {
-    [Authorize]
     [Route("v{version:apiVersion}/[controller]")]
     [ApiController]
     [ApiVersion("1.0")]
@@ -32,11 +31,13 @@ namespace Tailwind.Traders.Profile.Api.Controllers
         [HttpGet]
         [ProducesResponseType(typeof(List<Profiles>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [Authorize]
         public async Task<IActionResult> GetAllProfiles()
         {
             var result = await _ctx.Profiles
                 .Select(p => p.ToProfileDto(_settings))
                 .ToListAsync();
+
 
             if(!result.Any())
             {
@@ -50,33 +51,38 @@ namespace Tailwind.Traders.Profile.Api.Controllers
         [HttpGet("me")]
         [ProducesResponseType(typeof(List<Profiles>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [Authorize]
         public async Task<IActionResult> GetProfile()
         {
-            var currentUser = HttpContext.User;
+            StringValues headerValues;
+            var nameFilter = string.Empty;
 
-            var userId = currentUser.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value;
+            if (Request.Headers.TryGetValue("x-tt-name", out headerValues))
+            {
+                nameFilter = User.Identity.Name;
+            }
 
             var result = await _ctx.Profiles
-                .Where(p => p.Email == userId)
-                .Select(p => p.ToProfileDto(_settings))
-                .SingleOrDefaultAsync();
+                            .Where(p => p.Email == nameFilter)
+                            .Select(p => p.ToProfileDto(_settings))
+                            .SingleOrDefaultAsync();
 
             if (result == null)
             {
-                var defaultUser = GetDefaultUserProfile(userId);
+                var defaultUser = GetDefaultUserProfile(nameFilter);
                 return Ok(defaultUser);
             }
 
             return Ok(result);
         }
 
-        private ProfileDto GetDefaultUserProfile(string userId)
+        private ProfileDto GetDefaultUserProfile(string nameFilter)
         {
             return new ProfileDto
             {
-                Email = userId,
+                Email = $"{nameFilter}@{nameFilter}.com",
                 Address = "7711 W. Pawnee Ave. Beachwood, OH 44122",
-                Name = userId,
+                Name = nameFilter,
                 PhoneNumber = "+1-202-555-0155",
                 Id = 0,
                 ImageUrlMedium = "defaultImage-m.jpg",
@@ -88,6 +94,7 @@ namespace Tailwind.Traders.Profile.Api.Controllers
         [HttpPost]
         [ProducesResponseType(typeof(List<Profiles>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [Authorize]
         public async Task<IActionResult> Post([FromBody] CreateUser user)
         {
             if (!ModelState.IsValid)
@@ -99,6 +106,6 @@ namespace Tailwind.Traders.Profile.Api.Controllers
             await _ctx.SaveChangesAsync();
 
             return Ok();
-        }        
+        }
     }
 }

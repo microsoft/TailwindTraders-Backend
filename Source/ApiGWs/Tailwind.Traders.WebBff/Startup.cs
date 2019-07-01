@@ -6,10 +6,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Text;
 using System.Threading;
+using Tailwind.Traders.WebBff.Helpers;
 using Tailwind.Traders.WebBff.Infrastructure;
 
 namespace Tailwind.Traders.WebBff
@@ -36,7 +38,7 @@ namespace Tailwind.Traders.WebBff
                 options.DescribeAllEnumsAsStrings();
                 options.SwaggerDoc("v1", new Swashbuckle.AspNetCore.Swagger.Info
                 {
-                    Title = "Tailwind Traders - Mobile BFF HTTP API",
+                    Title = "Tailwind Traders - Web BFF HTTP API",
                     Version = "v1"
                 });
             });
@@ -50,18 +52,29 @@ namespace Tailwind.Traders.WebBff
 
             services.AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Latest)
-                .Services
+
+
+            .Services
                 .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
-                    options.TokenValidationParameters = new TokenValidationParameters
+                    if (UseBc2.GetUseB2CBoolean(Configuration))
                     {
-                        ValidateIssuer = true,
-                        ValidateAudience = false,
-                        ValidIssuer = Configuration["Issuer"],
-                        ValidateLifetime = true,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["SecurityKey"]))
-                    };
+                        options.Authority = Configuration["Authority"];
+                        options.TokenValidationParameters.ValidateAudience = false;
+                        options.RequireHttpsMetadata = false;
+                    }
+                    else
+                    {
+                        options.TokenValidationParameters = new TokenValidationParameters
+                        {
+                            ValidateIssuer = true,
+                            ValidateAudience = false,
+                            ValidIssuer = Configuration["Issuer"],
+                            ValidateLifetime = true,
+                            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["SecurityKey"]))
+                        };
+                    }
                 });
         }
 
@@ -70,6 +83,7 @@ namespace Tailwind.Traders.WebBff
         {
             if (env.IsDevelopment())
             {
+                IdentityModelEventSource.ShowPII = true;
                 app.UseDeveloperExceptionPage();
             }
 
