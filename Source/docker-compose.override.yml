@@ -106,7 +106,7 @@ services:
       - AUTHKEY=${COSMOSDB_AUTHKEY}  
       - ISSUER=TTFakeLogin
       - SECURITYKEY=nEpLzQJGNSCNL5H6DIQCtTdNxf5VgAGcBbtXLms1YDD01KJBAs0WVawaEjn97uwB
-      - UseB2C=${UseB2C:-true}
+      - UseB2C=${UseB2C:-false}
     ports:
       - "5007:3001"      
 
@@ -137,7 +137,7 @@ services:
       - SECURITYKEY=nEpLzQJGNSCNL5H6DIQCtTdNxf5VgAGcBbtXLms1YDD01KJBAs0WVawaEjn97uwB
       - ISSUER=TTFakeLogin
       - UseMlNetClassifier=true
-      - UseB2C=false
+      - UseB2C=${UseB2C:-false}
       - B2CIssuer=
       - Authority=
     ports:

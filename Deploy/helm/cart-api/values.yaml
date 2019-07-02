@@ -28,6 +28,11 @@ env:
     - name: HOST
     - name: ISSUER
     - name: SECURITYKEY
+    - name: tenantID
+    - name: clientID
+    - name: policyName
+    - name: identityMetadata
+    - name: issuer
   values:
     - name: DISABLE_SSL
       value: "false"  
