@@ -1,4 +1,4 @@
 B2C:
-  UseB2C: "true"
-  B2CIssuer: https://tailwindtradersB2cTenantdev.onmicrosoft.com.b2clogin.com/775527ff-9a37-4307-8b3d-cc311f58d925/v2.0/
-  Authority: https://tailwindtradersB2cTenantdev.b2clogin.com/tfp/tailwindtradersB2cTenantdev.onmicrosoft.com/B2C_1_tailwindtraderssignin_v2/v2.0
+  UseB2C: "false"
+  B2CIssuer: 
+  Authority: 
