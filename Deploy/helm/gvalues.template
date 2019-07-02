@@ -96,3 +96,11 @@ ingress:
 sec:
   issuer: {{secissuer}}
   securityKey: {{seckey}}
+
+# Autoscaling global settings
+hpa:
+  activated: false # set to true to deploy HPA for services
+  cpu:
+    averageUtilization: 40 
+  minReplicas: 1
+  maxReplicas: 40
