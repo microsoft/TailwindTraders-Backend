@@ -15,10 +15,10 @@ data:
   HOST: {{ .Values.inf.db.cart.host }}
   ISSUER: {{ .Values.sec.issuer }}
   SECURITYKEY: {{ .Values.sec.securityKey }}
-  tenantID: ""
-  clientID: ""
-  policyName: ""
-  identityMetadata: ""
-  issuer: ""
+  tenantID: {{ .Values.B2C.tenantID }}
+  clientID: {{ .Values.B2C.clientID }}
+  policyName: {{ .Values.B2C.policyName }}
+  identityMetadata: {{ .Values.B2C.identityMetadata }}
+  issuer: {{ .Values.B2C.issuer }}
 
 

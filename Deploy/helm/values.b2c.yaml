@@ -1,9 +1,0 @@
-B2C:
-  UseB2C: "false"
-  B2CIssuer: 
-  Authority: 
-  tenantID:
-  clientID:
-  policyName:
-  identityMetadata:
-  issuer:

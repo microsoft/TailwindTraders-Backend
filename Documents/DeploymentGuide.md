@@ -158,7 +158,6 @@ If using Powershell, have to run `./Deploy-Images-Aks.ps1` with following parame
 * `-tag <tag>` Docker images tag to use. Defaults to  `latest`
 * `-charts <charts>` List of comma-separated values with charts to install. Defaults to `*` (all)
 * `-valueSFile <values-file>`: Values file to use (defaults to `gvalues.yaml`)
-* `-b2cValuesFile`: YAML file with the B2C configuration values. Defaults to `values.b2c.yaml`. If B2C login is needed, you must fill the values in the file in order to configure it.
 * `-tlsEnv prod|staging` If **SSL/TLS support has been installed**, you have to use this parameter to enable https endpoints. Value must be `staging` or `prod` and must be the same value used when you installed SSL/TLS support. If SSL/TLS is not installed, you can omit this parameter.
 * `-autoscale <boolean>`: Flag to activate HPA autoscaling. Defaults to `false`.
 
