@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28010.2026
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29020.237
 MinimumVisualStudioVersion = 15.0.26124.0
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tailwind.Traders.MobileBff", "ApiGWs\Tailwind.Traders.Bff\Tailwind.Traders.MobileBff.csproj", "{457E90F5-C61A-49A4-A6CF-B3B5C2D0E3F6}"
 EndProject
@@ -20,6 +20,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tailwind.Traders.ImageClassifier.Api", "Services\Tailwind.Traders.ImageClassifier.Api\Tailwind.Traders.ImageClassifier.Api.csproj", "{25077CC7-F3BD-4645-BF8C-B98587B46D53}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tailwind.Traders.Login.Api", "Services\Tailwind.Traders.Login.Api\Tailwind.Traders.Login.Api.csproj", "{6B477ACB-8A9C-4F7C-9E1E-0B195B56A14C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailwind.Traders.Rewards.Registration.Api", "Services\Tailwind.Traders.Rewards.Registration.Api\Tailwind.Traders.Rewards.Registration.Api.csproj", "{05581061-B0A2-4044-85ED-E219C11C2EAA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -115,6 +117,18 @@ Global
 		{6B477ACB-8A9C-4F7C-9E1E-0B195B56A14C}.Release|x64.Build.0 = Release|Any CPU
 		{6B477ACB-8A9C-4F7C-9E1E-0B195B56A14C}.Release|x86.ActiveCfg = Release|Any CPU
 		{6B477ACB-8A9C-4F7C-9E1E-0B195B56A14C}.Release|x86.Build.0 = Release|Any CPU
+		{05581061-B0A2-4044-85ED-E219C11C2EAA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{05581061-B0A2-4044-85ED-E219C11C2EAA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{05581061-B0A2-4044-85ED-E219C11C2EAA}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{05581061-B0A2-4044-85ED-E219C11C2EAA}.Debug|x64.Build.0 = Debug|Any CPU
+		{05581061-B0A2-4044-85ED-E219C11C2EAA}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{05581061-B0A2-4044-85ED-E219C11C2EAA}.Debug|x86.Build.0 = Debug|Any CPU
+		{05581061-B0A2-4044-85ED-E219C11C2EAA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{05581061-B0A2-4044-85ED-E219C11C2EAA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{05581061-B0A2-4044-85ED-E219C11C2EAA}.Release|x64.ActiveCfg = Release|Any CPU
+		{05581061-B0A2-4044-85ED-E219C11C2EAA}.Release|x64.Build.0 = Release|Any CPU
+		{05581061-B0A2-4044-85ED-E219C11C2EAA}.Release|x86.ActiveCfg = Release|Any CPU
+		{05581061-B0A2-4044-85ED-E219C11C2EAA}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -126,6 +140,7 @@ Global
 		{01F1142C-58E0-45FC-B986-1A3510B37BFB} = {F3C7C047-D464-48DC-8D87-74A112A59340}
 		{25077CC7-F3BD-4645-BF8C-B98587B46D53} = {E8A4248E-1EAC-48AE-9060-973D4C15B548}
 		{6B477ACB-8A9C-4F7C-9E1E-0B195B56A14C} = {E8A4248E-1EAC-48AE-9060-973D4C15B548}
+		{05581061-B0A2-4044-85ED-E219C11C2EAA} = {E8A4248E-1EAC-48AE-9060-973D4C15B548}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5D3E7ED9-6991-46BF-BBD8-57AE7000A309}
