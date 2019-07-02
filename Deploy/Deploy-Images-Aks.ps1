@@ -187,7 +187,7 @@ if ($charts.Contains("ic") -or  $charts.Contains("*")) {
 
 if ($charts.Contains("ct") -or  $charts.Contains("*")) {
     Write-Host "Cart (Basket) -ct" -ForegroundColor Yellow
-    $command = "helm  install --name $name-cart -f $valuesFile --set ingress.hosts={$aksHost} --set image.repository=$acrLogin/cart.api --set image.tag=$tag"
+    $command = "helm  install --name $name-cart -f $valuesFile -f $valuesB2CFile --set ingress.hosts={$aksHost} --set image.repository=$acrLogin/cart.api --set image.tag=$tag"
     if ($useInfraInAks) {
         $fqdn=$cartAci.ipAddress.fqdn
         $command = "$command --set inf.db.cart.host=https://${fqdn}:8081 -f values_inf_cartapi.yaml"
