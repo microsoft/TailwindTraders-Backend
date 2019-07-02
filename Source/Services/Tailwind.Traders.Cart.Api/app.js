@@ -16,29 +16,6 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const bodyParser = require("body-parser");
 const indexRouter = require('./routes/index');
- 
-const tenantID = authConfig.tenantID;
-const clientID = authConfig.clientID;
-const policyName = authConfig.policyName;
-const identityMetadata = authConfig.identityMetadata;
-const issuer = authConfig.issuer
-
-const options = {
-  identityMetadata: identityMetadata,
-  issuer: issuer,
-  clientID: clientID,
-  policyName: policyName,
-  isB2C: true,
-  validateIssuer: true,
-  loggingLevel: 'info',
-  passReqToCallback: false
-};
-
-const bearerStrategy = new BearerStrategy(options,
-  function (token, done) {
-    done(null, {}, token);
-  }
-);
 
 const app = express();
 app.use(logger('dev'));
@@ -49,6 +26,24 @@ app.use(cors());
 app.use(cookieParser());
 
 if (JSON.parse(authConfig.UseB2C)) {
+
+  const options = {
+    identityMetadata: authConfig.identityMetadata,
+    issuer: authConfig.issuer,
+    clientID: authConfig.clientID,
+    policyName: authConfig.policyName,
+    isB2C: true,
+    validateIssuer: true,
+    loggingLevel: 'info',
+    passReqToCallback: false
+  };
+
+  const bearerStrategy = new BearerStrategy(options,
+    function (token, done) {
+      done(null, {}, token);
+    }
+  );
+
   app.use(passport.initialize());
   passport.use(bearerStrategy);
 
