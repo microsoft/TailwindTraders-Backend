@@ -6,7 +6,6 @@ Param(
     [parameter(Mandatory=$false)][string]$tag="latest",
     [parameter(Mandatory=$false)][string]$charts = "*",
     [parameter(Mandatory=$false)][string]$valuesFile = "",
-    [parameter(Mandatory=$false)][string]$valuesB2CFile = "values.b2c.yaml",
     [parameter(Mandatory=$false)][bool]$useInfraInAks=$false,
     [parameter(Mandatory=$false)][string]$cartAciGroup="",
     [parameter(Mandatory=$false)][string]$cartAciName="",
@@ -214,7 +213,7 @@ if ($charts.Contains("mgw") -or  $charts.Contains("*")) {
 
 if ($charts.Contains("wgw") -or  $charts.Contains("*")) {
     Write-Host "webbff -wgw" -ForegroundColor Yellow
-    $command = createHelmCommand "helm  upgrade --install $name-webbff webbff -f $valuesFile -f $valuesB2CFile --set ingress.hosts={$aksHost} --set image.repository=$acrLogin/webapigw --set image.tag=$tag --set hpa.activated=$autoscale"
+    $command = createHelmCommand "helm  upgrade --install $name-webbff webbff -f $valuesFile --set ingress.hosts={$aksHost} --set image.repository=$acrLogin/webapigw --set image.tag=$tag --set hpa.activated=$autoscale"
     cmd /c "$command"
 }
 
