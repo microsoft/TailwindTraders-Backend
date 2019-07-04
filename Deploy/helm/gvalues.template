@@ -73,6 +73,9 @@ inf:
     stockapiurl: http://stock
     imageclassifierapiurl: http://imageclassifier
     loginapiurl: http://login
+  registrationusers:
+    registerusers: "false"
+    registrationusersurl: "TODO DEMI"
 az:
   productvisitsurl: ""
 
@@ -96,6 +99,16 @@ ingress:
 sec:
   issuer: {{secissuer}}
   securityKey: {{seckey}}
+
+B2C:
+  UseB2C: "false"
+  B2CIssuer: ""
+  Authority: ""
+  tenantID: ""
+  clientID: ""
+  policyName: ""
+  identityMetadata: ""
+  issuer: ""
 
 # Autoscaling global settings
 hpa:

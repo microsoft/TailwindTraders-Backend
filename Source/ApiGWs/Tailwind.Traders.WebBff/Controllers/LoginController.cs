@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Tailwind.Traders.WebBff.Infrastructure;
 using Tailwind.Traders.WebBff.Models;
+using Tailwind.Traders.WebBff.Services;
 
 namespace Tailwind.Traders.WebBff.Controllers
 {
@@ -18,15 +19,18 @@ namespace Tailwind.Traders.WebBff.Controllers
     public class LoginController : Controller
     {
         private readonly IHttpClientFactory _httpClientFactory;
+        private readonly IRegisterService _registerService;
         private readonly AppSettings _settings;
         private const string VERSION_API = "v1";
 
         public LoginController(
             IHttpClientFactory httpClientFactory,
-            IOptions<AppSettings> options)
+            IOptions<AppSettings> options,
+            IRegisterService registerService)
         {
             _httpClientFactory = httpClientFactory;
             _settings = options.Value;
+            _registerService = registerService;
         }
 
         // POST: v1/login
@@ -40,8 +44,14 @@ namespace Tailwind.Traders.WebBff.Controllers
 
             var response = await client.PostAsync(API.Login.PostLogin(_settings.LoginApiUrl, VERSION_API), stringContent);
 
-            if (response.StatusCode == HttpStatusCode.BadRequest) {
+            if (response.StatusCode == HttpStatusCode.BadRequest)
+            {
                 return BadRequest();
+            }
+
+            if (_settings.RegisterUsers)
+            {
+                await _registerService.RegisterUserIfNotExists(request.Username);
             }
 
             var result = await response.Content.ReadAsStringAsync();

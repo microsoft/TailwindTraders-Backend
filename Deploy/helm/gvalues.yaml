@@ -78,6 +78,9 @@ inf:
     stockapiurl: http://stock
     imageclassifierapiurl: http://imageclassifier
     loginapiurl: http://login
+  registrationusers:
+    registerusers: "false"
+    registrationusersurl: "TODO DEMI"
 az:
   productvisitsurl: ""
 

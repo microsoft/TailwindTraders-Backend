@@ -28,9 +28,26 @@ namespace Tailwind.Traders.Rewards.Registration.Api.Repositories
 
         public void InsertCustomer(string email)
         {
-            var query = "INSERT INTO CUSTOMERS([Email]) VALUES (@email)";
-            var emailParam = new SqlParameter("@email", email);
-            ExecuteNonSelect(query, new SqlParameter[] { emailParam });
+            var query = @"INSERT INTO CUSTOMERS
+                                    ([Email], 
+                                    [Active],
+                                    [Enrrolled]
+                                    ) 
+                                VALUES 
+                                    (@Email
+                                    ,@Active
+                                    ,@Enrrolled)";
+
+
+            var enrollmentStatus = (int)EnrollmentStatusEnum.Uninitialized;
+            var parameters = new SqlParameter[]
+            {
+                new SqlParameter("@Email", email),
+                new SqlParameter("@Active", true),
+                new SqlParameter("@Enrrolled", enrollmentStatus)
+        };
+
+            ExecuteNonSelect(query, parameters);
         }
     }
 }

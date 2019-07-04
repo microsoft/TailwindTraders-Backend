@@ -26,7 +26,7 @@ namespace Tailwind.Traders.Rewards.Registration.Api.Repositories
 
         protected DataTable ExecuteSelect(string query, SqlParameter[] parameters)
         {
-            DataTable table = null;
+            DataTable table = new DataTable();
             using (SqlCommand command = new SqlCommand(query, Connection))
             {
                 if (parameters != null)

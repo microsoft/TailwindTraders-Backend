@@ -8,11 +8,15 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
+using RegistrationUserService;
 using System;
+using System.ServiceModel;
 using System.Text;
 using System.Threading;
 using Tailwind.Traders.WebBff.Helpers;
 using Tailwind.Traders.WebBff.Infrastructure;
+using Tailwind.Traders.WebBff.Services;
+using static RegistrationUserService.UserServiceClient;
 
 namespace Tailwind.Traders.WebBff
 {
@@ -32,6 +36,11 @@ namespace Tailwind.Traders.WebBff
             services.AddHttpClientServices(Configuration);
 
             services.Configure<AppSettings>(Configuration);
+            services.AddTransient<IUserService>(_ => new UserServiceClient(
+                EndpointConfiguration.BasicHttpBinding_IUserService,
+                new EndpointAddress(Configuration["RegistrationUsersEndpoint"])));
+
+            services.AddTransient<IRegisterService, RegisterService>();
 
             services.AddSwaggerGen(options =>
             {
