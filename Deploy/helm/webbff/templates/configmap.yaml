@@ -23,5 +23,6 @@ data:
   UseB2C: {{ .Values.B2C.UseB2C | quote }}
   B2CIssuer: {{ .Values.B2C.B2CIssuer }}
   Authority: {{ .Values.B2C.Authority }}
-
+  RegisterUsers: {{ .Values.inf.registrationusers.registerusers | quote }}
+  RegistrationUsersEndpoint: {{ .Values.inf.registrationusers.registrationusersurl }}
 

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Tailwind.Traders.MobileBff
+﻿namespace Tailwind.Traders.MobileBff
 {
     public class AppSettings
     {
@@ -14,5 +9,7 @@ namespace Tailwind.Traders.MobileBff
         public string LoginApiUrl { get; set; }
         public string ImageClassifierApiUrl { get; set; }
         public bool UseMlNetClassifier { get; set; }
+        public bool RegisterUsers { get; set; }
+        public string RegistrationUsersEndpoint { get; set; }
     }
 }

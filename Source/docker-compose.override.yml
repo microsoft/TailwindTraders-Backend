@@ -108,7 +108,7 @@ services:
       - SECURITYKEY=nEpLzQJGNSCNL5H6DIQCtTdNxf5VgAGcBbtXLms1YDD01KJBAs0WVawaEjn97uwB
       - UseB2C=${UseB2C:-false}
     ports:
-      - "5007:3001"      
+      - "5007:3001"
 
   mobileapigw:
     environment:
@@ -120,6 +120,8 @@ services:
       - CouponsApiUrl=http://coupon.api
       - ImageClassifierApiUrl=http://image-classifier.api
       - LoginApiUrl=http://login.api
+      - RegisterUsers=${RegisterUsers:-true}
+      - RegistrationUsersEndpoint=
     ports:
       - "5100:80"
 
@@ -140,5 +142,7 @@ services:
       - UseB2C=${UseB2C:-false}
       - B2CIssuer=
       - Authority=
+      - RegisterUsers=${RegisterUsers:-true}
+      - RegistrationUsersEndpoint=
     ports:
       - "5200:80"
