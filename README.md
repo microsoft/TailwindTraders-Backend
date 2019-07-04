@@ -1,6 +1,6 @@
 # Tailwind Traders Backend Services
 
-This repository contains all code + deployment scripts for the Tailwind Traders Backend.
+This repository contains all code + deployment scripts and demo scripts for the Tailwind Traders Backend.
 
 [![Build status](https://dev.azure.com/TailwindTraders/Backend/_apis/build/status/Backend-CI)](https://dev.azure.com/TailwindTraders/Backend/_build/latest?definitionId=26)
 
