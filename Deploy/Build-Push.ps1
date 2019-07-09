@@ -35,6 +35,7 @@ if ($dockerPush) {
     Write-Host "---------------------------------------------------" -ForegroundColor Yellow
     Push-Location ..\Source
     docker login -p $acrPwd -u $acrUser $acrLoginServer
+    az acr login -n $acr
     $env:TAG=$dockerTag
     $env:REGISTRY=$acrLoginServer 
     docker-compose -f $dockerComposeFile push
