@@ -1,6 +1,6 @@
 {{- if .Values.ingress.enabled -}}
 {{- $fullName := include "tt-rewards-registration.fullname" . -}}
-{{- $ingressPath := .Values.inf.ingress.rewards-registration.path -}}
+{{- $ingressPath := .Values.inf.ingress.rewardsregistration.path -}}
 
  apiVersion: extensions/v1beta1
 kind: Ingress

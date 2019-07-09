@@ -7,4 +7,4 @@ version: '3.4'
       context: ./Services/Tailwind.Traders.Rewards.Registration.Api
       dockerfile: Dockerfile    
     ports:
-      - "5010:808"   
+      - "5010:808"
