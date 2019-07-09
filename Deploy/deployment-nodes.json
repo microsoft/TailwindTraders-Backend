@@ -2,22 +2,12 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-      "servicePrincipalId": {
-        "type": "string"
-      },
-      "servicePrincipalSecret": {
-        "type": "securestring"
-      },
       "sqlServerAdministratorLogin": {
         "type": "string",
         "defaultvalue": "sqladmin"
       },
       "sqlServerAdministratorLoginPassword": {
         "type": "securestring"
-      },
-      "aksVersion": {
-        "type": "string",
-        "defaultValue": "1.14"
       },
       "pgversion": {
         "type": "string",
@@ -27,7 +17,6 @@
     "variables": {
       "acr_name": "[concat('ttacr',uniqueString(resourceGroup().id))]",
       "storage_name": "[concat('ttstorage',uniqueString(resourceGroup().id))]",
-      "aks_name": "[concat('tailwindtradersaks',uniqueString(resourceGroup().id))]",
       "function_name": "[concat('ttfunction',uniqueString(resourceGroup().id))]",
       "sqlserver_name": "[concat('ttsqlserver',uniqueString(resourceGroup().id))]",
       "pg_name": "[concat('ttpg',uniqueString(resourceGroup().id))]",
@@ -63,57 +52,6 @@
           "supportsHttpsTrafficOnly": false
         },
         "dependsOn": []
-      },
-      {
-        "type": "Microsoft.ContainerService/managedClusters",
-        "name": "[variables('aks_name')]",
-        "apiVersion": "2018-03-31",
-        "location": "[resourceGroup().location]",
-        "tags": {},
-        "properties": {
-          "kubernetesVersion": "[parameters('aksVersion')]",
-          "enableRBAC": true,
-          "dnsPrefix": "[variables('aks_name')]",
-          "addonProfiles": {
-            "httpApplicationRouting": {
-              "enabled": true
-            },
-            "omsagent": {
-              "enabled": true,
-              "config": {
-                "logAnalyticsWorkspaceResourceID": "[variables('omsWorkspaceId')]"
-              }
-            }
-          },
-          "agentPoolProfiles": [
-            {
-              "name": "agentpool",
-              "count": 2,
-              "vmSize": "Standard_DS2_v2",
-              "osType": "Linux",
-              "osDiskSizeGB": 0,
-              "storageProfile": "ManagedDisks"
-            },
-            {
-              "name": "npwin",
-              "count": 2,
-              "vmSize": "Standard_D2s_v3",
-              "osType": "Windows",
-              "osDiskSizeGB": 0,
-              "storageProfile": "ManagedDisks"
-            }
-          ],
-          "servicePrincipalProfile": {
-            "ClientId": "[parameters('servicePrincipalId')]",
-            "Secret": "[parameters('servicePrincipalSecret')]"
-          },
-          "networkProfile": {
-            "networkPlugin": "kubenet"
-          }
-        },
-        "dependsOn": [
-          "[concat('Microsoft.Resources/deployments/', 'WorkspaceDeployment')]"
-        ]
       },
       {
         "type": "Microsoft.Web/sites",
@@ -400,10 +338,6 @@
       "acr": {
         "type": "string",
         "value": "[variables('acr_name')]"
-      },
-      "aks": {
-        "type": "string",
-        "value": "[variables('aks_name')]"
       },
       "function": {
         "type": "string",

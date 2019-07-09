@@ -22,6 +22,28 @@ For development scenarios everything can be run on a AKS, so **not external depe
 
 Once you have an AKS please follow the documentation to [deploy infrastructure on AKS](./Documents/AKS-infrastructure.md)
 
+### Deploy Backend (Windows and Linux containers) on Azure AKS and Azure resources (SQL Azure, CosmosDb, Storage accounts)
+
+ We need to create and Azure Kubernetes Service (AKS) with 1.14 version, This version allows us to deploy Windows and Linux containers.
+This AKS version is in preview, so you must execute the following command:
+```
+az extension add --name aks-preview
+```
+We have added an ARM template so you can automate the creation of the resources required for the backend services.       
+Click the following button to deploy:
+
+<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FMicrosoft%2FTailwindTraders-Backend%2Fmaster%2FDeploy%2Fdeployment-nodes.json"><img src="./Documents/Images/deploy-to-azure.png" alt="Deploy to Azure"/></a>
+
+To create an AKS with the last version we need to execute this script located in .\Deploy folder:
+
+```powershell
+Create-WinLinux-Aks.ps1 --resourceGroup YourResourceGroupName --location TheRegion --clientId ServicePrincipalId --password ServicePrincipalSecret
+```
+
+For mixed (Windows and Linux containers) scenario we need to deploy [Tailwind Traders Rewards](https://github.com/Microsoft/TailwindTraders-Rewards). The data base deployed in Tailwind Traders Rewards is used by a WCF service of this project.
+
+Follow the [Deployment Guide](./Documents/DeploymentGuide.md) to deploy the services to AKS.
+
 ### Running services Locally
 
 To run the backend locally on your computer follow these [instructions](./Documents/RunLocally.md)

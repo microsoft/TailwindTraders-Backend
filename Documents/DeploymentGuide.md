@@ -7,7 +7,7 @@ Pre-requisites for this deployment are to have
     * Bash environment with [jq](https://stedolan.github.io/jq/) installed **-OR-**
     * Powershell environment
 * [Azure CLI 2.0](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest) installed.
-* [Kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) installed.
+* [Kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) installed with the last version (v1.15.0 at this moment).
 * Docker installed
 
 ## Pre-requisite: Azure infrastructure created
@@ -45,6 +45,22 @@ An example of this file is in `helm/gvalues.yaml`. The deployment scripts use th
 
 >**Note:** The folder `/Deploy/helm/__values/` is added to `.gitignore`, so you can keep all your configuration files in it, to avoid accidental pushes.
 
+>**Note:** If you come from the **Windows and Linux containers scenario** you must add the Rewards database's connection string, in the values file you are using, for example:
+```yaml
+inf:
+(...)
+  db:
+  (...)  
+    rewards:
+      host: tcp:*****.database.windows.net
+      port: "1433"
+      catalog: rewardsdb # you must not modify this name
+      user: ttuser
+      pwd: YourPassword
+    (...)  
+```
+
+
 Please refer to the comments of the file for its usage. Just ignore (but not delete) the `tls` section (it is used if TLS is enabled).
 
 ### Auto generating the configuration file
@@ -61,8 +77,7 @@ The parameters that `Generate-Config.ps1` accepts are:
 
 * `-resourceGroup`: Resource group where all Azure resources are. **Mandatory**
 * `-sqlPwd`: Password of SQL Servers and PostgreSQL server. This parameter is **mandatory** because can't be read using Azure CLI
-* `-rewardsResourceGroup`: Resource group where Rewards resources are.
-* `-rewardsSqlPwd`: Password of the external Rewards SQL Server. This parameter defaults to sqlPwd if not set.
+* `-rewardsResourceGroup`: Fill it if you are going to use Rewards DB (this is used, for example in the **Windows and Linux containers in AKS** scenarios)
 * `-forcePwd`: If `$true`, the scripts updates the SQL Server and PostgreSQ to set their password to the value of `sqlPwd`. Defaults to `$false`.
 * `-outputFile`: Full path of the output file to generate. A good idea is to generate a file in `/Deploy/helm/__values/` folder as this folder is ignored by Git. If not passed the result file is written on screen.
 * `-gvaluesTemplate`: Template of the _gvalues_ file to use. The parameter defaults to the `/Deploy/helm/gvalues.template` which is the only template provided.
@@ -118,7 +133,7 @@ This script uses `az` CLI to get ACR information, and then uses `docker-compose`
 To build an push images tagged with v1 to a ACR named my-acr in resource group named my-rg:
 
 ```
-.\Build-Push.ps1 -resourceGroup my-rg -dockerTag v1 -acrName my-acr
+.\Build-Push.ps1 -resourceGroup my-rg -dockerTag v1 -acrName my-acr -isWindows $false
 ```
 
 To just push the images (without building them before):
@@ -140,6 +155,10 @@ resources:
 ## Deploying services
 
 >**Note**: If you want to add SSL/TLS support on the cluster (needed to use https on the web) plase read following section **before installing the backend**.
+
+>**Note**: If the script has problems detecting the AKS host verify that the AKS has http_application_routing enabled.
+[More information](https://docs.microsoft.com/es-es/azure/aks/http-application-routing)
+
 
 To deploy the services from a Bash terminal run the `./deploy-images-aks.sh` script with the following parameters:
 
