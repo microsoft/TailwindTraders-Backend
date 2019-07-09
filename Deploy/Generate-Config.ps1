@@ -1,6 +1,8 @@
 Param (
     [parameter(Mandatory=$true)][string]$resourceGroup,
     [parameter(Mandatory=$true)][string]$sqlPwd,
+    [parameter(Mandatory=$false)][string]$rewardsResourceGroup,
+    [parameter(Mandatory=$false)][string]$rewardsSqlPwd,
     [parameter(Mandatory=$false)][string]$outputFile=$null,
     [parameter(Mandatory=$false)][string]$gvaluesTemplate=".\\helm\\gvalues.template",
     [parameter(Mandatory=$false)][bool]$forcePwd=$false
@@ -27,6 +29,12 @@ if (-not $rg) {
 $sqlsrv=$(az sql server list -g $resourceGroup --query "[].{administratorLogin:administratorLogin, name:name, fullyQualifiedDomainName: fullyQualifiedDomainName}" -o json | ConvertFrom-Json)
 $sqlsrv=EnsureAndReturnFistItem $sqlsrv "SQL Server"
 Write-Host "Sql Server: $($sqlsrv.name)" -ForegroundColor Yellow
+
+if ($rewardsResourceGroup) {
+    $rewardssqlsrv=$(az sql server list -g $rewardsResourceGroup --query "[].{administratorLogin:administratorLogin, name:name, fullyQualifiedDomainName: fullyQualifiedDomainName}" -o json | ConvertFrom-Json)
+    $rewardssqlsrv=EnsureAndReturnFistItem $rewardssqlsrv "Rewards SQL Server"
+    Write-Host "Rewards Sql Server: $($rewardssqlsrv.name)" -ForegroundColor Yellow
+}
 
 ### Getting postgreSQL info
 $pg=$(az postgres server list -g $resourceGroup --query "[].{administratorLogin:administratorLogin, name:name, fullyQualifiedDomainName: fullyQualifiedDomainName}" -o json | ConvertFrom-Json)
@@ -66,6 +74,10 @@ $tokens=@{}
 $tokens.dbhost=$sqlsrv.fullyQualifiedDomainName
 $tokens.dbuser=$sqlsrv.administratorLogin
 $tokens.dbpwd=$sqlPwd
+
+$tokens.dbhostrewards=If ($rewardsResourceGroup) { $rewardssqlsrv.fullyQualifiedDomainName } Else { $sqlsrv.fullyQualifiedDomainName}
+$tokens.dbuserrewards=If ($rewardsResourceGroup) { $rewardssqlsrv.administratorLogin } Else { $sqlsrv.administratorLogin}
+$tokens.dbpwdrewards=If ($rewardsSqlPwd) { $rewardsSqlPwd } Else { $sqlPwd }
 
 $tokens.pghost=$pg.fullyQualifiedDomainName
 $tokens.pguser="$($pg.administratorLogin)@$($pg.name)"

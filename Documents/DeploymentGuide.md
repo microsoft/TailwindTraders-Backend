@@ -61,6 +61,8 @@ The parameters that `Generate-Config.ps1` accepts are:
 
 * `-resourceGroup`: Resource group where all Azure resources are. **Mandatory**
 * `-sqlPwd`: Password of SQL Servers and PostgreSQL server. This parameter is **mandatory** because can't be read using Azure CLI
+* `-rewardsResourceGroup`: Resource group where Rewards resources are.
+* `-rewardsSqlPwd`: Password of the external Rewards SQL Server. This parameter defaults to sqlPwd if not set.
 * `-forcePwd`: If `$true`, the scripts updates the SQL Server and PostgreSQ to set their password to the value of `sqlPwd`. Defaults to `$false`.
 * `-outputFile`: Full path of the output file to generate. A good idea is to generate a file in `/Deploy/helm/__values/` folder as this folder is ignored by Git. If not passed the result file is written on screen.
 * `-gvaluesTemplate`: Template of the _gvalues_ file to use. The parameter defaults to the `/Deploy/helm/gvalues.template` which is the only template provided.

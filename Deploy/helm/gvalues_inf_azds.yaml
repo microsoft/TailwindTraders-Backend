@@ -24,6 +24,12 @@ inf:
       catalog: profile
       user: sa
       pwd: Passw0rd1!
+    rewards:
+      host: sql.ttrinfra
+      port: "1433"
+      catalog: rewards
+      user: sa
+      pwd: Passw0rd1!
     coupons:
       user: tt-user
       pwd: Passw0rd1!

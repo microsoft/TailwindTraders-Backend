@@ -15,6 +15,12 @@ inf:
       catalog: profile
       user: {{dbuser}}
       pwd: {{dbpwd}}
+    rewards:
+      host: {{dbhostrewards}}
+      port: "1433"
+      catalog: rewards
+      user: {{dbuserrewards}}
+      pwd: {{dbpwdrewards}}
     coupons:
       user: {{couponsuser}}
       pwd: {{couponspwd}}

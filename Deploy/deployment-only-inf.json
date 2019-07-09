@@ -10,7 +10,7 @@
     },
     "aksVersion": {
       "type": "string",
-      "defaultValue": "1.12.7"
+      "defaultValue": "1.14"
     }
   },
   "variables": {
@@ -50,10 +50,18 @@
         "agentPoolProfiles": [
           {
             "name": "agentpool",
-            "osDiskSizeGB": 0,
-            "count": 3,
-            "vmSize": "Standard_D2_v2",
+            "count": 2,
+            "vmSize": "Standard_DS2_v2",
             "osType": "Linux",
+            "osDiskSizeGB": 0,
+            "storageProfile": "ManagedDisks"
+          },
+          {
+            "name": "npwin",
+            "count": 2,
+            "vmSize": "Standard_D2s_v3",
+            "osType": "Windows",
+            "osDiskSizeGB": 0,
             "storageProfile": "ManagedDisks"
           }
         ],
@@ -62,7 +70,7 @@
           "Secret": "[parameters('servicePrincipalSecret')]"
         },
         "networkProfile": {
-          "networkPlugin": "kubenet"
+          "networkPlugin": "azure"
         }
       }
     }

@@ -14,7 +14,7 @@ Azure portal will ask you for the following parameters:
 * `servicePrincipalSecret`: Password of the service principal
 * `sqlServerAdministratorLogin`: Name of the user for the databases
 * `sqlServerAdministratorLoginPassword`: Password for the user of the databases
-* `aksVersion`: AKS version to use.
+* `aksVersion`: AKS version to use (at least 1.14).
 * `pgversion`: Version of the Azure database for PostgreSQL to install. Defaults to `10`.
 
 The deployment could take more than 10 minutes, and once finished all needed resources will be created:
