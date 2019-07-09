@@ -3,8 +3,8 @@ Param(
     [parameter(Mandatory=$true)][string]$location,
     [parameter(Mandatory=$true)][string]$clientId,
     [parameter(Mandatory=$true)][string]$password,
-    [parameter(Mandatory=$false)][string]$winUser="ttradmin",
-    [parameter(Mandatory=$false)][string]$winPassword="longPassw0rd2!"
+    [parameter(Mandatory=$true)][string]$winUser,
+    [parameter(Mandatory=$true)][string]$winPassword
 )
 
 $rg = $(az group show -n $resourceGroup -o json | ConvertFrom-Json)

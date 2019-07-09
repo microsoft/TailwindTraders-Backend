@@ -130,7 +130,7 @@ Additionaly there is a Powershell script in the `Deploy` folder, named `Build-Pu
 
 This script uses `az` CLI to get ACR information, and then uses `docker-compose` to build and push the images to ACR.
 
-To build an push images tagged with v1 to a ACR named my-acr in resource group named my-rg:
+To build and push images tagged with v1 to a ACR named my-acr in resource group named my-rg:
 
 ```
 .\Build-Push.ps1 -resourceGroup my-rg -dockerTag v1 -acrName my-acr -isWindows $false
@@ -154,7 +154,7 @@ resources:
 
 ## Deploying services
 
->**Note**: If you want to add SSL/TLS support on the cluster (needed to use https on the web) plase read following section **before installing the backend**.
+>**Note**: If you want to add SSL/TLS support on the cluster (needed to use https on the web) please read *Enabling SSL/TLS on the cluster* section **before installing the backend**.
 
 >**Note**: If the script has problems detecting the AKS host verify that the AKS has http_application_routing enabled.
 [More information](https://docs.microsoft.com/es-es/azure/aks/http-application-routing)
