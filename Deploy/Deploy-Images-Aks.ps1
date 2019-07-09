@@ -205,6 +205,12 @@ if ($charts.Contains("lg") -or  $charts.Contains("*")) {
     cmd /c "$command"
 }
 
+if ($charts.Contains("rr") -or  $charts.Contains("*")) {
+    Write-Host "Rewards Registration -rr" -ForegroundColor Yellow
+    $command = createHelmCommand "helm  upgrade --install $name-rewards-registration rewards-registration-api -f $valuesFile --set ingress.hosts={$aksHost} --set image.repository=$acrLogin/rewards.registration.api --set image.tag=$tag --set hpa.activated=$autoscale"
+    cmd /c "$command"
+}
+
 if ($charts.Contains("mgw") -or  $charts.Contains("*")) {
     Write-Host "mobilebff -mgw" -ForegroundColor Yellow 
     $command = createHelmCommand "helm  upgrade --install $name-mobilebff mobilebff -f $valuesFile --set ingress.hosts={$aksHost} --set image.repository=$acrLogin/mobileapigw --set image.tag=$tag --set hpa.activated=$autoscale"
