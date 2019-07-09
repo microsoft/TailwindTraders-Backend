@@ -143,6 +143,6 @@ services:
       - B2CIssuer=
       - Authority=
       - RegisterUsers=${RegisterUsers:-true}
-      - RegistrationUsersEndpoint=
+      - RegistrationUsersEndpoint=http://localhost:51402/UserService.svc
     ports:
       - "5200:80"

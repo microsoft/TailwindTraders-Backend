@@ -176,6 +176,7 @@ The parameter `charts` allow for a selective installation of charts. Is a list o
 * `ic` Image classifier API
 * `ct` Shopping cart API
 * `lg` Login API
+* `rr` Rewards Registration
 * `mgw` Mobile Api Gateway
 * `wgw` Web Api Gateway
 
