@@ -120,7 +120,7 @@ services:
       - CouponsApiUrl=http://coupon.api
       - ImageClassifierApiUrl=http://image-classifier.api
       - LoginApiUrl=http://login.api
-      - RegisterUsers=${RegisterUsers:-true}
+      - RegisterUsers=${RegisterUsers:-false}
       - RegistrationUsersEndpoint=
     ports:
       - "5100:80"
@@ -142,7 +142,7 @@ services:
       - UseB2C=${UseB2C:-false}
       - B2CIssuer=
       - Authority=
-      - RegisterUsers=${RegisterUsers:-true}
-      - RegistrationUsersEndpoint=
+      - RegisterUsers=${RegisterUsers:-false}
+      - RegistrationUsersEndpoint=http://localhost:51402/UserService.svc
     ports:
       - "5200:80"

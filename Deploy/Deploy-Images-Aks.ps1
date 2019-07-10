@@ -11,7 +11,9 @@ Param(
     [parameter(Mandatory=$false)][string]$cartAciName="",
     [parameter(Mandatory=$false)][string]$afHost = "http://your-product-visits-af-here",
     [parameter(Mandatory=$false)][string]$namespace = "",
-    [parameter(Mandatory=$false)][string][ValidateSet('prod','staging','none', IgnoreCase=$false)]$tlsEnv = "none",
+    [parameter(Mandatory=$false)][string][ValidateSet('prod','staging','none','custom', IgnoreCase=$false)]$tlsEnv = "none",
+    [parameter(Mandatory=$false)][string]$tlsHost="",
+    [parameter(Mandatory=$false)][string]$tlsSecretName="",
     [parameter(Mandatory=$false)][bool]$autoscale=$false
 )
 
@@ -28,7 +30,7 @@ function validate {
         $valid=$false
     }
 
-    if ([string]::IsNullOrEmpty($aksHost))  {
+    if ([string]::IsNullOrEmpty($aksHost) -and $tlsEnv -ne "custom")  {
         Write-Host "AKS host of HttpRouting can't be found. Are you using right AKS ($aksName) and RG ($resourceGroup)?" -ForegroundColor Red
         $valid=$false
     }     
@@ -42,19 +44,32 @@ function validate {
         $valid=$false
     }
 
+    if ($tlsEnv -eq "custom" -and [string]::IsNullOrEmpty($tlsSecretName)) {
+        Write-Host "If tlsEnv is custom must use -tlsSecretName to set the TLS secret name (you need to install this secret manually)"
+        $valid=$false
+    }
+
+    if ($tlsEnv -eq "custom" -and [string]::IsNullOrEmpty($tlsHost)) {
+        Write-Host "If tlsEnv is custom must use -tlsHost to set the hostname of AKS (inferred name of Http Application Routing won't be used)"
+        $valid=$false
+    }
+
     if ($valid -eq $false) {
         exit 1
     }
 }
 
 function createHelmCommand([string]$command) {
-    $tlsSecretName = ""
+    $tlsSecretNameToUse = ""
     if ($tlsEnv -eq "staging") {
-        $tlsSecretName = "tt-letsencrypt-staging"
+        $tlsSecretNameToUse = "tt-letsencrypt-staging"
     }
     if ($tlsEnv -eq "prod") {
-        $tlsSecretName = "tt-letsencrypt-prod"
+        $tlsSecretNameToUse = "tt-letsencrypt-prod"
     }
+    if ($tlsEnv -eq "custom") {
+        $tlsSecretNameToUse=$tlsSecretName
+    }	    
 
     $newcmd = $command
 
@@ -63,12 +78,11 @@ function createHelmCommand([string]$command) {
     }
 
     if (-not [string]::IsNullOrEmpty($tlsSecretName)) {
-        $newcmd = "$newcmd --set ingress.tls[0].secretName=$tlsSecretName --set ingress.tls[0].hosts={$aksHost}"
+        $newcmd = "$newcmd --set ingress.tls[0].secretName=$tlsSecretNameToUse --set ingress.tls[0].hosts={$aksHost}"
     }
 
     return "$newcmd";
 }
-
 
 Write-Host "--------------------------------------------------------" -ForegroundColor Yellow
 Write-Host " Deploying images on cluster $aksName"  -ForegroundColor Yellow
@@ -82,15 +96,20 @@ Write-Host " Namespace (empty means the one in .kube/config): $namespace"  -Fore
 Write-Host " --------------------------------------------------------" 
 
 $acrLogin=$(az acr show -n $acrName -g $resourceGroup -o json| ConvertFrom-Json).loginServer
-$aksHost=$(az aks show -n $aksName -g $resourceGroup --query addonProfiles.httpapplicationrouting.config.HTTPApplicationRoutingZoneName -o json | ConvertFrom-Json)
 
-if (-not $aksHost) {
-    $aksHost=$(az aks show -n $aksName -g $resourceGroup --query addonProfiles.httpApplicationRouting.config.HTTPApplicationRoutingZoneName -o json | ConvertFrom-Json)
+if ($tlsEnv -ne "custom") {
+    $aksHost=$(az aks show -n $aksName -g $resourceGroup --query addonProfiles.httpapplicationrouting.config.HTTPApplicationRoutingZoneName -o json | ConvertFrom-Json)
+
+     if (-not $aksHost) {
+        $aksHost=$(az aks show -n $aksName -g $resourceGroup --query addonProfiles.httpApplicationRouting.config.HTTPApplicationRoutingZoneName -o json | ConvertFrom-Json)
+    }
+
+     Write-Host "acr login server is $acrLogin" -ForegroundColor Yellow
+    Write-Host "aksHost is $aksHost" -ForegroundColor Yellow
 }
-
-
-Write-Host "acr login server is $acrLogin" -ForegroundColor Yellow
-Write-Host "aksHost is $aksHost" -ForegroundColor Yellow
+else {
+    $aksHost=$tlsHost
+}
 
 validate
 
@@ -202,6 +221,12 @@ if ($charts.Contains("lg") -or  $charts.Contains("*")) {
         $command = "$command --set inf.storage.profileimages=$azuriteProfilesUrl"
     }
     $command = createHelmCommand $command
+    cmd /c "$command"
+}
+
+if ($charts.Contains("rr") -or  $charts.Contains("*")) {
+    Write-Host "Rewards Registration -rr" -ForegroundColor Yellow
+    $command = createHelmCommand "helm  upgrade --install $name-rewards-registration rewards-registration-api -f $valuesFile --set ingress.hosts={$aksHost} --set image.repository=$acrLogin/rewards.registration.api --set image.tag=$tag --set hpa.activated=$autoscale"
     cmd /c "$command"
 }
 

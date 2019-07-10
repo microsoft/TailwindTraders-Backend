@@ -24,6 +24,12 @@ inf:
       catalog: profile
       user: sa
       pwd: Passw0rd1!
+    rewards:
+      host: sql.ttrinfra
+      port: "1433"
+      catalog: rewards
+      user: sa
+      pwd: Passw0rd1!
     coupons:
       user: tt-user
       pwd: Passw0rd1!
@@ -74,8 +80,8 @@ inf:
     imageclassifierapiurl: http://imageclassifier
     loginapiurl: http://login
   registrationusers:
-    registerusers: "false"
-    registrationusersurl: "TODO DEMI: WCF SERVICE URL"
+    registerusers: false
+    registrationusersurl: http://rewards-registration/UserService.svc
 az:
   productvisitsurl: ""
 

@@ -44,8 +44,7 @@ namespace Tailwind.Traders.Profile.Api.Infrastructure
             try
             {
                 var authHeader = AuthenticationHeaderValue.Parse(Request.Headers[AuthorizationHeaderName]);
-                var credentials = authHeader.Scheme.Split(':');
-                user = credentials[0];
+                user = authHeader.Parameter;
             }
             catch
             {

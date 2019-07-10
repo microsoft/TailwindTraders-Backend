@@ -22,6 +22,12 @@ inf:
       catalog: profile
       user: sa
       pwd: Passw0rd1!
+    rewards:
+      host: sql
+      port: "1433"
+      catalog: rewards
+      user: sa
+      pwd: Passw0rd1!
     coupons:
       user: tt-user
       pwd: Passw0rd1!
@@ -69,6 +75,8 @@ inf:
       path: /login-api      
     cart:
       path: /cart-api
+    rewardsregistration:
+      path: /rewards-registration-api
   apiurls:
     popularproductsapiurl: http://popularproducts
     productsapiurl: http://product 
@@ -78,8 +86,8 @@ inf:
     imageclassifierapiurl: http://imageclassifier
     loginapiurl: http://login
   registrationusers:
-    registerusers: "false"
-    registrationusersurl: "TODO DEMI"
+    registerusers: false
+    registrationusersurl: http://rewards-registration/UserService.svc
 az:
   productvisitsurl: ""
 

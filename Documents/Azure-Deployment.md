@@ -14,7 +14,7 @@ Azure portal will ask you for the following parameters:
 * `servicePrincipalSecret`: Password of the service principal
 * `sqlServerAdministratorLogin`: Name of the user for the databases
 * `sqlServerAdministratorLoginPassword`: Password for the user of the databases
-* `aksVersion`: AKS version to use.
+* `aksVersion`: AKS version to use (at least 1.14).
 * `pgversion`: Version of the Azure database for PostgreSQL to install. Defaults to `10`.
 
 The deployment could take more than 10 minutes, and once finished all needed resources will be created:
@@ -48,7 +48,7 @@ If these two parameters are not passed a new service principal will be created.
 There are three additional optional parameters to control some aspects of what is created:
 
 * `-dbAdmin`: Name of the user of all databases. Defaults to `ttadmin`
-* `-dbPassword`: Passwowrd of the user of all databases. Defaults to `Passw0rd1!`
+* `-dbPassword`: Password of the user of all databases. Defaults to `Passw0rd1!`
 * `-deployAks`: If set to `$false` AKS and ACR are not created. This is useful if you want to create the AKS yourself or use an existing AKS. Defaults to `$true`. If this parameter is `$true` the resource group can't exist (AKS must be deployed in a new resource group).
 
 Once script finishes, everything is installed. If a service principal has been created, the script will output the service principal details - _please, take note of the appId and password properties for use them in the AKS deployment_ 

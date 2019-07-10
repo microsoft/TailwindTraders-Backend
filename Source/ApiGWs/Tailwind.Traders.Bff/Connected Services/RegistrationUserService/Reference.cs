@@ -7,6 +7,8 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
+using System;
+
 namespace RegistrationUserService
 {
     
@@ -94,6 +96,11 @@ namespace RegistrationUserService
                 result.ReaderQuotas = System.Xml.XmlDictionaryReaderQuotas.Max;
                 result.MaxReceivedMessageSize = int.MaxValue;
                 result.AllowCookies = true;
+                result.ReaderQuotas.MaxArrayLength = Int32.MaxValue;
+                result.ReaderQuotas.MaxBytesPerRead = Int32.MaxValue;
+                result.ReaderQuotas.MaxDepth = Int32.MaxValue;
+                result.ReaderQuotas.MaxNameTableCharCount = Int32.MaxValue;
+                result.ReaderQuotas.MaxStringContentLength = Int32.MaxValue;
                 return result;
             }
             throw new System.InvalidOperationException(string.Format("Could not find endpoint with name \'{0}\'.", endpointConfiguration));
