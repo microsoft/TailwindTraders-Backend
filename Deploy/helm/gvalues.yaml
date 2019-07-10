@@ -81,7 +81,7 @@ inf:
     imageclassifierapiurl: http://imageclassifier
     loginapiurl: http://login
   registrationusers:
-    registerusers: true
+    registerusers: false
     registrationusersurl: http://rewards-registration/UserService.svc
 az:
   productvisitsurl: ""
