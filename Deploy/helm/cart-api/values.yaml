@@ -28,6 +28,7 @@ env:
     - name: AUTHKEY
     - name: HOST
     - name: ISSUER
+    - name: UseB2C
     - name: SECURITYKEY
     - name: tenantID
     - name: clientID
