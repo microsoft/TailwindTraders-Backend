@@ -1,29 +1,29 @@
 replicaCount: 1
 applicationName: tailwindtraders
 
- image:
+image:
   repository: tailwindtradersacr.azurecr.io/rewards.registration.api
   tag: prod
   pullPolicy: Always
 
- service:
+service:
   type: ClusterIP
   port: 80
 
- resources:
+resources:
   limits:
     cpu: "500m"
   requests:
     cpu: "100m"
 
- nodeSelector:
-  "beta.kubernetes.io/os": windows
+nodeSelector:
+  "kubernetes.io/os": windows
 
- tolerations: []
+tolerations: []
 
- affinity: {}
+affinity: {}
 
- env:
+env:
   configmap:
     - name: ConnectionString
     - name: SecurityKey

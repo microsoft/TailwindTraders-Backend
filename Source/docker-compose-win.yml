@@ -1,6 +1,6 @@
 version: '3.4'
 
- services:
+services:
   rewards.registration.api:
     image: ${REGISTRY:-tailwindtraders}/rewards.registration.api:${TAG:-latest}
     build:
