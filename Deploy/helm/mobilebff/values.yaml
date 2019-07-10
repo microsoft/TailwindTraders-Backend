@@ -33,6 +33,8 @@ env:
     - name: ISSUER
     - name: SECURITYKEY
     - name: LoginApiUrl
+    - name: RegisterUsers
+    - name: RegistrationUsersEndpoint
   values:
     - name: ASPNETCORE_ENVIRONMENT
       value: Development

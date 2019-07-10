@@ -5,9 +5,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using RegistrationUserService;
 using System;
+using System.ServiceModel;
 using Tailwind.Traders.MobileBff;
 using Tailwind.Traders.MobileBff.Infrastructure;
+using Tailwind.Traders.MobileBff.Services;
+using static RegistrationUserService.UserServiceClient;
 
 namespace Tailwind.Traders.Bff
 {
@@ -27,6 +31,11 @@ namespace Tailwind.Traders.Bff
             services.AddHttpClientServices(Configuration);
 
             services.Configure<AppSettings>(Configuration);
+            services.AddTransient<IUserService>(_ => new UserServiceClient(
+                EndpointConfiguration.BasicHttpBinding_IUserService,
+                new EndpointAddress(Configuration["RegistrationUsersEndpoint"])));
+
+            services.AddTransient<IRegisterService, RegisterService>();
 
             services.AddSwaggerGen(options =>
             {

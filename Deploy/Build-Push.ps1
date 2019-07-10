@@ -3,7 +3,8 @@ Param(
     [parameter(Mandatory=$true)][string]$acrName,
     [parameter(Mandatory=$false)][bool]$dockerBuild=$true,
     [parameter(Mandatory=$false)][bool]$dockerPush=$true,
-    [parameter(Mandatory=$false)][string]$dockerTag="latest"
+    [parameter(Mandatory=$false)][string]$dockerTag="latest",
+    [parameter(Mandatory=$false)][bool]$isWindows=$false
 )
 
 Write-Host "---------------------------------------------------" -ForegroundColor Yellow
@@ -13,6 +14,7 @@ $acrLoginServer=$(az acr show -g $resourceGroup -n $acrName -o json | ConvertFro
 $acrCredentials=$(az acr credential show -g $resourceGroup -n $acrName -o json | ConvertFrom-Json)
 $acrPwd=$acrCredentials.passwords[0].value
 $acrUser=$acrCredentials.username
+$dockerComposeFile= If ($isWindows) {".\docker-compose-win.yml"} Else {".\docker-compose.yml"}
 
 if ($dockerBuild) {
     Write-Host "---------------------------------------------------" -ForegroundColor Yellow
@@ -23,7 +25,7 @@ if ($dockerBuild) {
     Push-Location ..\Source
     $env:TAG=$dockerTag
     $env:REGISTRY=$acrLoginServer 
-    docker-compose build
+    docker-compose -f $dockerComposeFile build
     Pop-Location
 }
 
@@ -33,9 +35,10 @@ if ($dockerPush) {
     Write-Host "---------------------------------------------------" -ForegroundColor Yellow
     Push-Location ..\Source
     docker login -p $acrPwd -u $acrUser $acrLoginServer
+    az acr login -n $acr
     $env:TAG=$dockerTag
     $env:REGISTRY=$acrLoginServer 
-    docker-compose push
+    docker-compose -f $dockerComposeFile push
     Pop-Location
 }
 

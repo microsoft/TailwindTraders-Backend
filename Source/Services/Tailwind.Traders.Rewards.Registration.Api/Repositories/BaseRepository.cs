@@ -9,7 +9,8 @@ namespace Tailwind.Traders.Rewards.Registration.Api.Repositories
         private readonly SqlConnection _sqlConnection;
         public BaseRepository(string connectionString)
         {
-            _sqlConnection = new SqlConnection(connectionString);
+            var actualConnection = Environment.GetEnvironmentVariable("ConnectionString") ?? connectionString;
+            _sqlConnection = new SqlConnection(actualConnection);
         }
 
         protected SqlConnection Connection
@@ -26,7 +27,7 @@ namespace Tailwind.Traders.Rewards.Registration.Api.Repositories
 
         protected DataTable ExecuteSelect(string query, SqlParameter[] parameters)
         {
-            DataTable table = null;
+            DataTable table = new DataTable();
             using (SqlCommand command = new SqlCommand(query, Connection))
             {
                 if (parameters != null)

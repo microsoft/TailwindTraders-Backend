@@ -24,6 +24,12 @@ inf:
       catalog: profile
       user: sa
       pwd: Passw0rd1!
+    rewards:
+      host: sql.ttrinfra
+      port: "1433"
+      catalog: rewards
+      user: sa
+      pwd: Passw0rd1!
     coupons:
       user: tt-user
       pwd: Passw0rd1!
@@ -73,6 +79,9 @@ inf:
     stockapiurl: http://stock
     imageclassifierapiurl: http://imageclassifier
     loginapiurl: http://login
+  registrationusers:
+    registerusers: false
+    registrationusersurl: http://rewards-registration/UserService.svc
 az:
   productvisitsurl: ""
 
@@ -96,6 +105,16 @@ ingress:
 sec:
   issuer: TTFakeLogin
   securityKey: nEpLzQJGNSCNL5H6DIQCtTdNxf5VgAGcBbtXLms1YDD01KJBAs0WVawaEjn97uwB
+
+B2C:
+  UseB2C: "false"
+  B2CIssuer: ""
+  Authority: ""
+  tenantID: ""
+  clientID: ""
+  policyName: ""
+  identityMetadata: ""
+  issuer: ""
 
 # Autoscaling global settings
 hpa:

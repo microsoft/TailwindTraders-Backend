@@ -335,6 +335,7 @@ ASALocalRun/
 Deploy/helm/__values/*
 !Deploy/helm/__values/readme.txt
 
+Source\Services\Tailwind.Traders.Rewards.Registration.Api\Properties\PublishProfiles\*.pubxml
 Source/Services/Tailwind.Traders.Cart.Api/.env
 
 /Source/.env

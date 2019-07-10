@@ -1,0 +1,20 @@
+{{- $name := include "tt-rewards-registration.fullname" . -}}
+{{- $sqlsrv := .Values.inf.db.rewards.host -}}
+{{- $sqlport := .Values.inf.db.rewards.port -}}
+{{- $sqldb := .Values.inf.db.rewards.catalog -}}
+{{- $sqluser := .Values.inf.db.rewards.user -}}
+{{- $sqlpwd := .Values.inf.db.rewards.pwd -}}
+
+ apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "cfg-{{ $name }}"
+  labels:
+    app: {{ template "tt-rewards-registration.name" . }}
+    chart: {{ template "tt-rewards-registration.chart" .}}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+data:
+  ConnectionString: Server={{ $sqlsrv }},{{ $sqlport }};Initial Catalog={{ $sqldb }};Persist Security Info=False;User ID={{ $sqluser }};Password={{ $sqlpwd }};MultipleActiveResultSets=False;Connection Timeout=30;
+  Issuer: {{ .Values.sec.issuer }}
+  SecurityKey: {{ .Values.sec.securityKey }}
