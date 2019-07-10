@@ -2,7 +2,7 @@
 {{- $fullName := include "tt-rewards-registration.fullname" . -}}
 {{- $ingressPath := .Values.inf.ingress.rewardsregistration.path -}}
 
- apiVersion: extensions/v1beta1
+apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: {{ $fullName }}

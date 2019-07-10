@@ -15,6 +15,7 @@ data:
   HOST: {{ .Values.inf.db.cart.host }}
   ISSUER: {{ .Values.sec.issuer }}
   SECURITYKEY: {{ .Values.sec.securityKey }}
+  UseB2C: {{ .Values.B2C.UseB2C | quote }}
   tenantID: {{ .Values.B2C.tenantID }}
   clientID: {{ .Values.B2C.clientID }}
   policyName: {{ .Values.B2C.policyName }}

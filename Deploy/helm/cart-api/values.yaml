@@ -16,7 +16,8 @@ resources:
   requests:
     cpu: "100m"
 
-nodeSelector: {}
+nodeSelector:
+  "kubernetes.io/os": linux
 
 tolerations: []
 
@@ -27,6 +28,7 @@ env:
     - name: AUTHKEY
     - name: HOST
     - name: ISSUER
+    - name: UseB2C
     - name: SECURITYKEY
     - name: tenantID
     - name: clientID
