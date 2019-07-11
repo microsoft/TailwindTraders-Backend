@@ -6,6 +6,7 @@ This repository contains all code + deployment scripts for the Tailwind Traders 
 
 ## Table of contents
 
+* [Repositories](#repositories)
 * [Deployment scenarios](#deployment-scenarios)
     * [Deploy Tailwind Traders Backend on Azure AKS and Azure resources (SQL Azure, CosmosDb, Storage accounts)](#deploy-resources)
     * [Deploy Tailwind Traders Backend on Windows and Linux containers in AKS](#deploy-win-linux-containers)
@@ -13,9 +14,10 @@ This repository contains all code + deployment scripts for the Tailwind Traders 
 * [Run Tailwind Traders Backend Services Locally](#run-backend-locally)
 * [Run Tailwind Traderes Backend using Devspaces](#run-devspaces)
 * [Test image classiffier](#test-image)
+* [Contributing](#contributing)
 
 
-# Repositories
+# <a name="repositories"></a>Repositories
 
 For this demo reference, we built several consumer and line-of-business applications and a set of backend services. You can find all repositories in the following locations:
 
@@ -29,10 +31,10 @@ For this demo reference, we built several consumer and line-of-business applicat
 
 # <a name="deployment-scenarios"></a>Deployment scenarios
 
-Tailwind Traders supports two deployment scenarios:
-* [Deploy Tailwind Traders Backend on Azure AKS and Azure resources (SQL Azure, CosmosDb, Storage accounts)](#deploy-resources)
-* [Deploy Tailwind Traders Backend on Windows and Linux containers in AKS](#deploy-win-linux-containers)
-* [Deploy everything on AKS](#deploy-everything-aks)
+Tailwind Traders supports three deployment scenarios:
+1. [Deploy Tailwind Traders Backend on Azure AKS and Azure resources (SQL Azure, CosmosDb, Storage accounts)](#deploy-resources)
+2. [Deploy Tailwind Traders Backend on Windows and Linux containers in AKS](#deploy-win-linux-containers)
+3. [Deploy everything on AKS](#deploy-everything-aks)
 
 ## <a name="deploy-resources"></a>Deploy Tailwind Traders on AKS and Azure Resources (SQL Azure, CosmosDb, Storage accounts)
 
@@ -382,7 +384,7 @@ Events:
   Normal  CertObtained    9m    cert-manager  Obtained certificate from ACME server
   Normal  CertIssued      9m    cert-manager  Certificate issued successfully
 ```
-
+---
 ## <a name="deploy-win-linux-containers"></a>Using AKS with Windows and Linux containers
 
 This version allows us to deploy Windows and Linux containers. We need to create and Azure Kubernetes Service (AKS) with 1.14 version. This AKS version is in preview, so you must execute the following command:
@@ -531,7 +533,7 @@ To run the Backend using Visual Studio, just open the `Tailwind.Traders.Backend.
 
 Tailwind Traders supports [Azure Devspaces](https://docs.microsoft.com/en-us/azure/dev-spaces/). Follow the steps in this document to deploy Tailwind traders under devspaces.
 
-**Note**: There is an [end-to-end Devspaces demo](./Documents/Demoscripts/DevspacesJava/demoscript.md).
+**Note**: There is an [end-to-end Devspaces demo](https://github.com/microsoft/TailwindTraders/tree/master/Documents/DemoScripts/Managing%20backend%20with%20Azure%20Kubernetes%20Service%20(AKS)).
 
 ### Requeriments
 
@@ -766,10 +768,10 @@ The response should be similar to:
 
 
 You have sample images to test this feature in:
-* [Documents/Images/ImageClassiffier/](Documents/Images/ImageClassiffier/)
+* [Documents/Images/ImageClassiffier](Documents/Images/ImageClassiffier/)
 
 
-# Contributing
+# <a name="contributing"></a>Contributing
 
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a
 Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
