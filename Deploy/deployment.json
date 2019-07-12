@@ -65,7 +65,7 @@
     {
       "type": "Microsoft.ContainerService/managedClusters",
       "name": "[variables('aks_name')]",
-      "apiVersion": "2018-03-31",
+      "apiVersion": "2019-02-01",
       "location": "[resourceGroup().location]",
       "tags": {},
       "properties": {
