@@ -16,12 +16,10 @@
       "type": "securestring"
     },
     "aksVersion": {
-      "type": "string",
-      "defaultValue": "1.14"
+      "type": "string"
     },
     "pgversion": {
-      "type": "string",
-      "defaultValue": "10"
+      "type": "string"
     }
   },
   "variables": {
