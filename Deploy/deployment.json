@@ -91,14 +91,6 @@
             "osType": "Linux",
             "osDiskSizeGB": 0,
             "storageProfile": "ManagedDisks"
-          },
-          {
-            "name": "npwin",
-            "count": 2,
-            "vmSize": "Standard_D2s_v3",
-            "osType": "Windows",
-            "osDiskSizeGB": 0,
-            "storageProfile": "ManagedDisks"
           }
         ],
         "servicePrincipalProfile": {
