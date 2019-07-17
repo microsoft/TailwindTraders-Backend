@@ -36,6 +36,13 @@ spec:
             - name: http
               containerPort: 27017
               protocol: TCP
+          volumeMounts:
+          - mountPath: "/data/db"
+            name: volume
+      volumes:
+        - name: volume
+          persistentVolumeClaim:
+            claimName: mongo-volume
           resources:
 {{ toYaml .Values.resources | indent 12 }}
     {{- with .Values.nodeSelector }}

@@ -32,6 +32,17 @@ service:
     type: ClusterIP
     port: 5432
 
+volumes:
+  sql:
+    storage: 5Gi
+    storageClass: default
+  postgresql:
+    storage: 5Gi
+    storageClass: default
+  mongo:
+    storage: 5Gi
+    storageClass: default
+
 resources: {}
 
 nodeSelector:
