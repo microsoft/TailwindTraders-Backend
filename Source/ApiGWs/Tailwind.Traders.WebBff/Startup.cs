@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -13,6 +14,7 @@ using System;
 using System.ServiceModel;
 using System.Text;
 using System.Threading;
+using Tailwind.Traders.WebBff.Extensions;
 using Tailwind.Traders.WebBff.Helpers;
 using Tailwind.Traders.WebBff.Infrastructure;
 using Tailwind.Traders.WebBff.Services;
@@ -61,9 +63,8 @@ namespace Tailwind.Traders.WebBff
 
             services.AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Latest)
-
-
-            .Services
+                .Services
+                .AddHealthChecks(Configuration)
                 .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
@@ -104,6 +105,13 @@ namespace Tailwind.Traders.WebBff
                 .AllowAnyMethod()
                 .AllowCredentials();
             });
+
+            app.UseHealthChecks("/liveness", new HealthCheckOptions
+            {
+                Predicate = r => r.Name.Contains("self")
+            });
+
+            app.UseHealthChecks("/readiness");
 
             app.UseAuthentication();
             app.UseMvc();

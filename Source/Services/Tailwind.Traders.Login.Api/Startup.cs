@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Tailwind.Traders.Login.Api.Extensions;
 using Tailwind.Traders.Login.Api.Services;
 
 namespace Tailwind.Traders.Login.Api
@@ -22,7 +24,9 @@ namespace Tailwind.Traders.Login.Api
         {
 
             // Services
-            services.AddSingleton<ITokenHandlerService, TokenHandlerService>();
+            services
+                .AddSingleton<ITokenHandlerService, TokenHandlerService>()
+                .AddHealthChecks(_configuration);
 
             services.AddApiVersioning(options =>
             {
@@ -46,6 +50,11 @@ namespace Tailwind.Traders.Login.Api
             {
                 app.UseHsts();
             }
+
+            app.UseHealthChecks("/liveness", new HealthCheckOptions
+            {
+                Predicate = r => r.Name.Contains("self")
+            });
 
             app.UseHttpsRedirection();
             app.UseMvc();

@@ -1,13 +1,10 @@
-﻿using System.Text;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.Tokens;
 using Tailwind.Traders.Profile.Api.Extensions;
 using Tailwind.Traders.Profile.Api.Infrastructure;
 using Tailwind.Traders.Profile.Api.Models;
@@ -30,6 +27,7 @@ namespace Tailwind.Traders.Profile.Api
                 .AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Latest)
                 .Services
+                .AddHealthChecks(Configuration)
                 .AddProfileContext(Configuration)
                 .AddModulesProfile();
 
@@ -65,6 +63,13 @@ namespace Tailwind.Traders.Profile.Api
                 .AllowAnyHeader()
                 .AllowAnyMethod();
             });
+
+            app.UseHealthChecks("/liveness", new HealthCheckOptions
+            {
+                Predicate = r => r.Name.Contains("self")
+            });
+
+            app.UseHealthChecks("/readiness");
 
             app.UseHttpsRedirection();
             app.UseAuthentication();
