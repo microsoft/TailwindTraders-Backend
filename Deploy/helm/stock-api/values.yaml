@@ -38,4 +38,4 @@ probes:
     path: /liveness
     initialDelaySeconds: 100
     periodSeconds: 30
-    port: 80
+    port: http
