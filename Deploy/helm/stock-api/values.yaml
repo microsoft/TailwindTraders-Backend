@@ -36,6 +36,6 @@ env:
 probes:
   liveness:
     path: /liveness
-    initialDelaySeconds: 20
+    initialDelaySeconds: 100
     periodSeconds: 30
     port: 80
