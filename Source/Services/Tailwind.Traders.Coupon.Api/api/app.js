@@ -2,6 +2,7 @@
 
 const routes = require('./config/route');
 const handlerError = require('./middlewares/handlerError');
+const handlerHealthCheck = require('./middlewares/handlerHealthCheck');
 
 const logger = require('morgan');
 const bodyParser = require('body-parser');
@@ -16,6 +17,7 @@ app.use(cors());
 
 routes.add(app);
 
+app.use(handlerHealthCheck);
 app.use(handlerError);
 
 module.exports = app;
