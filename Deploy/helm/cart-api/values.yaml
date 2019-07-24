@@ -38,3 +38,10 @@ env:
   values:
     - name: DISABLE_SSL
       value: "false"  
+
+probes:
+  liveness:
+    path: /liveness
+    initialDelaySeconds: 20
+    periodSeconds: 30
+    port: http

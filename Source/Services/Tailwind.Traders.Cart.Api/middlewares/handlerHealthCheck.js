@@ -1,4 +1,4 @@
-﻿'use strict';
+'use strict';
 
 module.exports = (req, res, next) => {
     if(req.url == '/liveness') {
