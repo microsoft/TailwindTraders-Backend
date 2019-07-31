@@ -44,3 +44,10 @@ env:
   values:
     - name: ASPNETCORE_ENVIRONMENT
       value: Development
+
+probes:
+  liveness:
+    path: /liveness
+    initialDelaySeconds: 20
+    periodSeconds: 30
+    port: http

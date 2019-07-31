@@ -8,6 +8,7 @@ const RecommededDao = require("./models/recommendedDao");
 const ensureAuthenticated = require('./middlewares/authorization');
 const ensureB2cAuthenticated = require('./middlewares/authorizationB2c');
 const setHeaders = require('./middlewares/headers');
+const handlerHealthCheck = require('./middlewares/handlerHealthCheck');
 const cors = require('cors');
 const express = require('express');
 const passport = require("passport");
@@ -24,6 +25,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cors());
 app.use(cookieParser());
+app.use(handlerHealthCheck);
 
 if (JSON.parse(authConfig.UseB2C)) {
 
@@ -43,6 +45,8 @@ if (JSON.parse(authConfig.UseB2C)) {
       done(null, {}, token);
     }
   );
+  
+  app.use('/', indexRouter);
 
   app.use(passport.initialize());
   passport.use(bearerStrategy);
@@ -53,8 +57,6 @@ if (JSON.parse(authConfig.UseB2C)) {
 }
 
 app.use(setHeaders);
-
-app.use('/', indexRouter);
 
 console.log(`Cosmos to use is ${config.host}`);
 const cosmosClientOptions = {

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Versioning;
@@ -21,7 +22,8 @@ namespace Tailwind.Traders.Product.Api
         {
             services.AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Latest)
-                .Services
+                .Services                
+                .AddHealthChecks(Configuration)
                 .AddApplicationInsightsTelemetry(Configuration)
                 .AddProductsContext(Configuration)
                 .AddModulesProducts(Configuration);
@@ -51,6 +53,13 @@ namespace Tailwind.Traders.Product.Api
                     .AllowAnyHeader()
                     .AllowAnyMethod();
             });
+
+            app.UseHealthChecks("/liveness", new HealthCheckOptions
+            {
+                Predicate = r => r.Name.Contains("self")
+            });
+
+            app.UseHealthChecks("/readiness");
 
             app.UseHttpsRedirection();
             app.UseMvc();

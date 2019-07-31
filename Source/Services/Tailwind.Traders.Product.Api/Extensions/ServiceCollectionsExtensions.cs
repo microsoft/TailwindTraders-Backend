@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using System;
 using System.Reflection;
 using Tailwind.Traders.Product.Api.Infrastructure;
@@ -45,6 +46,21 @@ namespace Tailwind.Traders.Product.Api.Extensions
             service.Configure<AppSettings>(configuration);
 
             return service;
+        }
+
+        public static IServiceCollection AddHealthChecks(this IServiceCollection services, IConfiguration configuration)
+        {
+            var hcBuilder = services.AddHealthChecks();
+
+            hcBuilder.AddCheck("self", () => HealthCheckResult.Healthy());
+
+            hcBuilder
+                .AddSqlServer(
+                    configuration["ConnectionString"],
+                    name: "ProductsDB-check",
+                    tags: new string[] { "productdb" });
+            
+            return services;
         }
     }
 }

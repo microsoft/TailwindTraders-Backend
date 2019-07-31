@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -9,6 +10,7 @@ using RegistrationUserService;
 using System;
 using System.ServiceModel;
 using Tailwind.Traders.MobileBff;
+using Tailwind.Traders.MobileBff.Extensions;
 using Tailwind.Traders.MobileBff.Infrastructure;
 using Tailwind.Traders.MobileBff.Services;
 using static RegistrationUserService.UserServiceClient;
@@ -28,7 +30,9 @@ namespace Tailwind.Traders.Bff
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddHttpClientServices(Configuration);
+            services
+                .AddHttpClientServices(Configuration)
+                .AddHealthChecks(Configuration);
 
             services.Configure<AppSettings>(Configuration);
             services.AddTransient<IUserService>(_ => new UserServiceClient(
@@ -74,6 +78,13 @@ namespace Tailwind.Traders.Bff
                 .AllowAnyMethod()
                 .AllowCredentials();
             });
+
+            app.UseHealthChecks("/liveness", new HealthCheckOptions
+            {
+                Predicate = r => r.Name.Contains("self")
+            });
+
+            app.UseHealthChecks("/readiness");
 
             app.UseSwagger()
               .UseSwaggerUI(c =>

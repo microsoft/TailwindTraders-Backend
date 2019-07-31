@@ -32,10 +32,19 @@ spec:
             value: ttadmin
           - name: POSTGRES_DB
             value: stockdb
+          - name: PGDATA
+            value: /var/lib/postgresql/data/pgdata
           ports:
             - name: http
               containerPort: 5432
               protocol: TCP
+          volumeMounts:
+          - mountPath: "/var/lib/postgresql/data"
+            name: volume
+      volumes:
+        - name: volume
+          persistentVolumeClaim:
+            claimName: postgresql-volume
           resources:
 {{ toYaml .Values.resources | indent 12 }}
     {{- with .Values.nodeSelector }}

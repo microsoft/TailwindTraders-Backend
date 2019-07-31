@@ -32,3 +32,10 @@ env:
     - name: sql_user_name
     - name: sql_user_password
   values: {}
+
+probes:
+  liveness:
+    path: /liveness
+    initialDelaySeconds: 100
+    periodSeconds: 30
+    port: http

@@ -36,6 +36,13 @@ spec:
             - name: http
               containerPort: 1433
               protocol: TCP
+          volumeMounts:
+          - mountPath: "/var/opt/mssql"
+            name: volume
+      volumes:
+        - name: volume
+          persistentVolumeClaim:
+            claimName: sql-volume
           resources:
 {{ toYaml .Values.resources | indent 12 }}
     {{- with .Values.nodeSelector }}

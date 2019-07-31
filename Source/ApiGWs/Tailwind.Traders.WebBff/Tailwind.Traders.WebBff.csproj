@@ -22,6 +22,7 @@
     <PackageReference Include="System.ServiceModel.Http" Version="4.4.*" />
     <PackageReference Include="System.ServiceModel.NetTcp" Version="4.4.*" />
     <PackageReference Include="System.ServiceModel.Security" Version="4.4.*" />
+    <PackageReference Include="AspNetCore.HealthChecks.Uris" Version="$(AspNetCore_HealthChecks_Uris)" />
   </ItemGroup>
 
   <ItemGroup>

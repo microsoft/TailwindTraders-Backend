@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Versioning;
@@ -52,6 +53,7 @@ namespace Tailwind.Traders.ImageClassifier.Api
                 .AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Latest)
                 .Services
+                .AddHealthChecks(Configuration)
                 .AddApplicationInsightsTelemetry(Configuration)
                 .AddModulesService(Configuration);
 
@@ -87,6 +89,11 @@ namespace Tailwind.Traders.ImageClassifier.Api
                     .AllowAnyOrigin()
                     .AllowAnyHeader()
                     .AllowAnyMethod();
+            });
+
+            app.UseHealthChecks("/liveness", new HealthCheckOptions
+            {
+                Predicate = r => r.Name.Contains("self")
             });
 
             app.UseSwagger()

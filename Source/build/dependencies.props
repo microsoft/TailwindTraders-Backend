@@ -27,5 +27,7 @@
     <MicrosoftMLTensorFlow>0.12.0</MicrosoftMLTensorFlow>
     <MicrosoftVisualStudioAzureContainersToolsTargets>1.1.1</MicrosoftVisualStudioAzureContainersToolsTargets>
     <SwashbuckleAspNetCore>3.0.0</SwashbuckleAspNetCore>
+    <AspNetCore_HealthChecks_SqlServer>2.2.0</AspNetCore_HealthChecks_SqlServer>
+    <AspNetCore_HealthChecks_Uris>2.2.2</AspNetCore_HealthChecks_Uris>
   </PropertyGroup>
 </Project>
