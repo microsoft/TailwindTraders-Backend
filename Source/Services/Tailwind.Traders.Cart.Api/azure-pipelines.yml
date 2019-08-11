@@ -23,4 +23,4 @@ stages:
     - task: Bash@3
       inputs:
         targetType: 'inline'
-        script: 'ls'
+        script: 'ls Source'
