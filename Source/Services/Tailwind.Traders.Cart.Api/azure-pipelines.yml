@@ -1,0 +1,157 @@
+variables:
+  azureSubscription: nepeters-azure
+  resourcegroup: tailwind-traders
+  location: eastus
+  ImageName: website
+  containerRegistryName: ttacrajie6a75n2mue
+  containerRegistryFqdn: ttacrajie6a75n2mue.azurecr.io
+  aks-cluster: tailwindtradersaksajie6a75n2mue
+  aks-cluster-rg: tailwind-traders
+  ingress: 8e1375690b8947f8adf2.eastus.aksapp.io
+
+stages:
+
+- stage: build
+  jobs:
+  - job: build
+
+    pool:
+      name: Hosted Ubuntu 1604
+
+    steps:
+
+    - task: AzureCLI@1
+      displayName: 'AZ ACR Login'
+      inputs:
+        azureSubscription: $(azureSubscription)
+        scriptLocation: inlineScript
+        inlineScript: 'az acr login --name $(containerRegistryName)'
+      condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+
+    - task: HelmDeploy@0
+      displayName: 'helm init --client-only'
+      inputs:
+        connectionType: None
+        command: init
+        arguments: '--client-only'
+      condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+
+    - task: HelmDeploy@0
+      displayName: 'helm package (tt-web)'
+      inputs:
+        command: package
+        chartPath: 'Deploy/helm/web'
+        arguments: '--version $(Build.BuildId)'
+      condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+
+    - task: AzureCLI@1
+      displayName: 'AZ ACR helm push (tt-web)'
+      inputs:
+        azureSubscription: $(azureSubscription)
+        scriptLocation: inlineScript
+        inlineScript: 'az acr helm push -n $(containerRegistryName) /home/vsts/work/1/a/web-$(Build.BuildId).tgz'
+      condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+
+    - task: CmdLine@2
+      displayName: 'docker build (tt-web)'
+      inputs:
+        script: |
+          cd Source/Tailwind.Traders.Web
+          docker build -t $(containerRegistryFqdn)/web:$(Build.BuildId) .
+      condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+
+    - task: CmdLine@2
+      displayName: 'docker push (tt-web)'
+      inputs:
+        script: |
+          docker push $(containerRegistryFqdn)/web:$(Build.BuildId)
+      condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Artifacts'
+      inputs:
+        PathtoPublish: '/home/vsts/work/1/s'
+        artifactName: 'drop' 
+
+
+- stage: release_pre_production
+  jobs:
+  - deployment: release_pre_production
+    displayName: release_pre_production
+    pool:
+      name: Hosted Ubuntu 1604
+    environment: pre-production
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+
+          - download: current
+            artifact: drop
+            patterns: '**/*'
+
+          - task: HelmDeploy@0
+            displayName: 'helm init --client-only'
+            inputs:
+              connectionType: None
+              command: init
+              arguments: '--client-only'
+
+          - task: AzureCLI@1
+            displayName: 'AZ ACR Login'
+            inputs:
+              azureSubscription: $(azureSubscription)
+              scriptLocation: inlineScript
+              inlineScript: 'az acr login --name $(containerRegistryName)'
+
+          - task: AzureCLI@1
+            inputs:
+              azureSubscription: 'nepeters-azure'
+              scriptLocation: 'inlineScript'
+              inlineScript: |
+                az acr login --name $(containerRegistryName)
+                az acr helm repo add --name $(containerRegistryName)
+                az aks get-credentials --name $(aks-cluster) --resource-group $(aks-cluster-rg) --admin
+                echo $(Release.Artifacts.drop.BuildId)
+                helm upgrade web $(containerRegistryName)/web --install -f /home/vsts/work/1/drop/Deploy/helm/gvalues.yaml --set ingress.protocol=http --set ingress.hosts={$(ingress)} --set image.repository=$(containerRegistryFqdn)/web --set image.tag=$(Build.BuildId)
+
+- stage: release_production
+  jobs:
+  - deployment: release_production
+    displayName: release_production
+    pool:
+      name: Hosted Ubuntu 1604
+    environment: pre-production
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+
+          - download: current
+            artifact: drop
+            patterns: '**/*'
+
+          - task: HelmDeploy@0
+            displayName: 'helm init --client-only'
+            inputs:
+              connectionType: None
+              command: init
+              arguments: '--client-only'
+
+          - task: AzureCLI@1
+            displayName: 'AZ ACR Login'
+            inputs:
+              azureSubscription: $(azureSubscription)
+              scriptLocation: inlineScript
+              inlineScript: 'az acr login --name $(containerRegistryName)'
+
+          - task: AzureCLI@1
+            inputs:
+              azureSubscription: 'nepeters-azure'
+              scriptLocation: 'inlineScript'
+              inlineScript: |
+                az acr login --name $(containerRegistryName)
+                az acr helm repo add --name $(containerRegistryName)
+                az aks get-credentials --name $(aks-cluster) --resource-group $(aks-cluster-rg) --admin
+                echo $(Release.Artifacts.drop.BuildId)
+                helm upgrade web $(containerRegistryName)/web --install -f /home/vsts/work/1/drop/Deploy/helm/gvalues.yaml --set ingress.protocol=http --set ingress.hosts={$(ingress)} --set image.repository=$(containerRegistryFqdn)/web --set image.tag=$(Build.BuildId)
