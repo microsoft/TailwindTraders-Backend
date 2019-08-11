@@ -20,7 +20,55 @@ stages:
 
     steps:
 
-    - task: Bash@3
+    - task: AzureCLI@1
+      displayName: 'AZ ACR Login'
       inputs:
-        targetType: 'inline'
-        script: 'ls Source/Services/Tailwind.Traders.Cart.Api'
+        azureSubscription: $(azureSubscription)
+        scriptLocation: inlineScript
+        inlineScript: 'az acr login --name $(containerRegistryName)'
+      condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+
+    - task: HelmDeploy@0
+      displayName: 'helm init --client-only'
+      inputs:
+        connectionType: None
+        command: init
+        arguments: '--client-only'
+      condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+
+    - task: HelmDeploy@0
+      displayName: 'helm package (tt-cart)'
+      inputs:
+        command: package
+        chartPath: 'Deploy/helm/cart-api'
+        arguments: '--version $(Build.BuildId)'
+      condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+
+    - task: AzureCLI@1
+      displayName: 'AZ ACR helm push (tt-cart)'
+      inputs:
+        azureSubscription: $(azureSubscription)
+        scriptLocation: inlineScript
+        inlineScript: 'az acr helm push -n $(containerRegistryName) /home/vsts/work/1/a/my-tt-cart-$(Build.BuildId).tgz'
+      condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+
+    - task: CmdLine@2
+      displayName: 'docker build (tt-cart)'
+      inputs:
+        script: |
+          cd Source/Services/Tailwind.Traders.Cart.Api
+          docker build -t $(containerRegistryFqdn)/cart.api:$(Build.BuildId) .
+      condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+
+    - task: CmdLine@2
+      displayName: 'docker push (tt-web)'
+      inputs:
+        script: |
+          docker push $(containerRegistryFqdn)/cart.api:$(Build.BuildId)
+      condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Artifacts'
+      inputs:
+        PathtoPublish: '/home/vsts/work/1/s'
+        artifactName: 'drop' 
