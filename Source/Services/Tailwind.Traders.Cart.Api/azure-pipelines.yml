@@ -23,4 +23,4 @@ stages:
     - task: Bash@3
       inputs:
         targetType: 'inline'
-        script: 'ls /Source/Services/Tailwind.Traders.Cart.Api'
+        script: 'ls /Source'
