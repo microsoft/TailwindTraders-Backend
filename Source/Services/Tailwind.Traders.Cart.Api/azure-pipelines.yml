@@ -1,16 +1,21 @@
 variables:
+  
+  # Azure
   azureSubscription: nepeters-azure
-  resourcegroup: tailwind-traders
-  location: eastus
-  ImageName: website
-  containerRegistryName: ttacrajie6a75n2mue
-  containerRegistryFqdn: ttacrajie6a75n2mue.azurecr.io
-  aks-cluster: tailwindtradersaksajie6a75n2mue
-  aks-cluster-rg: tailwind-traders
-  aks-cluster-pre-prod: tailwindtradersaksfasrhoie2wdak
-  aks-cluster-rg-pre-prod: tailwind-traders-pre-production
-  ingress: 8e1375690b8947f8adf2.eastus.aksapp.io
-  ingress-pre-prod: 8e1375690b8947f8adf2.eastus.aksapp.io
+
+  # Container Registry
+  containerRegistryName: ttacr5iny4v2wygm3k
+  containerRegistryFqdn: ttacr5iny4v2wygm3k.azurecr.io
+  containerRegistryName-pre-prod: ttacr5iny4v2wygm3k
+  containerRegistryFqdn-pre-prod: ttacr5iny4v2wygm3k.azurecr.io
+
+  # Azure Kubernetes Service
+  aks-cluster: tailwindtradersaks5iny4v2wygm3k
+  aks-cluster-rg: tailwind-production
+  aks-cluster-pre-prod: tailwindtradersakstbsxyzrioekbm
+  aks-cluster-rg-pre-prod: tailwind-pre-production
+  ingress: dcc025f1ea7b441cafc1.eastus.aksapp.io
+  ingress-pre-prod: 9462369e85774e3e90ee.eastus.aksapp.io
 
 stages:
 
