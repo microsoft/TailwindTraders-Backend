@@ -49,7 +49,7 @@ stages:
       inputs:
         azureSubscription: $(azureSubscription)
         scriptLocation: inlineScript
-        inlineScript: 'az acr helm push -n $(containerRegistryName) /home/vsts/work/1/a/my-tt-cart-$(Build.BuildId).tgz'
+        inlineScript: 'az acr helm push -n $(containerRegistryName) /home/vsts/work/1/a/cart-api-$(Build.BuildId).tgz'
       condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
 
     - task: CmdLine@2
