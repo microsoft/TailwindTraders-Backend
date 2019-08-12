@@ -45,6 +45,12 @@
         "addonProfiles": {
           "httpApplicationRouting": {
             "enabled": true
+          },
+          "omsagent": {
+            "enabled": true,
+            "config": {
+              "logAnalyticsWorkspaceResourceID": "[variables('omsWorkspaceId')]"
+            }
           }
         },
         "agentPoolProfiles": [
