@@ -7,7 +7,10 @@ variables:
   containerRegistryFqdn: ttacrajie6a75n2mue.azurecr.io
   aks-cluster: tailwindtradersaksajie6a75n2mue
   aks-cluster-rg: tailwind-traders
+  aks-cluster-pre-prod: tailwindtradersaksfasrhoie2wdak
+  aks-cluster-rg-pre-prod: tailwind-traders-pre-production
   ingress: 8e1375690b8947f8adf2.eastus.aksapp.io
+  ingress-pre-prod: 8e1375690b8947f8adf2.eastus.aksapp.io
 
 stages:
 
@@ -71,4 +74,84 @@ stages:
       displayName: 'Publish Artifacts'
       inputs:
         PathtoPublish: '/home/vsts/work/1/s'
-        artifactName: 'drop' 
+        artifactName: 'drop'
+
+- stage: release_pre_production
+  jobs:
+  - deployment: release_pre_production
+    displayName: release_pre_production
+    pool:
+      name: Hosted Ubuntu 1604
+    environment: pre-production
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+
+          - download: current
+            artifact: drop
+            patterns: '**/*'
+
+          - task: HelmDeploy@0
+            displayName: 'helm init --client-only'
+            inputs:
+              connectionType: None
+              command: init
+              arguments: '--client-only'
+
+          - task: AzureCLI@1
+            displayName: 'AZ ACR Login'
+            inputs:
+              azureSubscription: $(azureSubscription)
+              scriptLocation: inlineScript
+              inlineScript: 'az acr login --name $(containerRegistryName)'
+
+          - task: AzureCLI@1
+            inputs:
+              azureSubscription: 'nepeters-azure'
+              scriptLocation: 'inlineScript'
+              inlineScript: |
+                az acr login --name $(containerRegistryName)
+                az acr helm repo add --name $(containerRegistryName)
+                az aks get-credentials --name $(aks-cluster-pre-prod) --resource-group $(aks-cluster-rg-pre-prod) --admin
+                helm upgrade web $(containerRegistryName)/cart-api --install -f /home/vsts/work/1/drop/Deploy/helm/gvalues.yaml --set ingress.hosts={$(ingress-pre-prod)} --set image.repository=$(containerRegistryFqdn)/web --set image.tag=$(Build.BuildId)
+
+- stage: release_production
+  jobs:
+  - deployment: release_production
+    displayName: release_production
+    pool:
+      name: Hosted Ubuntu 1604
+    environment: pre-production
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+
+          - download: current
+            artifact: drop
+            patterns: '**/*'
+
+          - task: HelmDeploy@0
+            displayName: 'helm init --client-only'
+            inputs:
+              connectionType: None
+              command: init
+              arguments: '--client-only'
+
+          - task: AzureCLI@1
+            displayName: 'AZ ACR Login'
+            inputs:
+              azureSubscription: $(azureSubscription)
+              scriptLocation: inlineScript
+              inlineScript: 'az acr login --name $(containerRegistryName)'
+
+          - task: AzureCLI@1
+            inputs:
+              azureSubscription: 'nepeters-azure'
+              scriptLocation: 'inlineScript'
+              inlineScript: |
+                az acr login --name $(containerRegistryName)
+                az acr helm repo add --name $(containerRegistryName)
+                az aks get-credentials --name $(aks-cluster) --resource-group $(aks-cluster) --admin
+                helm upgrade web $(containerRegistryName)/cart-api --install -f /home/vsts/work/1/drop/Deploy/helm/gvalues.yaml --set ingress.hosts={$(ingress)} --set image.repository=$(containerRegistryFqdn)/web --set image.tag=$(Build.BuildId)
