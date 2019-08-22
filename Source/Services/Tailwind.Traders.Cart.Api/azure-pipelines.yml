@@ -119,7 +119,7 @@ stages:
                 az acr login --name $(containerRegistryName)
                 az acr helm repo add --name $(containerRegistryName)
                 az aks get-credentials --name $(aks-cluster-pre-prod) --resource-group $(aks-cluster-rg-pre-prod) --admin
-                helm upgrade web $(containerRegistryName)/cart-api --install -f /home/vsts/work/1/drop/Deploy/helm/gvalues.yaml --set ingress.hosts={$(ingress-pre-prod)} --set image.repository=$(containerRegistryFqdn)/web --set image.tag=$(Build.BuildId)
+                helm upgrade my-tt-cart $(containerRegistryName)/cart-api --install -f /home/vsts/work/1/drop/Deploy/helm/gvalues.yaml --set ingress.hosts={$(ingress-pre-prod)} --set image.repository=$(containerRegistryFqdn)/cart.api --set image.tag=$(Build.BuildId)
 
 - stage: release_production
   jobs:
@@ -159,4 +159,4 @@ stages:
                 az acr login --name $(containerRegistryName)
                 az acr helm repo add --name $(containerRegistryName)
                 az aks get-credentials --name $(aks-cluster) --resource-group $(aks-cluster) --admin
-                helm upgrade web $(containerRegistryName)/cart-api --install -f /home/vsts/work/1/drop/Deploy/helm/gvalues.yaml --set ingress.hosts={$(ingress)} --set image.repository=$(containerRegistryFqdn)/web --set image.tag=$(Build.BuildId)
+                helm upgrade my-tt-cart $(containerRegistryName)/cart-api --install -f /home/vsts/work/1/drop/Deploy/helm/gvalues.yaml --set ingress.hosts={$(ingress-pre-prod)} --set image.repository=$(containerRegistryFqdn)/cart.api --set image.tag=$(Build.BuildId)
