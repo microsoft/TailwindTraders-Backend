@@ -127,7 +127,7 @@ stages:
     displayName: release_production
     pool:
       name: Hosted Ubuntu 1604
-    environment: pre-production
+    environment: production
     strategy:
       runOnce:
         deploy:
