@@ -14,7 +14,7 @@ variables:
   containerRegistryName-pre-prod: ttacrbfhhvynll7sie
   containerRegistryFqdn-pre-prod: ttacrbfhhvynll7sie.azurecr.io
   aks-cluster-pre-prod: tailwindtradersaksbfhhvynll7sie
-  aks-cluster-rg-pre-prod: tailwind-pre-production
+  aks-cluster-rg-pre-prod: twt-aks-cluster-pre-production
   ingress-pre-prod: 8b0d337f2ff1469b97be.eastus2.aksapp.io
 
 stages:
