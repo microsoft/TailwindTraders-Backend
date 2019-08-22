@@ -13,6 +13,7 @@ type Configuration struct {
 	SecurityKey      string
 	Issuer           string
 	AzureStorageUrl  string
+	ApplicationInsightsIK string
 }
 
 func Load() {

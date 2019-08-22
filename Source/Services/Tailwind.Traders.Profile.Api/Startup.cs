@@ -41,6 +41,13 @@ namespace Tailwind.Traders.Profile.Api
                 options.DefaultApiVersion = new ApiVersion(1, 0);
                 options.ApiVersionReader = new QueryStringApiVersionReader();
             });
+
+            var appInsightsIK = Configuration["ApplicationInsights:InstrumentationKey"];
+
+            if (!string.IsNullOrEmpty(appInsightsIK))
+            {
+                services.AddApplicationInsightsTelemetry(appInsightsIK);
+            }
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -57,6 +57,13 @@ namespace Tailwind.Traders.ImageClassifier.Api
                 .AddApplicationInsightsTelemetry(Configuration)
                 .AddModulesService(Configuration);
 
+            var appInsightsIK = Configuration["ApplicationInsights:InstrumentationKey"];
+
+            if (!string.IsNullOrEmpty(appInsightsIK))
+            {
+                services.AddApplicationInsightsTelemetry(appInsightsIK);
+            }
+
             services.AddApiVersioning(options =>
             {
                 options.ReportApiVersions = true;

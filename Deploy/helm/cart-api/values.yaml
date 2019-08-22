@@ -25,6 +25,7 @@ affinity: {}
 
 env:
   configmap:
+    - name: APPLICATIONINSIGHTSIK
     - name: AUTHKEY
     - name: HOST
     - name: ISSUER
@@ -37,7 +38,7 @@ env:
     - name: issuer
   values:
     - name: DISABLE_SSL
-      value: "false"  
+      value: "false"
 
 probes:
   liveness:

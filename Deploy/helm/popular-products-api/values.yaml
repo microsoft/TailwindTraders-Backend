@@ -2,15 +2,14 @@ replicaCount: 1
 applicationName: tailwindtraders
 
 image:
-  repository:  tailwindtradersacr.azurecr.io/popular-product.api
+  repository: tailwindtradersacr.azurecr.io/popular-product.api
   tag: prod
   pullPolicy: Always
 
 initImage:
-  repository:  tailwindtradersacr.azurecr.io/popular-product-seed.api
+  repository: tailwindtradersacr.azurecr.io/popular-product-seed.api
   tag: prod
   pullPolicy: Always
-
 
 service:
   type: ClusterIP
@@ -31,7 +30,7 @@ affinity: {}
 
 env:
   configmap:
-    - name: ApplicationInsights__InstrumentationKey
+    - name: ApplicationInsightsIK
     - name: ConnectionString
     - name: AzureStorageUrl
     - name: ISSUER

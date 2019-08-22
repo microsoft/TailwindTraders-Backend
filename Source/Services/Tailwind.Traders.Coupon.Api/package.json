@@ -11,6 +11,7 @@
     "name": "Erik Pique Terron"
   },
   "dependencies": {
+    "applicationinsights": "^1.4.1",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.15.0",
     "cors": "^2.8.4",
