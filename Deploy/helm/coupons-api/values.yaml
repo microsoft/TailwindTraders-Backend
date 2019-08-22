@@ -25,7 +25,7 @@ affinity: {}
 
 env:
   configmap:
-    - name: ApplicationInsights__InstrumentationKey
+    - name: APPLICATIONINSIGHTSIK
     - name: CONNECTIONSTRING
     - name: COUPON_COLLECTION
     - name: URL_BASE

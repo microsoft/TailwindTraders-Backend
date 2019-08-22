@@ -9,13 +9,13 @@ metadata:
   name: "cfg-{{ $name }}"
   labels:
     app: {{ template "tt-coupons.name" . }}
-    chart: {{ template "tt-coupons.chart" .}}
+    chart: {{ template "tt-coupons.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 data:
-  ApplicationInsights__InstrumentationKey:  {{ .Values.inf.appinsights.id }}
   CONNECTIONSTRING: {{ $constr }}
   COUPON_COLLECTION: {{ $collection }}
   URL_BASE: {{ $imagebaseurl }}
   ISSUER: {{ .Values.sec.issuer }}
   SECURITYKEY: {{ .Values.sec.securityKey }}
+  APPLICATIONINSIGHTSIK:  {{ .Values.inf.appinsights.id }} 

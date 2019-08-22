@@ -61,6 +61,13 @@ namespace Tailwind.Traders.WebBff
                 options.ApiVersionReader = new QueryStringApiVersionReader();
             });
 
+            var appInsightsIK = Configuration["ApplicationInsights:InstrumentationKey"];
+
+            if (!string.IsNullOrEmpty(appInsightsIK))
+            {
+                services.AddApplicationInsightsTelemetry(appInsightsIK);
+            }
+
             services.AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Latest)
                 .Services

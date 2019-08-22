@@ -87,7 +87,13 @@
 			<version>2.6.1</version>
 			<scope>compile</scope>
 		</dependency>
-
+		
+		<dependency>
+			<groupId>com.microsoft.azure</groupId>
+			<artifactId>applicationinsights-spring-boot-starter</artifactId>
+			<version>1.0.1-BETA</version>
+		</dependency>
+		
 	</dependencies>
 
 	<build>

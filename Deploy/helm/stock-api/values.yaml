@@ -25,7 +25,7 @@ affinity: {}
 
 env:
   configmap:
-    - name: ApplicationInsights
+    - name: APPLICATION_INSIGHTS_IKEY
     - name: ISSUER
     - name: SECURITYKEY
     - name: sql_server_url

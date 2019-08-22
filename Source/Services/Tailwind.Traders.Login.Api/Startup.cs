@@ -28,6 +28,13 @@ namespace Tailwind.Traders.Login.Api
                 .AddSingleton<ITokenHandlerService, TokenHandlerService>()
                 .AddHealthChecks(_configuration);
 
+            var appInsightsIK = _configuration["ApplicationInsights:InstrumentationKey"];
+
+            if (!string.IsNullOrEmpty(appInsightsIK))
+            {
+                services.AddApplicationInsightsTelemetry(appInsightsIK);
+            }
+
             services.AddApiVersioning(options =>
             {
                 options.ReportApiVersions = true;

@@ -21,5 +21,6 @@ data:
   policyName: {{ .Values.B2C.policyName }}
   identityMetadata: {{ .Values.B2C.identityMetadata }}
   issuer: {{ .Values.B2C.issuer }}
+  APPLICATIONINSIGHTSIK:  {{ .Values.inf.appinsights.id }} 
 
 

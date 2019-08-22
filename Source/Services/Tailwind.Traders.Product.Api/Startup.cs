@@ -28,6 +28,13 @@ namespace Tailwind.Traders.Product.Api
                 .AddProductsContext(Configuration)
                 .AddModulesProducts(Configuration);
 
+            var appInsightsIK = Configuration["ApplicationInsights:InstrumentationKey"];
+
+            if (!string.IsNullOrEmpty(appInsightsIK))
+            {
+                services.AddApplicationInsightsTelemetry(appInsightsIK);
+            }
+
             services.AddApiVersioning(options =>
             {
                 options.ReportApiVersions = true;
