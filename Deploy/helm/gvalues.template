@@ -49,7 +49,7 @@ inf:
     couponimage: {{storage}}coupon-list
     profileimages: {{storage}}profiles-list
   appinsights:
-    id: ""
+    id: {{appinsightsik}}
   ingress:
     products:
       path: /product-api

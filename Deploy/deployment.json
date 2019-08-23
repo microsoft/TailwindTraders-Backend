@@ -20,6 +20,10 @@
     },
     "pgversion": {
       "type": "string"
+    },
+    "components_app_insights_name": {
+      "defaultValue": "tt-app-insights",
+      "type": "String"
     }
   },
   "variables": {
@@ -35,6 +39,18 @@
     "omsWorkspaceId": "[concat('/subscriptions/', subscription().subscriptionId,'/resourceGroups/',resourceGroup().name,'/providers/Microsoft.OperationalInsights/workspaces/', variables('workspaceName'))]"
   },
   "resources": [
+    {
+      "type": "microsoft.insights/components",
+      "apiVersion": "2015-05-01",
+      "name": "[parameters('components_app_insights_name')]",
+      "location": "eastus",
+      "kind": "web",
+      "properties": {
+        "Application_Type": "web",
+        "Flow_Type": "Redfield",
+        "Request_Source": "IbizaAIExtension"
+      }
+    },
     {
       "type": "Microsoft.ContainerRegistry/registries",
       "sku": {
@@ -166,7 +182,7 @@
         "size": "5120",
         "family": "Gen5"
       }
-    },    
+    },
     {
       "type": "Microsoft.Sql/servers",
       "name": "[variables('sqlserver_name')]",
