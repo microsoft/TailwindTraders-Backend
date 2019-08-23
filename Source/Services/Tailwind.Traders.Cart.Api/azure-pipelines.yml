@@ -104,13 +104,6 @@ stages:
               command: init
               arguments: '--client-only'
 
-          # - task: AzureCLI@1
-          #   displayName: 'AZ ACR Login'
-          #   inputs:
-          #     azureSubscription: $(azureSubscription)
-          #     scriptLocation: inlineScript
-          #     inlineScript: 'az acr login --name $(containerRegistryName)'
-
           - task: AzureCLI@1
             inputs:
               azureSubscription: 'nepeters-azure'
@@ -143,13 +136,6 @@ stages:
               connectionType: None
               command: init
               arguments: '--client-only'
-
-          # - task: AzureCLI@1
-          #   displayName: 'AZ ACR Login'
-          #   inputs:
-          #     azureSubscription: $(azureSubscription)
-          #     scriptLocation: inlineScript
-          #     inlineScript: 'az acr login --name $(containerRegistryName)'
 
           - task: AzureCLI@1
             inputs:
