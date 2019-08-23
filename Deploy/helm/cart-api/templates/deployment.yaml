@@ -30,8 +30,8 @@ spec:
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}
-          # image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          image: "{{ .Values.image.repository }}:32"
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          # image: "{{ .Values.image.repository }}:32"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
           {{- if .Values.env.values -}}
