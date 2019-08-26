@@ -11,11 +11,11 @@ variables:
   ingress: a8743d8c24e94be0b078.eastus2.aksapp.io
 
   # Azure Kubernetes Service pre-production
-  containerRegistryName-pre-prod: ttacrbfhhvynll7sie
-  containerRegistryFqdn-pre-prod: ttacrbfhhvynll7sie.azurecr.io
-  aks-cluster-pre-prod: tailwindtradersaksbfhhvynll7sie
-  aks-cluster-rg-pre-prod: twt-aks-cluster-pre-production
-  ingress-pre-prod: 8b0d337f2ff1469b97be.eastus2.aksapp.io
+  containerRegistryName-pre-prod: ttacrtbmpyz36gz5ya
+  containerRegistryFqdn-pre-prod: ttacrtbmpyz36gz5ya.azurecr.io
+  aks-cluster-pre-prod: tailwindtradersakstbmpyz36gz5ya
+  aks-cluster-rg-pre-prod: twt-aks-001
+  ingress-pre-prod: 8d346584cb31402cb1f5.eastus.aksapp.io
 
 stages:
 
