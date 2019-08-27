@@ -38,7 +38,7 @@ stages:
     - script: 'python -m pip install --upgrade pip && pip install pytest'
       displayName: 'Python Dependencies'
 
-    - script: 'pytest tests --doctest-modules --junitxml=junit/test-results.xml'
+    - script: 'pytest /tests --doctest-modules --junitxml=junit/test-results.xml'
       displayName: 'Python Tests'
 
     - task: PublishTestResults@2
