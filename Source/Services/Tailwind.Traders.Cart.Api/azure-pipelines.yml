@@ -107,13 +107,12 @@ stages:
             displayName: 'pwd / ls'
             inputs:
               script: |
-                pwd
                 ls
 
           - task: CmdLine@2
             displayName: 'Generate values file'
             inputs:
-              script: 'pwsh TailwindTraders-Backend/Deploy/Generate-Config.ps1 -resourceGroup $aks-cluster-rg-pre-prod -sqlPwd Password12 -outputFile values.yaml'
+              script: 'pwsh /home/vsts/work/1/drop/Deploy/Generate-Config.ps1 -resourceGroup $aks-cluster-rg-pre-prod -sqlPwd Password12 -outputFile values.yaml'
 
           - task: CmdLine@2
             displayName: 'pwd / ls'
