@@ -13,6 +13,7 @@ variables:
   # Azure Kubernetes Service pre-production
   containerRegistryName-pre-prod: ttacrkajeefnrcxzjy
   containerRegistryFqdn-pre-prod: ttacrkajeefnrcxzjy.azurecr.io
+  aks-cluster-rg-pre-prod: tailwind-aks-production
   aks-cluster-pre-prod: tailwindtradersakskajeefnrcxzjy
   ingress-pre-prod: f129a49c5dc14383a8da.eastus.aksapp.io
 
