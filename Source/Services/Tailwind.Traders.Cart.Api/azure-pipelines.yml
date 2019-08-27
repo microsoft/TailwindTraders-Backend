@@ -14,7 +14,6 @@ variables:
   containerRegistryName-pre-prod: ttacrkajeefnrcxzjy
   containerRegistryFqdn-pre-prod: ttacrkajeefnrcxzjy.azurecr.io
   aks-cluster-pre-prod: tailwindtradersakskajeefnrcxzjy
-  aks-cluster-rg-pre-prod: tailwind-aks-production
   ingress-pre-prod: f129a49c5dc14383a8da.eastus.aksapp.io
 
 stages:
@@ -104,6 +103,25 @@ stages:
               command: init
               arguments: '--client-only'
 
+          - task: CmdLine@2
+            displayName: 'pwd / ls'
+            inputs:
+              script: |
+                pwd
+                ls
+
+          - task: CmdLine@2
+            displayName: 'Generate values file'
+            inputs:
+              script: 'pwsh TailwindTraders-Backend/Deploy/Generate-Config.ps1 -resourceGroup $aks-cluster-rg-pre-prod -sqlPwd Password12 -outputFile values.yaml'
+
+          - task: CmdLine@2
+            displayName: 'pwd / ls'
+            inputs:
+              script: |
+                pwd
+                ls
+
           - task: AzureCLI@1
             inputs:
               azureSubscription: 'nepeters-azure'
@@ -112,7 +130,8 @@ stages:
                 az acr login --name $(containerRegistryName)
                 az acr helm repo add --name $(containerRegistryName)
                 az aks get-credentials --name $(aks-cluster-pre-prod) --resource-group $(aks-cluster-rg-pre-prod) --admin
-                helm upgrade my-tt-cart $(containerRegistryName)/cart-api --install -f /home/vsts/work/1/drop/Deploy/helm/gvalues.yaml --set ingress.hosts={$(ingress-pre-prod)} --set image.repository=$(containerRegistryFqdn)/cart.api --set image.tag=$(Build.BuildId)
+                # helm upgrade my-tt-cart $(containerRegistryName)/cart-api --install -f /home/vsts/work/1/drop/Deploy/helm/gvalues.yaml --set ingress.hosts={$(ingress-pre-prod)} --set image.repository=$(containerRegistryFqdn)/cart.api --set image.tag=$(Build.BuildId)
+                helm upgrade my-tt-cart $(containerRegistryName)/cart-api --install -f values.yaml --set ingress.hosts={$(ingress-pre-prod)} --set image.repository=$(containerRegistryFqdn)/cart.api --set image.tag=$(Build.BuildId)
 
 - stage: release_production
   jobs:
