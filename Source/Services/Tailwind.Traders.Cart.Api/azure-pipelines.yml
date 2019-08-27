@@ -4,20 +4,58 @@ variables:
   azureSubscription: nepeters-azure
 
   # Azure Kubernetes Service production
-  containerRegistryName: ttacrtfueoquph3mtw
-  containerRegistryFqdn: ttacrtfueoquph3mtw.azurecr.io
-  aks-cluster: tailwindtradersakstfueoquph3mtw
-  aks-cluster-rg: twt-aks-cluster
-  ingress: a8743d8c24e94be0b078.eastus2.aksapp.io
+  containerRegistryName: ttacr6fnje5neykdty
+  containerRegistryFqdn: ttacr6fnje5neykdty.azurecr.io
+  aks-cluster: tailwindtradersaks6fnje5neykdty
+  aks-cluster-rg: twt-aks-001
+  ingress: 2bfcdc1ea6574f3a87b1.eastus.aksapp.io
 
   # Azure Kubernetes Service pre-production
-  containerRegistryName-pre-prod: ttacrbfhhvynll7sie
-  containerRegistryFqdn-pre-prod: ttacrbfhhvynll7sie.azurecr.io
-  aks-cluster-pre-prod: tailwindtradersaksbfhhvynll7sie
-  aks-cluster-rg-pre-prod: twt-aks-cluster-pre-production
-  ingress-pre-prod: 8b0d337f2ff1469b97be.eastus2.aksapp.io
+  containerRegistryName-pre-prod: ttacr6fnje5neykdty
+  containerRegistryFqdn-pre-prod: ttacr6fnje5neykdty.azurecr.io
+  aks-cluster-rg-pre-prod: twt-aks-001
+  aks-cluster-pre-prod: tailwindtradersaks6fnje5neykdty
+  ingress-pre-prod: 2bfcdc1ea6574f3a87b1.eastus.aksapp.io
 
 stages:
+
+- stage: test
+  jobs:
+  - job:
+
+    pool:
+      name: Hosted Ubuntu 1604
+
+    variables:
+      python.version: '3.7'
+
+    steps:
+    - task: UsePythonVersion@0
+      displayName: 'Setup Environment'
+      inputs:
+        versionSpec: '$(python.version)'
+
+    - task: CmdLine@2
+      displayName: 'Install packages'
+      inputs:
+        script: 'python -m pip install --upgrade pip && pip install pytest'
+
+    - task: CmdLine@2
+      displayName: 'ls'
+      inputs:
+        script: 'ls'
+
+    - task: CmdLine@2
+      displayName: 'Run tests'
+      inputs:
+        script: 'pytest /tests --doctest-modules --junitxml=junit/test-results.xml'
+
+    - task: PublishTestResults@2
+      displayName: 'Publish Test Results **/test-results.xml'
+      inputs:
+        testResultsFiles: '**/test-results.xml'
+        failTaskOnFailedTests: true
+        testRunTitle: 'Python $(python.version)'
 
 - stage: build
   jobs:
@@ -112,7 +150,9 @@ stages:
                 az acr login --name $(containerRegistryName)
                 az acr helm repo add --name $(containerRegistryName)
                 az aks get-credentials --name $(aks-cluster-pre-prod) --resource-group $(aks-cluster-rg-pre-prod) --admin
-                helm upgrade my-tt-cart $(containerRegistryName)/cart-api --install -f /home/vsts/work/1/drop/Deploy/helm/gvalues.yaml --set ingress.hosts={$(ingress-pre-prod)} --set image.repository=$(containerRegistryFqdn)/cart.api --set image.tag=$(Build.BuildId)
+                pwsh /home/vsts/work/1/drop/Deploy/Generate-Config.ps1 -resourceGroup $(aks-cluster-rg-pre-prod) -sqlPwd Password12 -gvaluesTemplate /home/vsts/work/1/drop/Deploy/helm/gvalues.template -outputFile values.yaml
+                kubectl delete configmap cfg-my-tt-cart-cart-api
+                helm upgrade my-tt-cart $(containerRegistryName)/cart-api --install -f values.yaml --set ingress.hosts={$(ingress-pre-prod)} --set image.repository=$(containerRegistryFqdn)/cart.api --set image.tag=$(Build.BuildId)
 
 - stage: release_production
   jobs:
