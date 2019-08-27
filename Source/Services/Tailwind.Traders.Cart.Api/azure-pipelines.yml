@@ -19,6 +19,35 @@ variables:
 
 stages:
 
+- stage: test
+  jobs:
+  - job:
+
+    pool:
+      name: Hosted Ubuntu 1604
+
+    variables:
+      python.version: '3.7'
+
+    steps:
+    - task: UsePythonVersion@0
+      displayName: 'Setup Python'
+      inputs:
+        versionSpec: '$(python.version)'
+
+    - script: 'python -m pip install --upgrade pip && pip install pytest'
+      displayName: 'Python Dependencies'
+
+    - script: 'pytest tests --doctest-modules --junitxml=junit/test-results.xml'
+      displayName: 'Python Tests'
+
+    - task: PublishTestResults@2
+      displayName: 'Publish Test Results **/test-results.xml'
+      inputs:
+        testResultsFiles: '**/test-results.xml'
+        failTaskOnFailedTests: true
+        testRunTitle: 'Python $(python.version)'
+
 - stage: build
   jobs:
   - job: build
