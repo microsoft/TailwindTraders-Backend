@@ -31,15 +31,24 @@ stages:
 
     steps:
     - task: UsePythonVersion@0
-      displayName: 'Setup Python'
+      displayName: 'Setup Environment'
       inputs:
         versionSpec: '$(python.version)'
 
-    - script: 'python -m pip install --upgrade pip && pip install pytest'
-      displayName: 'Python Dependencies'
+    - task: CmdLine@2
+      displayName: 'Install packages'
+      inputs:
+        script: 'python -m pip install --upgrade pip && pip install pytest'
 
-    - script: 'pytest /tests --doctest-modules --junitxml=junit/test-results.xml'
-      displayName: 'Python Tests'
+    - task: CmdLine@2
+      displayName: 'ls'
+      inputs:
+        script: 'ls'
+
+    - task: CmdLine@2
+      displayName: 'Run tests'
+      inputs:
+        script: 'pytest /tests --doctest-modules --junitxml=junit/test-results.xml'
 
     - task: PublishTestResults@2
       displayName: 'Publish Test Results **/test-results.xml'
