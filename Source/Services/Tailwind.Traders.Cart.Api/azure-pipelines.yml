@@ -104,7 +104,6 @@ stages:
               command: init
               arguments: '--client-only'
 
-
           - task: AzureCLI@1
             inputs:
               azureSubscription: 'nepeters-azure'
