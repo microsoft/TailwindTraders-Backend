@@ -1,5 +1,5 @@
 Param(
-    [parameter(Mandatory=$false)][string]$name = "my-tt",
+    [parameter(Mandatory=$false)][string]$name = "tailwindtraders",
     [parameter(Mandatory=$false)][string]$aksName,
     [parameter(Mandatory=$false)][string]$resourceGroup,
     [parameter(Mandatory=$false)][string]$acrName,
@@ -13,7 +13,7 @@ Param(
     [parameter(Mandatory=$false)][string]$namespace = "",
     [parameter(Mandatory=$false)][string][ValidateSet('prod','staging','none','custom', IgnoreCase=$false)]$tlsEnv = "none",
     [parameter(Mandatory=$false)][string]$tlsHost="",
-    [parameter(Mandatory=$false)][string]$tlsSecretName="",
+    [parameter(Mandatory=$false)][string]$tlsSecretName="tt-tls-custom",
     [parameter(Mandatory=$false)][bool]$autoscale=$false
 )
 
@@ -76,7 +76,7 @@ function createHelmCommand([string]$command) {
         $newcmd = "$newcmd --namespace $namespace" 
     }
 
-    if (-not [string]::IsNullOrEmpty($tlsSecretName)) {
+    if (-not [string]::IsNullOrEmpty($tlsSecretNameToUse)) {
         $newcmd = "$newcmd --set ingress.tls[0].secretName=$tlsSecretNameToUse --set ingress.tls[0].hosts={$aksHost}"
     }
 
