@@ -14,12 +14,15 @@ data:
   PopularProductsApiUrl: {{ .Values.inf.apiurls.popularproductsapiurl }}
   ProductsApiUrl: {{ .Values.inf.apiurls.productsapiurl }}
   ProfileApiUrl: {{ .Values.inf.apiurls.profileapiurl }}
+  LoginApiUrl: {{ .Values.inf.apiurls.loginapiurl }}
   CouponsApiUrl: {{ .Values.inf.apiurls.couponsapiurl }}
   StockApiUrl: {{ .Values.inf.apiurls.stockapiurl }}
   ImageClassifierApiUrl: {{ .Values.inf.apiurls.imageclassifierapiurl }}
   ISSUER: {{ .Values.sec.issuer }}
   SECURITYKEY: {{ .Values.sec.securityKey }}
-  LoginApiUrl: {{ .Values.inf.apiurls.loginapiurl }}
+  UseB2C: {{ .Values.B2C.UseB2C | quote }}
+  B2CIssuer: {{ .Values.B2C.B2CIssuer }}
+  Authority: {{ .Values.B2C.Authority }}
   RegisterUsers: {{ .Values.inf.registrationusers.registerusers | quote }}
   RegistrationUsersEndpoint: {{ .Values.inf.registrationusers.registrationusersurl }}
 
