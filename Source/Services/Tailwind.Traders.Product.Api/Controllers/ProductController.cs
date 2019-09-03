@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using System;
 using System.Linq;
 using System.Net.Http;
@@ -78,11 +79,14 @@ namespace Tailwind.Traders.Product.Api.Controllers
 
             try
             {
-                await _httpClientFactory.CreateClient().PostAsJsonAsync(RoutePathExtensions.VisitsHttpTrigger(_settings.ProductVisitsUrl), new
+                var data = new
                 {
                     UserId = ((ClaimsIdentity)User.Identity).Claims.Single(claim => claim.Type == "emails").Value,
                     Product = item
-                })
+                };
+                StringContent dataSerialized = new StringContent(JsonConvert.SerializeObject(data));
+
+                await _httpClientFactory.CreateClient().PostAsync(RoutePathExtensions.VisitsHttpTrigger(_settings.ProductVisitsUrl), dataSerialized)
                 .ContinueWith(task =>
                 {
                     if (task.IsFaulted)

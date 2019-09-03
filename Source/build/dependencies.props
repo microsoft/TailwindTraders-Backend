@@ -9,11 +9,14 @@
   </PropertyGroup>
 
   <PropertyGroup Label="Netcore Versions">
-      <NetCoreTargetVersion>netcoreapp2.2</NetCoreTargetVersion>
+      <NetCoreTargetVersion>netcoreapp3.0</NetCoreTargetVersion>
       <MicrosoftAspNetCoreRazorDesign>2.2.0</MicrosoftAspNetCoreRazorDesign>
       <MicrosoftAspNetCoreHttpFeatures>2.2.0</MicrosoftAspNetCoreHttpFeatures>
-      <MicrosoftEntityFrameworkCore>2.2.4</MicrosoftEntityFrameworkCore>
-      <MicrosoftEntityFrameworkCoreSqlServer>2.2.4</MicrosoftEntityFrameworkCoreSqlServer>
+      <MicrosoftEntityFrameworkCore>3.0.0-preview8.19405.11</MicrosoftEntityFrameworkCore>
+      <MicrosoftEntityFrameworkCoreSqlServer>3.0.0-preview8.19405.11</MicrosoftEntityFrameworkCoreSqlServer>
+      <MicrosoftEntityFrameworkCoreDesign>3.0.0-preview8.19405.11</MicrosoftEntityFrameworkCoreDesign>
+    
+    
       <MicrosoftVisualStudioWebCodeGenerationDesign>2.2.3</MicrosoftVisualStudioWebCodeGenerationDesign>
   </PropertyGroup>
 
