@@ -40,7 +40,6 @@
     "aks_name": "[concat('tailwindtradersaks',uniqueString(resourceGroup().id))]",
     "storage_name": "[concat('ttstorage',uniqueString(resourceGroup().id))]",
     "function_name": "[concat('ttfunction',uniqueString(resourceGroup().id))]",
-    "products_cosmosdb_name": "[concat('ttproductsdb',uniqueString(resourceGroup().id))]",
     "cuopons_cosmosdb_name": "[concat('ttcuoponsdb',uniqueString(resourceGroup().id))]",
     "shopping_cosmosdb_name": "[concat('ttshoppingdb',uniqueString(resourceGroup().id))]",
     "workspaceName": "[concat('ttoms', uniqueString(resourceGroup().id))]",
@@ -239,30 +238,6 @@
     {
       "type": "Microsoft.DocumentDB/databaseAccounts",
       "kind": "GlobalDocumentDB",
-      "name": "[variables('products_cosmosdb_name')]",
-      "apiVersion": "2015-04-08",
-      "location": "[resourceGroup().location]",
-      "tags": {
-        "defaultExperience": "Core (SQL)"
-      },
-      "properties": {
-        "databaseAccountOfferType": "Standard",
-        "locations": [
-          {
-            "id": "[concat(variables('products_cosmosdb_name'), '-', resourceGroup().location)]",
-            "failoverPriority": 0,
-            "locationName": "[resourceGroup().location]"
-          }
-        ],
-        "enableMultipleWriteLocations": true,
-        "isVirtualNetworkFilterEnabled": false,
-        "virtualNetworkRules": [],
-        "dependsOn": []
-      }
-    },
-    {
-      "type": "Microsoft.DocumentDB/databaseAccounts",
-      "kind": "GlobalDocumentDB",
       "name": "[variables('shopping_cosmosdb_name')]",
       "apiVersion": "2015-04-08",
       "location": "[resourceGroup().location]",
@@ -382,10 +357,6 @@
     "function": {
       "type": "string",
       "value": "[variables('function_name')]"
-    },
-    "productsdb": {
-      "type": "string",
-      "value": "[variables('products_cosmosdb_name')]"
     },
     "cuoponsdb": {
       "type": "string",
