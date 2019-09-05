@@ -8,7 +8,7 @@ This repository contains all code + deployment scripts for the Tailwind Traders 
 
 - [Repositories](#repositories)
 - [Deployment scenarios](#deployment-scenarios)
-  - [Deploy Tailwind Traders Backend on Azure AKS and Azure resources (SQL Azure, CosmosDb, Storage accounts)](#deploy-resources)
+  - [Deploy Tailwind Traders Backend on Azure AKS and Azure resources (CosmosDb and Storage accounts)](#deploy-resources)
   - [Deploy Tailwind Traders Backend on Windows and Linux containers in AKS](#deploy-win-linux-containers)
   - [Deploy everything on AKS](#deploy-everything-aks)
 - [Run Tailwind Traders Backend Services Locally](#run-backend-locally)
@@ -31,11 +31,11 @@ For this demo reference, we built several consumer and line-of-business applicat
 
 Tailwind Traders supports three deployment scenarios:
 
-1. [Deploy Tailwind Traders Backend on Azure AKS and Azure resources (SQL Azure, CosmosDb, Storage accounts)](#deploy-resources)
+1. [Deploy Tailwind Traders Backend on Azure AKS and Azure resources (CosmosDb and Storage accounts)](#deploy-resources)
 2. [Deploy Tailwind Traders Backend on Windows and Linux containers in AKS](#deploy-win-linux-containers)
 3. [Deploy everything on AKS](#deploy-everything-aks)
 
-## <a name="deploy-resources"></a>Deploy Tailwind Traders on AKS and Azure Resources (SQL Azure, CosmosDb, Storage accounts)
+## <a name="deploy-resources"></a>Deploy Tailwind Traders on AKS and Azure Resources (CosmosDb and Storage accounts)
 
 To run Tailwind Traders you need to create the Azure infrastructure. There are two ways to do it. Using Azure portal or using a Powershell script.
 
@@ -49,24 +49,11 @@ Azure portal will ask you for the following parameters:
 
 - `servicePrincipalId`: Id of the service principal used to create the AKS
 - `servicePrincipalSecret`: Password of the service principal
-- `sqlServerAdministratorLogin`: Name of the user for the databases
-- `sqlServerAdministratorLoginPassword`: Password for the user of the databases
 - `aksVersion`: AKS version to use (at least 1.14).
-- `pgversion`: Version of the Azure database for PostgreSQL to install. Defaults to `10`.
 
 The deployment could take more than 10 minutes, and once finished all needed resources will be created:
 
 ![Resource group with all azure resources created](Documents/Images/azure-resources.png)
-
-#### Creating the stockdb database in PostgreSQL
-
-Once the deployment is finished an additional step has to be done: You need to create a database named `stockdb` in the PostgreSQL server. For this you need the **[Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest) installed**.
-
-Just type the command:
-
-```
-az postgres db create -g <resource-group> -s <posgres-server-name> -n stockdb
-```
 
 ### <a name="create-infrastructure-cli"></a>Step 1 - Option 2: Create the resources using the CLI
 
@@ -82,10 +69,8 @@ You can optionally pass two additional parameters:
 
 If these two parameters are not passed a new service principal will be created.
 
-There are three additional optional parameters to control some aspects of what is created:
+There is an additional optional parameters to control some aspects of what is created:
 
-- `-dbAdmin`: Name of the user of all databases. Defaults to `ttadmin`
-- `-dbPassword`: Password of the user of all databases. Defaults to `Passw0rd1!`
 - `-deployAks`: If set to `$false` AKS and ACR are not created. This is useful if you want to create the AKS yourself or use an existing AKS. Defaults to `$true`. If this parameter is `$true` the resource group can't exist (AKS must be deployed in a new resource group).
 
 Once script finishes, everything is installed. If a service principal has been created, the script will output the service principal details - _please, take note of the appId and password properties for use them in the AKS deployment_
@@ -453,7 +438,7 @@ For mixed (Windows and Linux containers) scenario we need to deploy [Tailwind Tr
 
 Follow the [Step 2: Deploy AKS](#deploy-aks) to deploy the services to AKS.
 
-**Note**: In code is important to set **RegisterUsers** variable in true to test all the features.
+| **Note**: In code is important to set **RegisterUsers** variable true to test all the features.
 
 ---
 
@@ -467,7 +452,7 @@ For development scenarios everything can be run on a AKS, so **not external depe
 
 Same pre-requisites as the [standard AKS deployment (Step 2: Deploy AKS)](#deploy-aks)
 
-### Configure the cluster (insalling Helm and the secrets)
+### Configure the cluster (installing Helm and the secrets)
 
 You have to follow the following steps of the [standard AKS deployment](#deploy-aks):
 
@@ -477,15 +462,6 @@ You have to follow the following steps of the [standard AKS deployment](#deploy-
 - Build & deploy images to ACR
 
 You can skip the step "Configuring services" because there is no need to configure anything.
-
-### Creating the ACI resource
-
-Some of the Backend services use a CosmosDb resource. The CosmosDb emulator will be used in order to avoid creating a real CosmosDb account. Currently the emulator do not run under Linux containers, so it is deployed in a Azure Container Instance. To create the ACI you have to run the `Deploy-CosmosDb-Aci.ps1` with following parameters:
-
-- `-resourceGroup`: Resource group where to create the ACI
-- -`name`: Name of the ACI
-
-This will create the ACI resource and deploy the Azure CosmosDb emulator image running on it.
 
 ### Deploying mongodb, sql server and azurite (storage emulator) on AKS
 
@@ -508,7 +484,6 @@ When `infra` value is used, three additional deployments are installed on the Ku
 Assuming the images are pushed in the ACR, following commands will install **all Tailwind Traders Backend and infrastructure** in an AKS named `my-aks` in the RG `my-rg`, using images from ACR named `my-acr`. An ACI named `my-aci-tt` will be created in the same RG to run the CosmosDb emulator:
 
 ```
-.\Deploy-CosmosDb-Aci.ps1 -resourceGroup my-rg -name my-aci-tt
 .\Deploy-Images-Aks.ps1 -aksName my-aks -resourceGroup my-rg -acrName my-acr -useInfraInAks $true -cartAciGroup my-rg -cartAciName my-aci-tt  -charts "*,infra"
 ```
 

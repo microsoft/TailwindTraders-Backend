@@ -20,5 +20,5 @@ This folder contains a set of deployment scripts to cover various scenarios
 ## ARM Scripts
 
 * `deployment.json`: Full ARM script with AKS, ACR and all infrastructure in Azure
-* `deployment-only-inf.json`: ARM script with only AKS and ACR. Used when infrastructure runs in AKS instead of Azure
+* `deployment-nodes.json`: ARM script with an AKS that allows Windows and Linux containers.
 * `deployment-no-aks.json`: ARM script with all infrastructure but without AKS nor ACR. Used when using an existing AKS and ACR.
