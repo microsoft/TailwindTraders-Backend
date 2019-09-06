@@ -3,8 +3,6 @@ Param(
     [parameter(Mandatory=$true)][string]$location,
     [parameter(Mandatory=$false)][string]$clientId,
     [parameter(Mandatory=$false)][string]$password,
-    [parameter(Mandatory=$false)][string]$dbAdmin="ttadmin",
-    [parameter(Mandatory=$false)][string]$dbPassword="Passw0rd1!",
     [parameter(Mandatory=$false)][bool]$deployAks=$true
 )
 $spCreated=$false
@@ -41,7 +39,7 @@ if ($deployAks) {
 
     Write-Host "Begining the ARM deployment..." -ForegroundColor Yellow
     az group create -n $resourceGroup -l $location
-    az group deployment create -g $resourceGroup --template-file $script --parameters servicePrincipalId=$clientId --parameters servicePrincipalSecret=$password --parameters sqlServerAdministratorLogin=$dbAdmin --parameters sqlServerAdministratorLoginPassword=$dbPassword --parameters aksVersion=$aksLastVersion
+    az group deployment create -g $resourceGroup --template-file $script --parameters servicePrincipalId=$clientId --parameters servicePrincipalSecret=$password --parameters aksVersion=$aksLastVersion
 }
 else {
     # Deployment without AKS can be done in a existing or non-existing resource group.
@@ -50,18 +48,8 @@ else {
         az group create -n $resourceGroup -l $location
     }
     Write-Host "Begining the ARM deployment..." -ForegroundColor Yellow
-    az group deployment create -g $resourceGroup --template-file $script --parameters sqlServerAdministratorLogin=$dbAdmin --parameters sqlServerAdministratorLoginPassword=$dbPassword
+    az group deployment create -g $resourceGroup --template-file $script
 }
-
-Write-Host "Creating stockdb database in PostgreSQL" -ForegroundColor Yellow
-$pgs = $(az postgres server list -g $resourceGroup -o json | ConvertFrom-Json)
-$pg=$pgs[0]
-Write-Host "PostgreSQL server is $($pg.name)" -ForegroundColor Yellow
-az postgres db create -g $resourceGroup -s $pg.name -n stockdb
-Write-Host "Creating Firewall rule in $($pg.name) to allow connection from Azure Services" -ForegroundColor Yellow
-az postgres server firewall-rule create --end-ip-address 0.0.0.0 --start-ip-address 0.0.0.0 --name AllowAllWindowsAzureIps -g $resourceGroup --server-name $pg.name
-Write-Host "Disabling ssl enforcement for $($pg.name)" -ForegroundColor Yellow
-az postgres server update -g $resourceGroup --ssl-enforcement Disabled --name $pg.name
 
 if ($spCreated) {
     Write-Host "-----------------------------------------" -ForegroundColor Yellow
@@ -69,10 +57,3 @@ if ($spCreated) {
     Write-Host ($sp | ConvertTo-Json) -ForegroundColor Yellow
     Write-Host "-----------------------------------------" -ForegroundColor Yellow
 }
-
-Write-Host "-----------------------------------------" -ForegroundColor Yellow
-Write-Host "Db admin: $dbAdmin"
-Write-Host "Db Admin Pwd: $dbPassword"
-Write-Host "-----------------------------------------" -ForegroundColor Yellow
-
-

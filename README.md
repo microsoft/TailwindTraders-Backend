@@ -8,7 +8,7 @@ This repository contains all code + deployment scripts for the Tailwind Traders 
 
 - [Repositories](#repositories)
 - [Deployment scenarios](#deployment-scenarios)
-  - [Deploy Tailwind Traders Backend on Azure AKS and Azure resources (SQL Azure, CosmosDb, Storage accounts)](#deploy-resources)
+  - [Deploy Tailwind Traders Backend on Azure AKS and Azure resources (CosmosDb and Storage accounts)](#deploy-resources)
   - [Deploy Tailwind Traders Backend on Windows and Linux containers in AKS](#deploy-win-linux-containers)
   - [Deploy everything on AKS](#deploy-everything-aks)
 - [Run Tailwind Traders Backend Services Locally](#run-backend-locally)
@@ -31,11 +31,11 @@ For this demo reference, we built several consumer and line-of-business applicat
 
 Tailwind Traders supports three deployment scenarios:
 
-1. [Deploy Tailwind Traders Backend on Azure AKS and Azure resources (SQL Azure, CosmosDb, Storage accounts)](#deploy-resources)
+1. [Deploy Tailwind Traders Backend on Azure AKS and Azure resources (CosmosDb and Storage accounts)](#deploy-resources)
 2. [Deploy Tailwind Traders Backend on Windows and Linux containers in AKS](#deploy-win-linux-containers)
 3. [Deploy everything on AKS](#deploy-everything-aks)
 
-## <a name="deploy-resources"></a>Deploy Tailwind Traders on AKS and Azure Resources (SQL Azure, CosmosDb, Storage accounts)
+## <a name="deploy-resources"></a>Deploy Tailwind Traders on AKS and Azure Resources (CosmosDb and Storage accounts)
 
 To run Tailwind Traders you need to create the Azure infrastructure. There are two ways to do it. Using Azure portal or using a Powershell script.
 
@@ -49,24 +49,11 @@ Azure portal will ask you for the following parameters:
 
 - `servicePrincipalId`: Id of the service principal used to create the AKS
 - `servicePrincipalSecret`: Password of the service principal
-- `sqlServerAdministratorLogin`: Name of the user for the databases
-- `sqlServerAdministratorLoginPassword`: Password for the user of the databases
 - `aksVersion`: AKS version to use (at least 1.14).
-- `pgversion`: Version of the Azure database for PostgreSQL to install. Defaults to `10`.
 
 The deployment could take more than 10 minutes, and once finished all needed resources will be created:
 
 ![Resource group with all azure resources created](Documents/Images/azure-resources.png)
-
-#### Creating the stockdb database in PostgreSQL
-
-Once the deployment is finished an additional step has to be done: You need to create a database named `stockdb` in the PostgreSQL server. For this you need the **[Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest) installed**.
-
-Just type the command:
-
-```
-az postgres db create -g <resource-group> -s <posgres-server-name> -n stockdb
-```
 
 ### <a name="create-infrastructure-cli"></a>Step 1 - Option 2: Create the resources using the CLI
 
@@ -82,10 +69,8 @@ You can optionally pass two additional parameters:
 
 If these two parameters are not passed a new service principal will be created.
 
-There are three additional optional parameters to control some aspects of what is created:
+There is an additional optional parameters to control some aspects of what is created:
 
-- `-dbAdmin`: Name of the user of all databases. Defaults to `ttadmin`
-- `-dbPassword`: Password of the user of all databases. Defaults to `Passw0rd1!`
 - `-deployAks`: If set to `$false` AKS and ACR are not created. This is useful if you want to create the AKS yourself or use an existing AKS. Defaults to `$true`. If this parameter is `$true` the resource group can't exist (AKS must be deployed in a new resource group).
 
 Once script finishes, everything is installed. If a service principal has been created, the script will output the service principal details - _please, take note of the appId and password properties for use them in the AKS deployment_
@@ -156,23 +141,28 @@ Please refer to the comments of the file for its usage. Just ignore (but not del
 
 Generating a valid _gvalues_ file can be a bit harder, so there is a Powershell script that can do all work by you. This script assumes that all resources are deployed in the same resource group, and this resource group contains only the Tailwind Traders resources. Also assumes the Azure resources have been created using the **tools provided in this repo**.
 
+> **Note** The Generate-Config.ps1 uses the _application-insights_ CLI extension to find the application insights id. Install it with `az extension add --name application-insights`
+
 To auto-generate your _gvalues_ file just go to `/Deploy` folder and from a Powershell window, type the following:
 
 ```
-.\Generate-Config.ps1 -resourceGroup <your-resource-group> -sqlPwd <sql-password> -outputFile helm\__values\<name-of-your-file> -infraOutsideAKS $true
+.\Generate-Config.ps1 -resourceGroup <your-resource-group> -outputFile helm\__values\<name-of-your-file>
 ```
 
 The parameters that `Generate-Config.ps1` accepts are:
 
 - `-resourceGroup`: Resource group where all Azure resources are. **Mandatory**.
-- `-sqlPwd`: Password of SQL Servers and PostgreSQL server. This parameter is **mandatory** because can't be read using Azure CLI.
-- `-infraOutsideAKS`: Use this flag to create gvalues file depending if you are using the infrastructure inside AKS or outside. **Mandatory**.
-- `-rewardsResourceGroup`: Fill it if you are going to use Rewards DB (this is used, for example in the [Windows and Linux containers in AKS](#deploy-win-linux-containers) scenarios).
-- `-forcePwd`: If `$true`, the scripts updates the SQL Server and PostgreSQ to set their password to the value of `sqlPwd`. Defaults to `$false`.
 - `-outputFile`: Full path of the output file to generate. A good idea is to generate a file in `/Deploy/helm/__values/` folder as this folder is ignored by Git. If not passed the result file is written on screen.
 - `-gvaluesTemplate`: Template of the _gvalues_ file to use. The parameter defaults to the `/Deploy/helm/gvalues.template` which is the only template provided.
 
 The script checks that all needed resources exists in the resource group. If some resource is missing or there is an unexpected resource, the script exits.
+
+If you come from the [Windows and Linux containers in AKS](#deploy-win-linux-containers) scenario and you want to use the rewards registration service you have to pass also the following parameters:
+
+- `-rewardsResourceGroup`: Fill it if you are going to use Rewards DB (this is used, for example in the [Windows and Linux containers in AKS](#deploy-win-linux-containers) scenarios).
+- `-rewardsDbPassword`: The database password for the administrator user. Mandatory if a rewardsResourceGroup is provided.
+
+Otherwise the script will disable the rewards registration service.
 
 #### Create secrets on the AKS
 
@@ -187,19 +177,20 @@ To do so from a Bash terminal run the file `./create-secret.sh` with following p
 - `--clientid <id>` Client id of the service principal to use
 - `--password <pwd>` Service principal password
 
-Please, note that the Service principal must be already exist. To create a service principal you can run the command `az ad sp create-for-rbac`.
+Please, note that the Service principal must already exist. To create a service principal you can run the command `az ad sp create-for-rbac`.
 
 If using Powershell run the `./Create-Secret.ps1` with following parameters:
 
 - `-resourceGroup <group>` Resource group where AKS is
 - `-acrName <name>` Name of the ACR
 
-This will create the secret in AKS **using ACR credentials**. If ACR login is not enabled you can create a secret by using a service principal. For use a Azure service principal following additional parameters are needed:
+This will create the secret in AKS **using ACR credentials**. If ACR login is not enabled you can create a secret by using a service principal.
+In case that ACR is not created with administrator rights you will have to provide the service principal clientId and secret:
 
 - `-clientId <id>` Client id of the service principal to use
-- `-password <pwd>` Service principal password
+- `-password <pwd>` Service principal secret
 
-Please, note that the Service principal must be already exist. To create a service principal you can run the command `az ad sp create-for-rbac`.
+Please, note that the Service principal must exist. To create a service principal you can run the command `az ad sp create-for-rbac`.
 
 #### Build & deploy images to ACR
 
@@ -217,13 +208,14 @@ Additionaly there is a Powershell script in the `Deploy` folder, named `Build-Pu
 - `dockerTag`: Tag to use for generated images (defaults to `latest`)
 - `dockerBuild`: If `$true` (default value) docker images will be built using `docker-compose build`.
 - `dockerPush`: If `$true` (default value) docker images will be push to ACR using `docker-compose push`.
+- `isWindows`: If `$true` (default to `$false`) will use the docker compose file for windows.
 
 This script uses `az` CLI to get ACR information, and then uses `docker-compose` to build and push the images to ACR.
 
 To build and push images tagged with v1 to a ACR named my-acr in resource group named my-rg:
 
 ```
-.\Build-Push.ps1 -resourceGroup my-rg -dockerTag v1 -acrName my-acr -isWindows $false
+.\Build-Push.ps1 -resourceGroup my-rg -dockerTag v1 -acrName my-acr
 ```
 
 To just push the images (without building them before):
@@ -231,6 +223,12 @@ To just push the images (without building them before):
 ```
 .\Build-Push.ps1 -resourceGroup my-rg -dockerTag v1 -acrName my-acr -dockerBuild $false
 ```
+
+If you want to deploy the rewards registration image just call this command with the isWindows parameter set to true.
+
+> **Notes**:
+> - Remember to switch to Windows containers.
+> - The project needs to be published previously with the already created `FolderProfile`.
 
 #### Limit the used resources for the services
 
@@ -268,7 +266,7 @@ Then you should run `./Enable-Ssl.ps1` with following parameters:
 Output of the script will be something like following:
 
 ```
-NAME:   my-tt-ssl
+NAME:   tailwindtraders-ssl
 LAST DEPLOYED: Fri Dec 21 11:32:00 2018
 NAMESPACE: default
 STATUS: DEPLOYED
@@ -321,7 +319,7 @@ The SSL/TLS secret names are:
 
 At this point **the support for SSL/TLS is installed, and you can install Tailwind Traders Backend on the cluster**.
 
-> **Note:** You don't need to do this again, unless you want to change the domain of the SSL/TLS certificate. In this case you need to remove the issuer and certificate objects (using `helm delete my-tt-ssl --purge` and then reinstall again)
+> **Note:** You don't need to do this again, unless you want to change the domain of the SSL/TLS certificate. In this case you need to remove the issuer and certificate objects (using `helm delete tailwindtraders-ssl --purge` and then reinstall again)
 
 > **Remember** Staging certificates **are not trusted**, so browsers will complain about it, exactly in the same way that they complain about a self-signed certificate. The only purpose is to test all the deployment works, but in any production environment you must use the `prod` environment. In **development/test environments** is recommended to install the staging certificates and then trust those certificates in the developers' machines. You can [download the Let's Encrypt staging certificates from their web](https://letsencrypt.org/docs/staging-environment/).
 
@@ -378,14 +376,13 @@ If `tlsHost` is not passed, the script will assume that Http Application Routing
 
 You need to use Powershell and run `./Deploy-Images-Aks.ps1` with following parameters:
 
-- `-name <name>` Name of the deployment. Defaults to `my-tt`
+- `-name <name>` Name of the deployment. Defaults to `tailwindtraders`
 - `-aksName <name>` Name of the AKS
 - `-resourceGroup <group>` Name of the resource group
 - `-acrName <name>` Name of the ACR
 - `-tag <tag>` Docker images tag to use. Defaults to `latest`
-- `-charts <charts>` List of comma-separated values with charts to install. Defaults to `*` (all)
+- `-charts <charts>` List of comma-separated values with charts to install. Defaults to `*` (all linux container)
 - `-valuesFile <values-file>`: Values file to use (defaults to `gvalues.yaml`)
-- `-useInfraInAks`: Flag needed to check if infrastructure services will be in AKS or not.
 - `-tlsEnv prod|staging|custom` If **SSL/TLS support has been installed**, you have to use this parameter to enable https endpoints. Value must be `staging`, `prod` or `custom` and must be the same value used when you installed SSL/TLS support. If SSL/TLS is not installed, you can omit this parameter.
 - `-tlsSecretName`: Name of the Kubernetes secret that stores the TLS certificate. Only used if `tlsEnv` is `custom` (ignored otherwise) and defaults to `tt-tls-custom`.
 - `-tlsHost`: Name of the domain bounded to HTTPS endpoints. That is the same value passed to `
@@ -403,11 +400,13 @@ The parameter `charts` allow for a selective installation of charts. Is a list o
 - `ic` Image classifier API
 - `ct` Shopping cart API
 - `lg` Login API
-- `rr` Rewards Registration
+- `rr` Rewards Registration (not deployed with * charts as its a windows container)
 - `mgw` Mobile Api Gateway
 - `wgw` Web Api Gateway
 
 So, using `charts pp,st` will only install the popular products and the stock api.
+
+If you want to deploy the whole win-linux environment (with rewards registration pod) use `-charts *,rr`.
 
 #### Deploying the images on the storage
 
@@ -432,28 +431,13 @@ We have added an ARM template so you can automate the creation of the resources 
 
 Click the following button to deploy:
 
-<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FMicrosoft%2FTailwindTraders-Backend%2Fmaster%2FDeploy%2Fdeployment-nodes.json"><img src="./Documents/Images/deploy-to-azure.png" alt="Deploy to Azure"/></a>
-
-To create an AKS with the last version we need to execute this script located in .\Deploy folder:
-
-We need to register the Windows container with az tools:
-
-```az
-az feature register --name WindowsPreview --namespace Microsoft.ContainerService
-az provider register -n Microsoft.ContainerService
-```
-
-next
-
-```powershell
-Create-WinLinux-Aks.ps1 -resourceGroup YourResourceGroupName -location TheRegion -clientId ServicePrincipalId -password ServicePrincipalSecret
-```
+<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FMicrosoft%2FTailwindTraders-Backend%2Fmaster%2FDeploy%2Fdeployment-dual-nodes.json"><img src="./Documents/Images/deploy-to-azure.png" alt="Deploy to Azure"/></a>
 
 For mixed (Windows and Linux containers) scenario we need to deploy [Tailwind Traders Rewards](https://github.com/Microsoft/TailwindTraders-Rewards). The data base deployed in Tailwind Traders Rewards is used by a WCF service of this project.
 
 Follow the [Step 2: Deploy AKS](#deploy-aks) to deploy the services to AKS.
 
-**Note**: In code is important to set **RegisterUsers** variable in true to test all the features.
+| **Note**: In code is important to set **RegisterUsers** variable true to test all the features.
 
 ---
 
@@ -467,7 +451,7 @@ For development scenarios everything can be run on a AKS, so **not external depe
 
 Same pre-requisites as the [standard AKS deployment (Step 2: Deploy AKS)](#deploy-aks)
 
-### Configure the cluster (insalling Helm and the secrets)
+### Configure the cluster (installing Helm and the secrets)
 
 You have to follow the following steps of the [standard AKS deployment](#deploy-aks):
 
@@ -477,15 +461,6 @@ You have to follow the following steps of the [standard AKS deployment](#deploy-
 - Build & deploy images to ACR
 
 You can skip the step "Configuring services" because there is no need to configure anything.
-
-### Creating the ACI resource
-
-Some of the Backend services use a CosmosDb resource. The CosmosDb emulator will be used in order to avoid creating a real CosmosDb account. Currently the emulator do not run under Linux containers, so it is deployed in a Azure Container Instance. To create the ACI you have to run the `Deploy-CosmosDb-Aci.ps1` with following parameters:
-
-- `-resourceGroup`: Resource group where to create the ACI
-- -`name`: Name of the ACI
-
-This will create the ACI resource and deploy the Azure CosmosDb emulator image running on it.
 
 ### Deploying mongodb, sql server and azurite (storage emulator) on AKS
 
@@ -508,7 +483,6 @@ When `infra` value is used, three additional deployments are installed on the Ku
 Assuming the images are pushed in the ACR, following commands will install **all Tailwind Traders Backend and infrastructure** in an AKS named `my-aks` in the RG `my-rg`, using images from ACR named `my-acr`. An ACI named `my-aci-tt` will be created in the same RG to run the CosmosDb emulator:
 
 ```
-.\Deploy-CosmosDb-Aci.ps1 -resourceGroup my-rg -name my-aci-tt
 .\Deploy-Images-Aks.ps1 -aksName my-aks -resourceGroup my-rg -acrName my-acr -useInfraInAks $true -cartAciGroup my-rg -cartAciName my-aci-tt  -charts "*,infra"
 ```
 

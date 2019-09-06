@@ -1,6 +1,6 @@
 Param (
     [parameter(Mandatory=$false)][string][ValidateSet('prod','staging','none','custom', IgnoreCase=$false)]$sslSupport = "none",
-    [parameter(Mandatory=$false)][string]$name = "my-tt",
+    [parameter(Mandatory=$false)][string]$name = "tailwindtraders",
     [parameter(Mandatory=$false)][string]$aksName,
     [parameter(Mandatory=$false)][string]$resourceGroup,
     [parameter(Mandatory=$false)][string]$tlsCertFile="",

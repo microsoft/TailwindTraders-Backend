@@ -2,28 +2,44 @@
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "sqlServerAdministratorLogin": {
-      "type": "string",
-      "defaultvalue": "sqladmin"
-    },
-    "sqlServerAdministratorLoginPassword": {
-      "type": "securestring"
-    },
-    "pgversion": {
-      "type": "string",
-      "defaultValue": "10"
-    },
     "components_app_insights_name": {
       "defaultValue": "tt-app-insights",
-      "type": "String"
+      "type": "string"
+    },
+    "servicePrincipalId": {
+      "type": "string"
+    },
+    "servicePrincipalSecret": {
+      "type": "securestring"
+    },
+    "aksVersion": {
+      "type": "string"
+    },
+    "windowsProfileAdminUsername": {
+      "type": "string",
+      "defaultValue": "winadmin"
+    },
+    "windowsProfileAdminPassword": {
+      "type": "string",
+      "defaultValue": "Passw0rd"
+    },
+    "linuxProfileAdminUsername": {
+      "type": "string",
+      "defaultValue": "linadmin"
+    },
+    "linuxProfileAdminKeyData": {
+      "type": "securestring",
+      "defaultValue": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCvgpiai6L6+zdCJjAKQbiqGe900toED31fJgGgf9stvPDAsymbfXibjZMgLlui9aIt4lv7YC9FaFxORfKPPd0FQI/CjXGduLf0U1oReEFvHI5rc1nOkJp0Nn5PkPGRSXif3FKk5N8I2RSDQXCLNPzea8dmywcI5DYA5OLC4MVoYiVrGp4AzoRff3fUVA2393MBOqIXVSj/x+NJkMYGdxsa0cMZ1TZbR1/EN2PsUa7MA3G/jX+mVwMpKAA3czhN6q/ivEFerdtse3TvkYWEsNz4WfEmJkXKTxLqmq7P8ELY+WHE+8Xo196VfujEdmfT6slFL8GUq6Qe4GxM2il7NRWz admin@hostname",
+      "metadata": {
+        "description": "Configure all linux machines with the SSH RSA public key string.  Your key should include three parts, for example 'ssh-rsa AAAAB...snip...UcyupgH azureuser@linuxvm'"
+      }
     }
   },
   "variables": {
     "acr_name": "[concat('ttacr',uniqueString(resourceGroup().id))]",
+    "aks_name": "[concat('tailwindtradersaks',uniqueString(resourceGroup().id))]",
     "storage_name": "[concat('ttstorage',uniqueString(resourceGroup().id))]",
     "function_name": "[concat('ttfunction',uniqueString(resourceGroup().id))]",
-    "sqlserver_name": "[concat('ttsqlserver',uniqueString(resourceGroup().id))]",
-    "pg_name": "[concat('ttpg',uniqueString(resourceGroup().id))]",
     "cuopons_cosmosdb_name": "[concat('ttcuoponsdb',uniqueString(resourceGroup().id))]",
     "shopping_cosmosdb_name": "[concat('ttshoppingdb',uniqueString(resourceGroup().id))]",
     "workspaceName": "[concat('ttoms', uniqueString(resourceGroup().id))]",
@@ -31,10 +47,10 @@
   },
   "resources": [
     {
-      "type": "microsoft.insights/components",
+      "type": "Microsoft.Insights/components",
       "apiVersion": "2015-05-01",
       "name": "[parameters('components_app_insights_name')]",
-      "location": "eastus",
+      "location": "[resourceGroup().location]",
       "kind": "web",
       "properties": {
         "Application_Type": "web",
@@ -52,6 +68,117 @@
       "location": "[resourceGroup().location]",
       "properties": {
         "adminUserEnabled": true
+      }
+    },
+    {
+      "type": "Microsoft.ContainerService/managedClusters",
+      "apiVersion": "2019-06-01",
+      "name": "[variables('aks_name')]",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "kubernetesVersion": "[parameters('aksVersion')]",
+        "dnsPrefix": "[concat('tt-win-lin-', variables('aks_name'), '-acd681')]",
+        "agentPoolProfiles": [
+          {
+            "name": "nplinux",
+            "count": 2,
+            "vmSize": "Standard_DS2_v2",
+            "osDiskSizeGB": 100,
+            "maxPods": 30,
+            "type": "VirtualMachineScaleSets",
+            "orchestratorVersion": "1.14.4",
+            "osType": "Linux"
+          },
+          {
+            "name": "npwin",
+            "count": 2,
+            "vmSize": "Standard_D2s_v3",
+            "osDiskSizeGB": 100,
+            "maxPods": 30,
+            "type": "VirtualMachineScaleSets",
+            "orchestratorVersion": "1.14.4",
+            "enableNodePublicIP": false,
+            "osType": "Windows"
+          }
+        ],
+        "linuxProfile": {
+          "adminUsername": "[parameters('linuxProfileAdminUsername')]",
+          "ssh": {
+            "publicKeys": [
+              {
+                "keyData": "[parameters('linuxProfileAdminKeyData')]"
+              }
+            ]
+          }
+        },
+        "windowsProfile": {
+          "adminUsername": "[parameters('windowsProfileAdminUsername')]",
+          "adminPassword": "[parameters('windowsProfileAdminPassword')]"
+        },
+        "servicePrincipalProfile": {
+          "clientId": "[parameters('servicePrincipalId')]",
+          "secret": "[parameters('servicePrincipalSecret')]"
+        },
+        "addonProfiles": {
+          "azurepolicy": {
+            "enabled": true,
+            "config": {}
+          },
+          "httpApplicationRouting": {
+            "enabled": true
+          },
+          "omsagent": {
+            "enabled": true,
+            "config": {
+              "logAnalyticsWorkspaceResourceID": "[variables('omsWorkspaceId')]"
+            }
+          }
+        },
+        "nodeResourceGroup": "[concat('MC_', variables('aks_name'), '_', variables('aks_name'), '_', resourceGroup().location)]",
+        "enableRBAC": true,
+        "enablePodSecurityPolicy": false,
+        "networkProfile": {
+          "networkPlugin": "azure",
+          "loadBalancerSku": "basic",
+          "serviceCidr": "10.0.0.0/16",
+          "dnsServiceIP": "10.0.0.10",
+          "dockerBridgeCidr": "172.17.0.1/16"
+        }
+      }
+    },
+    {
+      "type": "Microsoft.ContainerService/managedClusters/agentPools",
+      "apiVersion": "2019-06-01",
+      "name": "[concat(variables('aks_name'), '/nplinux')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.ContainerService/managedClusters', variables('aks_name'))]"
+      ],
+      "properties": {
+        "count": 2,
+        "vmSize": "Standard_DS2_v2",
+        "osDiskSizeGB": 100,
+        "maxPods": 30,
+        "type": "VirtualMachineScaleSets",
+        "orchestratorVersion": "1.14.4",
+        "osType": "Linux"
+      }
+    },
+    {
+      "type": "Microsoft.ContainerService/managedClusters/agentPools",
+      "apiVersion": "2019-06-01",
+      "name": "[concat(variables('aks_name'), '/npwin')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.ContainerService/managedClusters', variables('aks_name'))]"
+      ],
+      "properties": {
+        "count": 2,
+        "vmSize": "Standard_D2s_v3",
+        "osDiskSizeGB": 100,
+        "maxPods": 30,
+        "type": "VirtualMachineScaleSets",
+        "orchestratorVersion": "1.14.4",
+        "enableNodePublicIP": false,
+        "osType": "Windows"
       }
     },
     {
@@ -109,135 +236,7 @@
       ]
     },
     {
-      "apiVersion": "2017-12-01",
-      "type": "Microsoft.DBforPostgreSQL/servers",
-      "location": "[resourceGroup().location]",
-      "name": "[variables('pg_name')]",
-      "properties": {
-        "version": "[parameters('pgversion')]",
-        "administratorLogin": "[parameters('sqlServerAdministratorLogin')]",
-        "administratorLoginPassword": "[parameters('sqlServerAdministratorLoginPassword')]",
-        "storageProfile": {
-          "storageMB": "5120",
-          "backupRetentionDays": "7",
-          "geoRedundantBackup": "Disabled"
-        }
-      },
-      "sku": {
-        "name": "GP_Gen5_2",
-        "tier": "GeneralPurpose",
-        "capacity": "2",
-        "size": "5120",
-        "family": "Gen5"
-      }
-    },
-    {
-      "type": "Microsoft.Sql/servers",
-      "name": "[variables('sqlserver_name')]",
-      "apiVersion": "2015-05-01-preview",
-      "location": "[resourceGroup().location]",
-      "properties": {
-        "administratorLogin": "[parameters('sqlServerAdministratorLogin')]",
-        "administratorLoginPassword": "[parameters('sqlServerAdministratorLoginPassword')]",
-        "version": "12.0"
-      },
-      "resources": [
-        {
-          "type": "databases",
-          "sku": {
-            "name": "S0",
-            "tier": "Standard"
-          },
-          "name": "Products",
-          "apiVersion": "2017-10-01-preview",
-          "location": "[resourceGroup().location]",
-          "properties": {
-            "collation": "SQL_Latin1_General_CP1_CI_AS",
-            "maxSizeBytes": 268435456000,
-            "sampleName": "",
-            "zoneRedundant": false,
-            "licenseType": ""
-          },
-          "dependsOn": [
-            "[concat('Microsoft.Sql/servers/', variables('sqlserver_name'))]"
-          ]
-        },
-        {
-          "type": "databases",
-          "sku": {
-            "name": "S0",
-            "tier": "Standard"
-          },
-          "name": "Profiles",
-          "apiVersion": "2017-10-01-preview",
-          "location": "[resourceGroup().location]",
-          "properties": {
-            "collation": "SQL_Latin1_General_CP1_CI_AS",
-            "maxSizeBytes": 268435456000,
-            "sampleName": "",
-            "zoneRedundant": false,
-            "licenseType": ""
-          },
-          "dependsOn": [
-            "[concat('Microsoft.Sql/servers/', variables('sqlserver_name'))]"
-          ]
-        },
-        {
-          "type": "databases",
-          "sku": {
-            "name": "S0",
-            "tier": "Standard"
-          },
-          "name": "PopularProducts",
-          "apiVersion": "2017-10-01-preview",
-          "location": "[resourceGroup().location]",
-          "properties": {
-            "collation": "SQL_Latin1_General_CP1_CI_AS",
-            "maxSizeBytes": 268435456000,
-            "sampleName": "",
-            "zoneRedundant": false,
-            "licenseType": ""
-          },
-          "dependsOn": [
-            "[concat('Microsoft.Sql/servers/', variables('sqlserver_name'))]"
-          ]
-        },
-        {
-          "type": "firewallrules",
-          "name": "AllowAllWindowsAzureIps",
-          "apiVersion": "2014-04-01-preview",
-          "location": "[resourceGroup().location]",
-          "properties": {
-            "endIpAddress": "255.255.255.255",
-            "startIpAddress": "0.0.0.0"
-          },
-          "dependsOn": [
-            "[concat('Microsoft.Sql/servers/', variables('sqlserver_name'))]"
-          ],
-          "condition": true
-        },
-        {
-          "type": "securityAlertPolicies",
-          "name": "Default",
-          "apiVersion": "2017-03-01-preview",
-          "properties": {
-            "state": "Enabled",
-            "disabledAlerts": [],
-            "emailAddresses": [],
-            "emailAccountAdmins": true
-          },
-          "dependsOn": [
-            "[concat('Microsoft.Sql/servers/', variables('sqlserver_name'))]",
-            "[concat('Microsoft.Sql/servers/', variables('sqlserver_name'), '/databases/', 'Products')]",
-            "[concat('Microsoft.Sql/servers/', variables('sqlserver_name'), '/databases/', 'Profiles')]",
-            "[concat('Microsoft.Sql/servers/', variables('sqlserver_name'), '/databases/', 'PopularProducts')]"
-          ],
-          "condition": false
-        }
-      ]
-    },
-    {
-      "type": "Microsoft.DocumentDb/databaseAccounts",
+      "type": "Microsoft.DocumentDB/databaseAccounts",
       "kind": "GlobalDocumentDB",
       "name": "[variables('shopping_cosmosdb_name')]",
       "apiVersion": "2015-04-08",
@@ -263,7 +262,7 @@
     {
       "apiVersion": "2015-04-08",
       "kind": "MongoDB",
-      "type": "Microsoft.DocumentDb/databaseAccounts",
+      "type": "Microsoft.DocumentDB/databaseAccounts",
       "name": "[variables('cuopons_cosmosdb_name')]",
       "location": "[resourceGroup().location]",
       "properties": {
@@ -288,8 +287,8 @@
       "type": "Microsoft.Resources/deployments",
       "name": "SolutionDeployment",
       "apiVersion": "2017-05-10",
-      "subscriptionId": "[split(variables('omsWorkspaceId'),'/')[2]]",
-      "resourceGroup": "[split(variables('omsWorkspaceId'),'/')[4]]",
+      "subscriptionId": "[subscription().subscriptionId]",
+      "resourceGroup": "[resourceGroup().name]",
       "properties": {
         "mode": "Incremental",
         "template": {
@@ -301,7 +300,7 @@
             {
               "apiVersion": "2015-11-01-preview",
               "type": "Microsoft.OperationsManagement/solutions",
-              "location": "East US",
+              "location": "[resourceGroup().location]",
               "name": "[concat('ContainerInsights', '(', split(variables('omsWorkspaceId'),'/')[8], ')')]",
               "properties": {
                 "workspaceResourceId": "[variables('omsWorkspaceId')]"
@@ -337,7 +336,7 @@
             {
               "apiVersion": "2015-11-01-preview",
               "type": "Microsoft.OperationalInsights/workspaces",
-              "location": "East US",
+              "location": "[resourceGroup().location]",
               "name": "[variables('workspaceName')]",
               "properties": {
                 "sku": {
@@ -358,10 +357,6 @@
     "function": {
       "type": "string",
       "value": "[variables('function_name')]"
-    },
-    "sqlserver": {
-      "type": "string",
-      "value": "[variables('sqlserver_name')]"
     },
     "cuoponsdb": {
       "type": "string",
