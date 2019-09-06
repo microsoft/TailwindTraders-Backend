@@ -49,7 +49,6 @@ namespace Tailwind.Traders.WebBff
 
             services.AddSwaggerGen(options =>
             {
-                options.DescribeAllEnumsAsStrings();
                 options.SwaggerDoc("v1", new OpenApiInfo
                 {
                     Title = "Tailwind Traders - Web BFF HTTP API",
@@ -73,6 +72,7 @@ namespace Tailwind.Traders.WebBff
 
             services.AddControllers()
                 .SetCompatibilityVersion(CompatibilityVersion.Latest)
+                .AddNewtonsoftJson()
                 .Services
                 .AddHealthChecks(Configuration)
                 .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -101,13 +101,26 @@ namespace Tailwind.Traders.WebBff
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            var swaggerEndpoint = "/swagger/v1/swagger.json";
+
+            if(!string.IsNullOrEmpty(Configuration["gwPath"]))
+            {
+                swaggerEndpoint = $"/{Configuration["gwPath"]}{swaggerEndpoint}";
+            }
+
             if (env.IsDevelopment())
             {
                 IdentityModelEventSource.ShowPII = true;
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseCors();
+            app.UseCors(builder =>
+            {
+                builder
+                    .AllowAnyOrigin()
+                    .AllowAnyHeader()
+                    .AllowAnyMethod();
+            });
 
             app.UseAuthentication();
             app.UseAuthorization();
@@ -115,6 +128,14 @@ namespace Tailwind.Traders.WebBff
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseSwagger();
+    
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint(swaggerEndpoint, "WebBFF V1");
+                c.RoutePrefix = string.Empty;
+            });
 
             app.UseEndpoints(endpoints =>
             {

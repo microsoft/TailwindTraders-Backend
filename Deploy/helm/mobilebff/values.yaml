@@ -39,6 +39,8 @@ env:
   values:
     - name: ASPNETCORE_ENVIRONMENT
       value: Development
+    - name: gwPath
+      value: mobilebff
 
 probes:
   liveness:

@@ -43,7 +43,7 @@ namespace Tailwind.Traders.Login.Api
                 options.ApiVersionReader = new QueryStringApiVersionReader();
             });
 
-            services.AddControllers().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
+            services.AddControllers().SetCompatibilityVersion(CompatibilityVersion.Version_3_0).AddNewtonsoftJson();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -58,6 +58,14 @@ namespace Tailwind.Traders.Login.Api
             {
                 app.UseHsts();
             }
+
+            app.UseCors(builder =>
+            {
+                builder
+                    .AllowAnyOrigin()
+                    .AllowAnyHeader()
+                    .AllowAnyMethod();
+            });
 
             app.UseHttpsRedirection();
 

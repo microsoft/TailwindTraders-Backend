@@ -116,9 +116,7 @@ namespace Tailwind.Traders.Product.Api.Controllers
                 .OrderByDescending(inc => inc.Name.Contains("gnome"))
                 .AsQueryable();
 
-            var predicate = QueryFilterExtension.Or<ProductItem>(item => brand.Contains(item.Brand.Id), item => type.Contains(item.Type.Id));
-
-            var items = await query.Where(predicate).ToListAsync();
+            var items = (await query.ToListAsync()).Where(item => brand.Contains(item.Brand.Id) || type.Contains(item.Type.Id));
 
             if (!items.Any())
             {

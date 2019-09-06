@@ -45,7 +45,6 @@ namespace Tailwind.Traders.Bff
 
             services.AddSwaggerGen(options =>
             {
-                options.DescribeAllEnumsAsStrings();
                 options.SwaggerDoc("v1", new OpenApiInfo
                 {
                     Title = "Tailwind Traders - Mobile BFF HTTP API",
@@ -70,18 +69,33 @@ namespace Tailwind.Traders.Bff
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-            }          
+            }
 
-            app.UseCors();
+            var swaggerEndpoint = "/swagger/v1/swagger.json";
 
-            app.UseSwagger()
-                .UseSwaggerUI(c =>
-                {
-                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "MobileBFF V1");
-                    c.RoutePrefix = string.Empty;
-                });
+            if (!string.IsNullOrEmpty(Configuration["gwPath"]))
+            {
+                swaggerEndpoint = $"/{Configuration["gwPath"]}{swaggerEndpoint}";
+            }
+
+            app.UseCors(builder =>
+            {
+                builder
+                    .AllowAnyOrigin()
+                    .AllowAnyHeader()
+                    .AllowAnyMethod();
+            });
 
             app.UseHttpsRedirection();
+
+            app.UseSwagger();
+
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint(swaggerEndpoint, "MobileBFF V1");
+                c.RoutePrefix = string.Empty;
+            });
+
 
             app.UseRouting();
 

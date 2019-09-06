@@ -24,6 +24,7 @@ namespace Tailwind.Traders.Product.Api
             services
                 .AddControllers()
                 .SetCompatibilityVersion(CompatibilityVersion.Latest)
+                .AddNewtonsoftJson()
                 .Services     
                 .AddHealthChecks(Configuration)
                 .AddApplicationInsightsTelemetry(Configuration)
@@ -58,7 +59,8 @@ namespace Tailwind.Traders.Product.Api
 
             app.UseCors(builder =>
             {
-                builder.AllowAnyOrigin()
+                builder
+                    .AllowAnyOrigin()
                     .AllowAnyHeader()
                     .AllowAnyMethod();
             });
