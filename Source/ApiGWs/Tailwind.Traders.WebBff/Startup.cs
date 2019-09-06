@@ -7,8 +7,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using RegistrationUserService;
 using System;
 using System.ServiceModel;
@@ -38,6 +40,7 @@ namespace Tailwind.Traders.WebBff
             services.AddHttpClientServices(Configuration);
 
             services.Configure<AppSettings>(Configuration);
+
             services.AddTransient<IUserService>(_ => new UserServiceClient(
                 EndpointConfiguration.BasicHttpBinding_IUserService,
                 new EndpointAddress(Configuration["RegistrationUsersEndpoint"])));
@@ -46,8 +49,7 @@ namespace Tailwind.Traders.WebBff
 
             services.AddSwaggerGen(options =>
             {
-                options.DescribeAllEnumsAsStrings();
-                options.SwaggerDoc("v1", new Swashbuckle.AspNetCore.Swagger.Info
+                options.SwaggerDoc("v1", new OpenApiInfo
                 {
                     Title = "Tailwind Traders - Web BFF HTTP API",
                     Version = "v1"
@@ -68,8 +70,9 @@ namespace Tailwind.Traders.WebBff
                 services.AddApplicationInsightsTelemetry(appInsightsIK);
             }
 
-            services.AddMvc()
+            services.AddControllers()
                 .SetCompatibilityVersion(CompatibilityVersion.Latest)
+                .AddNewtonsoftJson()
                 .Services
                 .AddHealthChecks(Configuration)
                 .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -96,8 +99,15 @@ namespace Tailwind.Traders.WebBff
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            var swaggerEndpoint = "/swagger/v1/swagger.json";
+
+            if(!string.IsNullOrEmpty(Configuration["gwPath"]))
+            {
+                swaggerEndpoint = $"/{Configuration["gwPath"]}{swaggerEndpoint}";
+            }
+
             if (env.IsDevelopment())
             {
                 IdentityModelEventSource.ShowPII = true;
@@ -107,21 +117,33 @@ namespace Tailwind.Traders.WebBff
             app.UseCors(builder =>
             {
                 builder
-                .AllowAnyOrigin()
-                .AllowAnyHeader()
-                .AllowAnyMethod()
-                .AllowCredentials();
+                    .AllowAnyOrigin()
+                    .AllowAnyHeader()
+                    .AllowAnyMethod();
             });
-
-            app.UseHealthChecks("/liveness", new HealthCheckOptions
-            {
-                Predicate = r => r.Name.Contains("self")
-            });
-
-            app.UseHealthChecks("/readiness");
 
             app.UseAuthentication();
-            app.UseMvc();
+            app.UseAuthorization();
+
+            app.UseHttpsRedirection();
+
+            app.UseRouting();
+
+            app.UseSwagger();
+    
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint(swaggerEndpoint, "WebBFF V1");
+                c.RoutePrefix = string.Empty;
+            });
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapHealthChecks("/liveness", new HealthCheckOptions() { Predicate = r => r.Name.Contains("self") });
+                endpoints.MapHealthChecks("/readiness", new HealthCheckOptions() { });
+                endpoints.MapDefaultControllerRoute();
+                endpoints.MapControllers();
+            });
         }
     }
 

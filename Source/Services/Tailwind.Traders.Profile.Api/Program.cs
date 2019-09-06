@@ -17,7 +17,7 @@ namespace Tailwind.Traders.Profile.Api
                 .Build()
                 .MigrateDbContext<ProfileDbContext>((context, services) =>
                 {
-                    var env = services.GetService<IHostingEnvironment>();
+                    var env = services.GetService<IWebHostEnvironment>();
                     var logger = services.GetService<ILogger<ProfileDbContext>>();
                     var csvReader = services.GetRequiredService<CsvReaderHelper>();
 

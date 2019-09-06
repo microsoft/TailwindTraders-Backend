@@ -29,16 +29,24 @@ env:
     - name: PopularProductsApiUrl
     - name: ProductsApiUrl
     - name: ProfileApiUrl
+    - name: LoginApiUrl
     - name: CouponsApiUrl
     - name: ImageClassifierApiUrl
+    - name: StockApiUrl
     - name: ISSUER
     - name: SECURITYKEY
-    - name: LoginApiUrl
+    - name: UseB2C
+    - name: B2CIssuer
+    - name: Authority
     - name: RegisterUsers
     - name: RegistrationUsersEndpoint
   values:
     - name: ASPNETCORE_ENVIRONMENT
       value: Development
+    - name: gwPath
+      value: mobilebff
+    - name: UseMlNetClassifier
+      value: "true"
 
 probes:
   liveness:
