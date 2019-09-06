@@ -184,10 +184,11 @@ If using Powershell run the `./Create-Secret.ps1` with following parameters:
 - `-resourceGroup <group>` Resource group where AKS is
 - `-acrName <name>` Name of the ACR
 
-This will create the secret in AKS **using ACR credentials**. If ACR login is not enabled you can create a secret by using a service principal. For use a Azure service principal following additional parameters are needed:
+This will create the secret in AKS **using ACR credentials**. If ACR login is not enabled you can create a secret by using a service principal.
+In case that ACR is not created with administrator rights you will have to provide the service principal clientId and secret:
 
 - `-clientId <id>` Client id of the service principal to use
-- `-password <pwd>` Service principal password
+- `-password <pwd>` Service principal secret
 
 Please, note that the Service principal must exist. To create a service principal you can run the command `az ad sp create-for-rbac`.
 

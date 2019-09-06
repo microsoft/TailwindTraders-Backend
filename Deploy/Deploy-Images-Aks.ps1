@@ -72,7 +72,6 @@ function createHelmCommand([string]$command) {
         $newcmd = "$newcmd --set ingress.tls[0].secretName=$tlsSecretNameToUse --set ingress.tls[0].hosts={$aksHost}"
     }
 
-    Write-Host "$($newcmd)" -ForegroundColor Red
     return "$newcmd";
 }
 
@@ -92,7 +91,7 @@ $acrLogin=$(az acr show -n $acrName -g $resourceGroup -o json| ConvertFrom-Json)
 if ($tlsEnv -ne "custom") {
     $aksHost=$(az aks show -n $aksName -g $resourceGroup --query addonProfiles.httpapplicationrouting.config.HTTPApplicationRoutingZoneName -o json | ConvertFrom-Json)
 
-     if (-not $aksHost) {
+    if (-not $aksHost) {
         $aksHost=$(az aks show -n $aksName -g $resourceGroup --query addonProfiles.httpApplicationRouting.config.HTTPApplicationRoutingZoneName -o json | ConvertFrom-Json)
     }
 
