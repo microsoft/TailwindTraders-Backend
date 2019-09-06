@@ -1,7 +1,8 @@
-package Tailwind.Traders.Stock.Api;
+package Tailwind.Traders.Stock.Api.controller;
 
 import java.io.IOException;
 
+import Tailwind.Traders.Stock.Api.StockProduct;
 import Tailwind.Traders.Stock.Api.models.StockItem;
 import Tailwind.Traders.Stock.Api.repositories.StockItemRepository;
 import org.apache.logging.log4j.LogManager;
@@ -37,22 +38,22 @@ public class StockController {
 
 	@ResponseBody
 	@PostMapping("/v1/consumptions/stock/{id}")
-	public ResponseEntity decreaseStock (@PathVariable int id) {
+	public ResponseEntity<StockItem> decreaseStock (@PathVariable int id) {
 		StockItem stock = stockItemRepository.findByProductId(id);
 
 		if (stock == null) {
 			log.debug("Not found stock for product " + id);
-			return new ResponseEntity<StockProduct>(HttpStatus.NOT_FOUND);
+			return new ResponseEntity<StockItem>(HttpStatus.NOT_FOUND);
 		}
 
 		int currentStock = stock.getStockCount();
 		if (currentStock > 0) {
 			stock.setStockCount(currentStock - 1);
 			stockItemRepository.save(stock);
-			return new ResponseEntity(stock, HttpStatus.OK);
+			return new ResponseEntity<StockItem>(stock, HttpStatus.OK);
 		}
 
-		return new ResponseEntity(HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<StockItem>(HttpStatus.BAD_REQUEST);
 
 	}
 }

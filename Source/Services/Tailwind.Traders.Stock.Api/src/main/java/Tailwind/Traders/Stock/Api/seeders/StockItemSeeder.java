@@ -8,10 +8,8 @@ import com.opencsv.bean.CsvToBeanBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
-import java.awt.font.NumericShaper;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -23,16 +21,8 @@ import java.util.List;
 
 @Component
 public class StockItemSeeder  {
-    private JdbcTemplate jdbcTemplate;
-    private StockItemRepository repository;
-
-
     @Autowired
-    public StockItemSeeder(StockItemRepository repository,
-                      JdbcTemplate jdbcTemplate) {
-        this.repository = repository;
-        this.jdbcTemplate = jdbcTemplate;
-    }
+    private StockItemRepository repository;
 
     @EventListener
     public void seed(ContextRefreshedEvent event) throws IOException {

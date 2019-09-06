@@ -94,6 +94,11 @@
 			<version>1.0.1-BETA</version>
 		</dependency>
 		
+		<dependency>
+			<groupId>com.microsoft.azure</groupId>
+			<artifactId>azure-documentdb</artifactId>
+			<version>1.0.1</version>
+		</dependency>
 	</dependencies>
 
 	<build>
