@@ -1,23 +1,6 @@
 version: "3.4"
 
 services:
-  sql.data:
-    image: microsoft/mssql-server-linux:2017-latest
-
-  nosql.data:
-    image: mongo
-
-  stock.data:
-    image: postgres:11.3
-
-  adminer:
-    image: adminer
-    ports:
-      - 8080:8080
-    depends_on:
-      - sql.data
-      - stock.data
-
   cart.api:
     image: ${REGISTRY:-msfttailwindtraders}/cart.api:${TAG:-latest}
     build:
@@ -29,16 +12,12 @@ services:
     build:
       context: .
       dockerfile: Services/Tailwind.Traders.Product.Api/Dockerfile
-    depends_on:
-      - sql.data
 
   profile.api:
     image: ${REGISTRY:-msfttailwindtraders}/profile.api:${TAG:-latest}
     build:
       context: .
       dockerfile: Services/Tailwind.Traders.Profile.Api/Dockerfile
-    depends_on:
-      - sql.data
 
   login.api:
     image: ${REGISTRY:-msfttailwindtraders}/login.api:${TAG:-latest}
@@ -52,16 +31,12 @@ services:
     build:
       context: Services/Tailwind.Traders.Coupon.Api
       dockerfile: Dockerfile
-    depends_on:
-      - nosql.data
 
   popular-product.api:
     image: ${REGISTRY:-msfttailwindtraders}/popular-product.api:${TAG:-latest}
     build:
       context: .
       dockerfile: Services/Tailwind.Traders.PopularProduct.Api/Dockerfile
-    depends_on:
-      - sql.data
 
   stock.api:
     image: ${REGISTRY:-msfttailwindtraders}/stock.api:${TAG:-latest}
@@ -69,8 +44,6 @@ services:
     build:
       context: ./Services/Tailwind.Traders.Stock.Api/
       dockerfile: Dockerfile
-    depends_on:
-      - stock.data
 
   product-visits.function:
     image: ${REGISTRY:-msfttailwindtraders}/product-visits.function:${TAG:-latest}

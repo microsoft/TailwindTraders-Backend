@@ -1,30 +1,12 @@
 version: "3.4"
 
 services:
-  sql.data:
-    environment:
-      - SA_PASSWORD=Pass@word
-      - ACCEPT_EULA=Y
-    ports:
-      - "5433:1433"
-
-  nosql.data:
-    ports:
-      - "27017:27017"
-
-  stock.data:
-    environment:
-      - POSTGRES_PASSWORD=Passw0rd1!
-      - POSTGRES_USER=ttuser
-      - POSTGRES_DB=stockdb
-    ports:
-      - "5432:5432"
-
   product.api:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://0.0.0.0:80
-      - ConnectionString=Server=sql.data;Database=Microsoft.TailWindTraders.Product;User Id=sa;Password=Pass@word
+      - HOST=${COSMOSDB_HOST:-https://10.0.75.1:8081} # Emulator URI
+      - AUTHKEY=${COSMOSDB_AUTHKEY}
       - ProductImagesUrl=
       - ProductDetailImagesUrl=
       - ProductVisitsUrl=
@@ -36,7 +18,8 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://0.0.0.0:80
-      - ConnectionString=Server=sql.data;Database=Microsoft.TailWindTraders.Profile;User Id=sa;Password=Pass@word
+      - HOST=${COSMOSDB_HOST:-https://10.0.75.1:8081} # Emulator URI
+      - AUTHKEY=${COSMOSDB_AUTHKEY}
       - ProfilesImageUrl=
       - SecurityKey=nEpLzQJGNSCNL5H6DIQCtTdNxf5VgAGcBbtXLms1YDD01KJBAs0WVawaEjn97uwB
       - Issuer=TTFakeLogin
@@ -48,7 +31,8 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://0.0.0.0:80
-      - ConnectionString=Server=sql.data;Database=Microsoft.TailWindTraders.Profile;User Id=sa;Password=Pass@word
+      - HOST=${COSMOSDB_HOST:-https://10.0.75.1:8081} # Emulator URI
+      - AUTHKEY=${COSMOSDB_AUTHKEY}
       - ProfilesImageUrl=
       - SecurityKey=nEpLzQJGNSCNL5H6DIQCtTdNxf5VgAGcBbtXLms1YDD01KJBAs0WVawaEjn97uwB
       - Issuer=TTFakeLogin
@@ -58,10 +42,10 @@ services:
 
   coupon.api:
     environment:
-      - CONNECTIONSTRING=nosql.data:27017/CouponsDb
+      - CONNECTIONSTRING=nosql.data:27017/CouponsDb # Connect to CosmosDb
       - PORT=3000
       - COUPON_COLLECTION=CouponCollection
-      - URL_BASE=nosql.data:27017/CouponsDb
+      - URL_BASE=nosql.data:27017/CouponsDb # Connect to CosmosDb ?
       - ISSUER=TTFakeLogin
       - SECURITYKEY=nEpLzQJGNSCNL5H6DIQCtTdNxf5VgAGcBbtXLms1YDD01KJBAs0WVawaEjn97uwB
       - APPLICATIONINSIGHTSIK=
@@ -72,7 +56,6 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://0.0.0.0:80
-      - ConnectionString=Server=sql.data;Database=Microsoft.TailWindTraders.PopularProduct;User Id=sa;Password=Pass@word
       - Issuer=TTFakeLogin
       - SecurityKey=nEpLzQJGNSCNL5H6DIQCtTdNxf5VgAGcBbtXLms1YDD01KJBAs0WVawaEjn97uwB
       - AzureStorageUrl=
@@ -84,9 +67,8 @@ services:
     ports:
       - "5004:8080"
     environment:
-      - sql_server_url=jdbc:postgresql://stock.data:5432/stockdb
-      - sql_user_name=ttuser
-      - sql_user_password=Passw0rd1!
+      - HOST=${COSMOSDB_HOST:-https://10.0.75.1:8081} # Emulator URI
+      - AUTHKEY=${COSMOSDB_AUTHKEY}
       - Issuer=TTFakeLogin
       - SecurityKey=nEpLzQJGNSCNL5H6DIQCtTdNxf5VgAGcBbtXLms1YDD01KJBAs0WVawaEjn97uwB
       - application_insights_ikey=
