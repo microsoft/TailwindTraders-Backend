@@ -21,7 +21,7 @@ namespace Tailwind.Traders.Profile.Api.Extensions
                     sqlOptions.MigrationsAssembly(typeof(Startup).GetTypeInfo().Assembly.GetName().Name);
                     sqlOptions.EnableRetryOnFailure(maxRetryCount: 15, maxRetryDelay: TimeSpan.FromSeconds(45), errorNumbersToAdd: null);
                 })
-                .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+               .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
             },
                 ServiceLifetime.Scoped
             );

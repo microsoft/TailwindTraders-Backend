@@ -45,6 +45,8 @@ env:
       value: Development
     - name: UseMlNetClassifier
       value: "true"
+    - name: gwPath
+      value: webbff
 
 probes:
   liveness:

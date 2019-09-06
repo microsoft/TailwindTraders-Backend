@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Tailwind.Traders.Profile.Api.Extensions;
 using Tailwind.Traders.Profile.Api.Infrastructure;
 using Tailwind.Traders.Profile.Api.Models;
@@ -24,7 +25,7 @@ namespace Tailwind.Traders.Profile.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services
-                .AddMvc()
+                .AddControllers()
                 .SetCompatibilityVersion(CompatibilityVersion.Latest)
                 .Services
                 .AddHealthChecks(Configuration)
@@ -51,7 +52,7 @@ namespace Tailwind.Traders.Profile.Api
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -66,21 +67,27 @@ namespace Tailwind.Traders.Profile.Api
             app.UseCors(builder =>
             {
                 builder
-                .AllowAnyOrigin()
-                .AllowAnyHeader()
-                .AllowAnyMethod();
+                    .AllowAnyOrigin()
+                    .AllowAnyHeader()
+                    .AllowAnyMethod();
             });
-
-            app.UseHealthChecks("/liveness", new HealthCheckOptions
-            {
-                Predicate = r => r.Name.Contains("self")
-            });
-
-            app.UseHealthChecks("/readiness");
 
             app.UseHttpsRedirection();
+
             app.UseAuthentication();
-            app.UseMvc();
+            app.UseAuthorization();
+
+            app.UseHttpsRedirection();
+
+            app.UseRouting();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapHealthChecks("/liveness", new HealthCheckOptions() { Predicate = r => r.Name.Contains("self") });
+                endpoints.MapHealthChecks("/readiness", new HealthCheckOptions() { });
+                endpoints.MapDefaultControllerRoute();
+                endpoints.MapControllers();
+            });
         }
     }
 }

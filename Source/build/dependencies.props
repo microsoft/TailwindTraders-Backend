@@ -9,11 +9,12 @@
   </PropertyGroup>
 
   <PropertyGroup Label="Netcore Versions">
-      <NetCoreTargetVersion>netcoreapp2.2</NetCoreTargetVersion>
+      <NetCoreTargetVersion>netcoreapp3.0</NetCoreTargetVersion>
       <MicrosoftAspNetCoreRazorDesign>2.2.0</MicrosoftAspNetCoreRazorDesign>
       <MicrosoftAspNetCoreHttpFeatures>2.2.0</MicrosoftAspNetCoreHttpFeatures>
-      <MicrosoftEntityFrameworkCore>2.2.4</MicrosoftEntityFrameworkCore>
-      <MicrosoftEntityFrameworkCoreSqlServer>2.2.4</MicrosoftEntityFrameworkCoreSqlServer>
+      <MicrosoftEntityFrameworkCore>3.0.0-preview8.19405.11</MicrosoftEntityFrameworkCore>
+      <MicrosoftEntityFrameworkCoreSqlServer>3.0.0-preview8.19405.11</MicrosoftEntityFrameworkCoreSqlServer>
+      <MicrosoftEntityFrameworkCoreDesign>3.0.0-preview8.19405.11</MicrosoftEntityFrameworkCoreDesign>
       <MicrosoftVisualStudioWebCodeGenerationDesign>2.2.3</MicrosoftVisualStudioWebCodeGenerationDesign>
   </PropertyGroup>
 
@@ -26,8 +27,15 @@
     <MicrosoftMLImageAnalytics>1.1.0</MicrosoftMLImageAnalytics>
     <MicrosoftMLTensorFlow>0.12.0</MicrosoftMLTensorFlow>
     <MicrosoftVisualStudioAzureContainersToolsTargets>1.1.1</MicrosoftVisualStudioAzureContainersToolsTargets>
-    <SwashbuckleAspNetCore>3.0.0</SwashbuckleAspNetCore>
+    <MicrosoftAspNetWebApiClient>5.2.7</MicrosoftAspNetWebApiClient>
+    <MicrosoftApplicationInsightsAspNetCore>2.7.1</MicrosoftApplicationInsightsAspNetCore>
+    <MicrosoftAspNetCoreAuthenticationJwtBearer>2.2.0</MicrosoftAspNetCoreAuthenticationJwtBearer>
+    <MicrosoftML>1.1.0</MicrosoftML>
+    <MicrosoftMLImageAnalytics>1.1.0</MicrosoftMLImageAnalytics>
+    <MicrosoftMLTensorFlow>0.12.0</MicrosoftMLTensorFlow>
+    <SwashbuckleAspNetCore>5.0.0-rc2</SwashbuckleAspNetCore>
     <AspNetCore_HealthChecks_SqlServer>2.2.0</AspNetCore_HealthChecks_SqlServer>
     <AspNetCore_HealthChecks_Uris>2.2.2</AspNetCore_HealthChecks_Uris>
+    <MicrosoftAspNetCoreMvcNewtonsoftJson>3.0.0-preview9.19424.4</MicrosoftAspNetCoreMvcNewtonsoftJson>
   </PropertyGroup>
 </Project>

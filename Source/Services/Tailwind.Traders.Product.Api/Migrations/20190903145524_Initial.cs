@@ -23,6 +23,7 @@ namespace Tailwind.Traders.Product.Api.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false),
+                    Code = table.Column<string>(nullable: true),
                     Name = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
@@ -116,6 +117,13 @@ namespace Tailwind.Traders.Product.Api.Migrations
                 name: "IX_ProductItems_TypeId",
                 table: "ProductItems",
                 column: "TypeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductTypes_Code",
+                table: "ProductTypes",
+                column: "Code",
+                unique: true,
+                filter: "[Code] IS NOT NULL");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

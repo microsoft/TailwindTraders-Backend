@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.OpenApi.Models;
 using System.IO;
 using Tailwind.Traders.ImageClassifier.Api.Extensions;
 using Tailwind.Traders.ImageClassifier.Api.Mlnet;
@@ -15,7 +17,7 @@ namespace Tailwind.Traders.ImageClassifier.Api
     {
 
         private readonly string _contentRoot;
-        public Startup(IConfiguration configuration, IHostingEnvironment env)
+        public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
             Configuration = configuration;
             _contentRoot = env.ContentRootPath;
@@ -50,7 +52,7 @@ namespace Tailwind.Traders.ImageClassifier.Api
 
             services
                 .AddSingleton<IImageScoringService>(scoringSvc)
-                .AddMvc()
+                .AddControllers()
                 .SetCompatibilityVersion(CompatibilityVersion.Latest)
                 .Services
                 .AddHealthChecks(Configuration)
@@ -74,7 +76,7 @@ namespace Tailwind.Traders.ImageClassifier.Api
             services.AddSwaggerGen(options =>
             {
                 options.DescribeAllEnumsAsStrings();
-                options.SwaggerDoc("v1", new Swashbuckle.AspNetCore.Swagger.Info
+                options.SwaggerDoc("v1", new OpenApiInfo
                 {
                     Title = "Tailwind Traders - Image Classifier API",
                     Version = "v1"
@@ -83,7 +85,7 @@ namespace Tailwind.Traders.ImageClassifier.Api
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -98,11 +100,6 @@ namespace Tailwind.Traders.ImageClassifier.Api
                     .AllowAnyMethod();
             });
 
-            app.UseHealthChecks("/liveness", new HealthCheckOptions
-            {
-                Predicate = r => r.Name.Contains("self")
-            });
-
             app.UseSwagger()
               .UseSwaggerUI(c =>
               {
@@ -111,7 +108,15 @@ namespace Tailwind.Traders.ImageClassifier.Api
               });
 
             app.UseHttpsRedirection();
-            app.UseMvc();
+
+            app.UseRouting();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapHealthChecks("/liveness", new HealthCheckOptions() { Predicate = r => r.Name.Contains("self") });
+                endpoints.MapDefaultControllerRoute();
+                endpoints.MapControllers();
+            });
         }
     }
 }

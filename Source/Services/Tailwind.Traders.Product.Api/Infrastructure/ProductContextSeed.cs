@@ -9,11 +9,11 @@ namespace Tailwind.Traders.Product.Api.Infrastructure
 {
     public class ProductContextSeed : IContextSeed<ProductContext>
     {
-        private readonly IHostingEnvironment _hostingEnvironment;
+        private readonly IWebHostEnvironment _hostingEnvironment;
         private readonly ILogger<ProductContextSeed> _logger;
         private readonly IProcessFile _processFile;
 
-        public ProductContextSeed(IHostingEnvironment hostingEnvironment, ILogger<ProductContextSeed> logger, IProcessFile processFile)
+        public ProductContextSeed(IWebHostEnvironment hostingEnvironment, ILogger<ProductContextSeed> logger, IProcessFile processFile)
         {
             _hostingEnvironment = hostingEnvironment;
             _logger = logger;
