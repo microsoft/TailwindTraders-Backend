@@ -1,10 +1,9 @@
 Param (
     [parameter(Mandatory=$true)][string]$resourceGroup,
-    [parameter(Mandatory=$true)][string]$sqlPwd,
     [parameter(Mandatory=$false)][string]$outputFile=$null,
-    [parameter(Mandatory=$false)][string]$gvaluesTemplate=".\\helm\\gvalues.template",
-    [parameter(Mandatory=$false)][bool]$forcePwd=$false,
-    [parameter(Mandatory=$true)][bool]$infraOutsideAKS
+    [parameter(Mandatory=$false)][string]$rewardsResourceGroup="",
+    [parameter(Mandatory=$false)][string]$rewardsDbPassword="",
+    [parameter(Mandatory=$false)][string]$gvaluesTemplate=".\\helm\\gvalues.template"
 )
 
 function EnsureAndReturnFistItem($arr, $restype) {
@@ -26,62 +25,56 @@ if (-not $rg) {
 ### Getting Resources
 $tokens=@{}
 
-if ($infraOutsideAKS) {
-    $sqlsrv=$(az sql server list -g $resourceGroup --query "[].{administratorLogin:administratorLogin, name:name, fullyQualifiedDomainName: fullyQualifiedDomainName}" -o json | ConvertFrom-Json)
+## Getting storage info
+$storage=$(az storage account list -g $resourceGroup --query "[].{name: name, blob: primaryEndpoints.blob}" -o json | ConvertFrom-Json)
+$storage=EnsureAndReturnFistItem $storage "Storage Account"
+Write-Host "Storage Account: $($storage.name)" -ForegroundColor Yellow
+
+## Getting CosmosDb info
+$docdb=$(az cosmosdb list -g $resourceGroup --query "[?kind=='GlobalDocumentDB'].{name: name, kind:kind, documentEndpoint:documentEndpoint}" -o json | ConvertFrom-Json)
+$docdb=EnsureAndReturnFistItem $docdb "CosmosDB (Document Db)"
+$docdbKey=$(az cosmosdb list-keys -g $resourceGroup -n $docdb.name -o json --query primaryMasterKey | ConvertFrom-Json)
+Write-Host "Document Db Account: $($docdb.name)" -ForegroundColor Yellow
+
+$mongodb=$(az cosmosdb list -g $resourceGroup --query "[?kind=='MongoDB'].{name: name, kind:kind}" -o json | ConvertFrom-Json)
+$mongodb=EnsureAndReturnFistItem $mongodb "CosmosDB (MongoDb mode)"
+$mongodbKey=$(az cosmosdb list-keys -g $resourceGroup -n $mongodb.name -o json --query primaryMasterKey | ConvertFrom-Json)
+Write-Host "Mongo Db Account: $($mongodb.name)" -ForegroundColor Yellow
+
+If ($rewardsResourceGroup){
+    $sqlsrv=$(az sql server list -g $rewardsResourceGroup --query "[].{administratorLogin:administratorLogin, name:name, fullyQualifiedDomainName: fullyQualifiedDomainName}" -o json | ConvertFrom-Json)
     $sqlsrv=EnsureAndReturnFistItem $sqlsrv "SQL Server"
-    Write-Host "Sql Server: $($sqlsrv.name)" -ForegroundColor Yellow
+    Write-Host "Rewards Sql Server: $($sqlsrv.name)" -ForegroundColor Yellow
 
-    ### Getting postgreSQL info
-    $pg=$(az postgres server list -g $resourceGroup --query "[].{administratorLogin:administratorLogin, name:name, fullyQualifiedDomainName: fullyQualifiedDomainName}" -o json | ConvertFrom-Json)
-    $pg=EnsureAndReturnFistItem $pg "PostgreSQL"
-    Write-Host "PostgreSQL Server: $($pg.name)" -ForegroundColor Yellow
-
-    ## Getting storage info
-    $storage=$(az storage account list -g $resourceGroup --query "[].{name: name, blob: primaryEndpoints.blob}" -o json | ConvertFrom-Json)
-    $storage=EnsureAndReturnFistItem $storage "Storage Account"
-    Write-Host "Storage Account: $($storage.name)" -ForegroundColor Yellow
-
-    ## Getting CosmosDb info
-    $docdb=$(az cosmosdb list -g $resourceGroup --query "[?kind=='GlobalDocumentDB'].{name: name, kind:kind, documentEndpoint:documentEndpoint}" -o json | ConvertFrom-Json)
-    $docdb=EnsureAndReturnFistItem $docdb "CosmosDB (Document Db)"
-    $docdbKey=$(az cosmosdb list-keys -g $resourceGroup -n $docdb.name -o json --query primaryMasterKey | ConvertFrom-Json)
-    Write-Host "Document Db Account: $($docdb.name)" -ForegroundColor Yellow
-
-    $mongodb=$(az cosmosdb list -g $resourceGroup --query "[?kind=='MongoDB'].{name: name, kind:kind}" -o json | ConvertFrom-Json)
-    $mongodb=EnsureAndReturnFistItem $mongodb "CosmosDB (MongoDb mode)"
-    $mongodbKey=$(az cosmosdb list-keys -g $resourceGroup -n $mongodb.name -o json --query primaryMasterKey | ConvertFrom-Json)
-    Write-Host "Mongo Db Account: $($mongodb.name)" -ForegroundColor Yellow
-
-    if ($forcePwd) {
-        Write-Host "Reseting password to $sqlPwd for SQL server $($sqlsrv.name)" -ForegroundColor Yellow
-        az sql server update -n $sqlsrv.name -g $resourceGroup -p $sqlPwd
-
-        Write-Host "Reseting password to $sqlPwd for PostgreSQL server $($pg.name)" -ForegroundColor Yellow
-        az postgres server update -n $pg.name -g $resourceGroup -p $sqlPwd
+    if (-not $rewardsDbPassword) {
+        Write-Host "Rewards registration requires the administrator password parameter --rewardsDbPassword" -ForegroundColor Red
+        exit 1
     }
 
-    ## Showing Values that will be used
-
-    Write-Host "===========================================================" -ForegroundColor Yellow
-    Write-Host "gvalues file will be generated with values:"
-
-    $tokens.dbhost=$sqlsrv.fullyQualifiedDomainName
-    $tokens.dbuser=$sqlsrv.administratorLogin
-    $tokens.dbpwd=$sqlPwd
-
-    $tokens.pghost=$pg.fullyQualifiedDomainName
-    $tokens.pguser="$($pg.administratorLogin)@$($pg.name)"
-    $tokens.pgpwd=$sqlPwd
-
-    $tokens.carthost=$docdb.documentEndpoint
-    $tokens.cartauth=$docdbKey
-
-    $tokens.couponsuser=$mongodb.name
-    $tokens.couponshost="$($mongodb.name).documents.azure.com"
-    $tokens.couponspwd=$mongodbKey
-
-    $tokens.storage=$storage.blob
+    $tokens.rewardshost=$sqlsrv.fullyQualifiedDomainName
+    $tokens.rewardsuser=$sqlsrv.administratorLogin
+    $tokens.rewardspwd=$rewardsDbPassword
 }
+else {
+    $tokens.rewardshost="localdb"
+    $tokens.rewardsuser="user"
+    $tokens.rewardspwd="password"
+}
+
+## Showing Values that will be used
+
+Write-Host "===========================================================" -ForegroundColor Yellow
+Write-Host "gvalues file will be generated with values:"
+
+$tokens.shoppinghost=$docdb.documentEndpoint
+$tokens.shoppingauth=$docdbKey
+
+$tokens.couponsuser=$mongodb.name
+$tokens.couponshost="$($mongodb.name).documents.azure.com"
+$tokens.couponspwd=$mongodbKey
+
+$tokens.storage=$storage.blob
+$tokens.rewardsregistration=If ($rewardsResourceGroup) { $true } Else { $false }
 
 ## Getting App Insights instrumentation key
 $appinsights=$(az monitor app-insights component show --app tt-app-insights -g $resourceGroup -o json | ConvertFrom-Json)
@@ -99,9 +92,3 @@ Write-Host ($tokens | ConvertTo-Json) -ForegroundColor Yellow
 Write-Host "===========================================================" -ForegroundColor Yellow
 
 & .\token-replace.ps1 -inputFile $gvaluesTemplate -outputFile $outputFile -tokens $tokens
-
-
-
-
-
-

@@ -1,9 +1,4 @@
 {{- $name := include "tt-popularproducts.fullname" . -}}
-{{- $sqlsrv := .Values.inf.db.popularproducts.host -}}
-{{- $sqlport := .Values.inf.db.popularproducts.port -}}
-{{- $sqldb := .Values.inf.db.popularproducts.catalog -}}
-{{- $sqluser := .Values.inf.db.popularproducts.user -}}
-{{- $sqlpwd := .Values.inf.db.popularproducts.pwd -}}
 
 apiVersion: v1
 kind: ConfigMap
@@ -15,9 +10,9 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 data:
-#  ConnectionString: Server={{ $sqlsrv }},{{ $sqlport }};Initial Catalog={{ $sqldb }};Persist Security Info=False;User ID={{ $sqluser }};Password={{ $sqlpwd }};MultipleActiveResultSets=False;Connection Timeout=30;
+  AUTHKEY: {{ .Values.inf.db.popularproducts.auth }}
+  HOST: {{ .Values.inf.db.popularproducts.host }}
   ApplicationInsightsIK:  {{ .Values.inf.appinsights.id }}
-  ConnectionString: Server={{ $sqlsrv }};Port={{ $sqlport }};Initial Catalog={{ $sqldb }};Persist Security Info=False;User ID={{ $sqluser }};Password={{ $sqlpwd }};MultipleActiveResultSets=False;Connection Timeout=30;
   AzureStorageUrl: {{ .Values.inf.storage.productimages }}
   ISSUER: {{ .Values.sec.issuer }}
   SECURITYKEY: {{ .Values.sec.securityKey }}
