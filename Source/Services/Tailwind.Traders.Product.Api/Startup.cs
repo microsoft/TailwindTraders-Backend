@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Tailwind.Traders.Product.Api.Extensions;
 
 namespace Tailwind.Traders.Product.Api
@@ -20,9 +21,11 @@ namespace Tailwind.Traders.Product.Api
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc()
+            services
+                .AddControllers()
                 .SetCompatibilityVersion(CompatibilityVersion.Latest)
-                .Services                
+                .AddNewtonsoftJson()
+                .Services     
                 .AddHealthChecks(Configuration)
                 .AddApplicationInsightsTelemetry(Configuration)
                 .AddProductsContext(Configuration)
@@ -43,7 +46,7 @@ namespace Tailwind.Traders.Product.Api
             });
         }
 
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -56,20 +59,25 @@ namespace Tailwind.Traders.Product.Api
 
             app.UseCors(builder =>
             {
-                builder.AllowAnyOrigin()
+                builder
+                    .AllowAnyOrigin()
                     .AllowAnyHeader()
                     .AllowAnyMethod();
             });
 
-            app.UseHealthChecks("/liveness", new HealthCheckOptions
+            app.UseHttpsRedirection();
+
+            app.UseRouting();
+
+            app.UseEndpoints(endpoints =>
             {
-                Predicate = r => r.Name.Contains("self")
+                endpoints.MapHealthChecks("/liveness", new HealthCheckOptions() { Predicate = r => r.Name.Contains("self") });
+                endpoints.MapHealthChecks("/readiness", new HealthCheckOptions() { });
+                endpoints.MapDefaultControllerRoute();
+                endpoints.MapControllers();
             });
 
-            app.UseHealthChecks("/readiness");
-
-            app.UseHttpsRedirection();
-            app.UseMvc();
+            
         }
     }
 }

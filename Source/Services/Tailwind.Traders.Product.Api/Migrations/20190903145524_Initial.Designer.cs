@@ -10,22 +10,24 @@ using Tailwind.Traders.Product.Api.Infrastructure;
 namespace Tailwind.Traders.Product.Api.Migrations
 {
     [DbContext(typeof(ProductContext))]
-    [Migration("20181113192553_Initial")]
+    [Migration("20190903145524_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.2.0-preview3-35497")
+                .HasAnnotation("ProductVersion", "3.0.0-preview8.19405.11")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("Tailwind.Traders.Product.Api.Models.ProductBrand", b =>
                 {
-                    b.Property<int>("Id");
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
 
-                    b.Property<string>("Name");
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -34,13 +36,17 @@ namespace Tailwind.Traders.Product.Api.Migrations
 
             modelBuilder.Entity("Tailwind.Traders.Product.Api.Models.ProductFeature", b =>
                 {
-                    b.Property<int>("Id");
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
 
-                    b.Property<string>("Description");
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("ProductItemId");
+                    b.Property<int>("ProductItemId")
+                        .HasColumnType("int");
 
-                    b.Property<string>("Title");
+                    b.Property<string>("Title")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -51,19 +57,26 @@ namespace Tailwind.Traders.Product.Api.Migrations
 
             modelBuilder.Entity("Tailwind.Traders.Product.Api.Models.ProductItem", b =>
                 {
-                    b.Property<int>("Id");
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
 
-                    b.Property<int>("BrandId");
+                    b.Property<int>("BrandId")
+                        .HasColumnType("int");
 
-                    b.Property<string>("ImageName");
+                    b.Property<string>("ImageName")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Name");
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<float>("Price");
+                    b.Property<float>("Price")
+                        .HasColumnType("real");
 
-                    b.Property<int?>("TagId");
+                    b.Property<int?>("TagId")
+                        .HasColumnType("int");
 
-                    b.Property<int>("TypeId");
+                    b.Property<int>("TypeId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -78,9 +91,11 @@ namespace Tailwind.Traders.Product.Api.Migrations
 
             modelBuilder.Entity("Tailwind.Traders.Product.Api.Models.ProductTag", b =>
                 {
-                    b.Property<int>("Id");
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
 
-                    b.Property<string>("Value");
+                    b.Property<string>("Value")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -89,21 +104,31 @@ namespace Tailwind.Traders.Product.Api.Migrations
 
             modelBuilder.Entity("Tailwind.Traders.Product.Api.Models.ProductType", b =>
                 {
-                    b.Property<int>("Id");
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
 
-                    b.Property<string>("Name");
+                    b.Property<string>("Code")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique()
+                        .HasFilter("[Code] IS NOT NULL");
 
                     b.ToTable("ProductTypes");
                 });
 
             modelBuilder.Entity("Tailwind.Traders.Product.Api.Models.ProductFeature", b =>
                 {
-                    b.HasOne("Tailwind.Traders.Product.Api.Models.ProductItem")
+                    b.HasOne("Tailwind.Traders.Product.Api.Models.ProductItem", null)
                         .WithMany("Features")
                         .HasForeignKey("ProductItemId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Tailwind.Traders.Product.Api.Models.ProductItem", b =>
@@ -111,7 +136,8 @@ namespace Tailwind.Traders.Product.Api.Migrations
                     b.HasOne("Tailwind.Traders.Product.Api.Models.ProductBrand", "Brand")
                         .WithMany()
                         .HasForeignKey("BrandId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Tailwind.Traders.Product.Api.Models.ProductTag", "Tag")
                         .WithMany()
@@ -120,7 +146,8 @@ namespace Tailwind.Traders.Product.Api.Migrations
                     b.HasOne("Tailwind.Traders.Product.Api.Models.ProductType", "Type")
                         .WithMany()
                         .HasForeignKey("TypeId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

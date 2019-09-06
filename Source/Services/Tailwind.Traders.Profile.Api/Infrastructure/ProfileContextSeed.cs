@@ -19,7 +19,7 @@ namespace Tailwind.Traders.Profile.Api.Infrastructure
             _logger = logger;
         }
 
-        public async Task SeedAsync(ProfileDbContext profileContext, IHostingEnvironment env)
+        public async Task SeedAsync(ProfileDbContext profileContext, IWebHostEnvironment env)
         {
             var contentRootPath = env.ContentRootPath;
 
