@@ -17,16 +17,14 @@ public class StockController {
 	@Autowired
 	private StockItemRepository stockItemRepository;
 
-	private final Logger log = LogManager.getLogger();
+	private final Logger log = LogManager.getLogger(StockController.class);
 
-	@ResponseBody
-	@RequestMapping(value = "/v1/stock/{id}")
+	@GetMapping(value = "/v1/stock/{id}")
 	public ResponseEntity<StockProduct> StockProduct(@PathVariable(value="id", required= true) int id) throws IOException, Exception {
 		StockItem stock = stockItemRepository.findByProductId(id);
 
 		if (stock == null) {
 			log.debug("Not found stock for product " + id);
-
 			return new ResponseEntity<StockProduct>(HttpStatus.NOT_FOUND);
 		}
 
@@ -36,7 +34,6 @@ public class StockController {
 		return new ResponseEntity<StockProduct>(response, HttpStatus.OK);
 	}
 
-	@ResponseBody
 	@PostMapping("/v1/consumptions/stock/{id}")
 	public ResponseEntity<StockItem> decreaseStock (@PathVariable int id) {
 		StockItem stock = stockItemRepository.findByProductId(id);

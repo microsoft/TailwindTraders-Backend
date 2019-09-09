@@ -33,7 +33,6 @@ public class StockItemSeeder  {
         }
 
         BufferedReader reader = Files.newBufferedReader(Paths.get("setup/StockProduct.csv"), StandardCharsets.UTF_8);
-
         List<StockProduct> allStock = new CsvToBeanBuilder<StockProduct>(reader).withType(StockProduct.class).build().parse();
         List<Integer> setted = new ArrayList<Integer>();
 

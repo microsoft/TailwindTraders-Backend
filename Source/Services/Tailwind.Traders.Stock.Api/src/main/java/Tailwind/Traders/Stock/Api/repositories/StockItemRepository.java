@@ -10,11 +10,11 @@ import com.microsoft.azure.documentdb.DocumentClientException;
 import com.microsoft.azure.documentdb.DocumentCollection;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Component;
 
 import Tailwind.Traders.Stock.Api.models.StockItem;
 
-@Repository
+@Component
 public class StockItemRepository
 {
 	private static final String DATABASE_ID = "Stock";
@@ -25,7 +25,7 @@ public class StockItemRepository
     private static DocumentCollection collectionCache;
 	
 	@Autowired
-	private static DocumentClient documentClient;
+	private DocumentClient documentClient;
 
 	public StockItem findByProductId(Integer pid)
 	{
