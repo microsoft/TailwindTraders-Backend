@@ -55,11 +55,6 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.postgresql</groupId>
-			<artifactId>postgresql</artifactId>
-			<version>42.1.4.jre7</version>
-		</dependency>
-		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-test</artifactId>
 			<scope>test</scope>
@@ -71,8 +66,10 @@
     	<version>0.2</version>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-jpa</artifactId>
+			<groupId>javax.persistence</groupId>
+			<artifactId>persistence-api</artifactId>
+			<version>1.0.2</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>io.springfox</groupId>
@@ -94,6 +91,11 @@
 			<version>1.0.1-BETA</version>
 		</dependency>
 		
+		<dependency>
+			<groupId>com.microsoft.azure</groupId>
+			<artifactId>azure-documentdb</artifactId>
+			<version>1.0.1</version>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -104,6 +106,4 @@
 			</plugin>
 		</plugins>
 	</build>
-
-
 </project>

@@ -67,11 +67,11 @@ services:
     ports:
       - "5004:8080"
     environment:
-      - HOST=${COSMOSDB_HOST:-https://10.0.75.1:8081} # Emulator URI
-      - AUTHKEY=${COSMOSDB_AUTHKEY}
+      - COSMOSDB_HOST=${COSMOSDB_HOST:-https://192.168.0.1:8081} # Emulator URI
+      - COSMOSDB_AUTHKEY=${COSMOSDB_AUTHKEY:-C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==} # Emulator Key
       - Issuer=TTFakeLogin
       - SecurityKey=nEpLzQJGNSCNL5H6DIQCtTdNxf5VgAGcBbtXLms1YDD01KJBAs0WVawaEjn97uwB
-      - application_insights_ikey=
+      - APPLICATION_INSIGHTS_IKEY=
 
   product-visits.function:
     environment:
@@ -92,7 +92,7 @@ services:
   cart.api:
     environment:
       - HOST=${COSMOSDB_HOST:-https://10.0.75.1:8081} # Emulator URI
-      - AUTHKEY=${COSMOSDB_AUTHKEY}
+      - AUTHKEY=${COSMOSDB_AUTHKEY:-C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==} # Emulator Key
       - ISSUER=TTFakeLogin
       - SECURITYKEY=nEpLzQJGNSCNL5H6DIQCtTdNxf5VgAGcBbtXLms1YDD01KJBAs0WVawaEjn97uwB
       - UseB2C=${UseB2C:-false}
