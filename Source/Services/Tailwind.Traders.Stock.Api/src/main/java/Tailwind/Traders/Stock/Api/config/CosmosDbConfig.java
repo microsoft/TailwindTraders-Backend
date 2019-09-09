@@ -15,10 +15,10 @@ import com.microsoft.azure.documentdb.DocumentClient;
 public class CosmosDbConfig {
     private final Logger log = LogManager.getLogger(CosmosDbConfig.class);
 
-    @Value("${azure.cosmosdb-auth}")
+    @Value("${azure.cosmosdb.auth}")
     private String MASTER_KEY;
     
-    @Value("${azure.cosmosdb-host}")
+    @Value("${azure.cosmosdb.host}")
     private String HOST;
 
     @Bean

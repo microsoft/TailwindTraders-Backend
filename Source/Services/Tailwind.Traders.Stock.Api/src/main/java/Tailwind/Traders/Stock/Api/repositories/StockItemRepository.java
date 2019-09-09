@@ -10,6 +10,7 @@ import com.microsoft.azure.documentdb.DocumentClientException;
 import com.microsoft.azure.documentdb.DocumentCollection;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import Tailwind.Traders.Stock.Api.models.StockItem;
@@ -17,7 +18,9 @@ import Tailwind.Traders.Stock.Api.models.StockItem;
 @Component
 public class StockItemRepository
 {
-	private static final String DATABASE_ID = "Stock";
+    @Value("${azure.cosmosdb.database}")
+	private String DATABASE_ID;
+
 	private static final String COLLECTION_ID = "StockCollection";
     private static Gson gson = new Gson();
 
