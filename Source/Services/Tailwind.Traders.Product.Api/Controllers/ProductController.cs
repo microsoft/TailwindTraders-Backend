@@ -66,13 +66,26 @@ namespace Tailwind.Traders.Product.Api.Controllers
         [ProducesResponseType(404)]
         public async Task<IActionResult> ProductByIdAsync(int productId)
         {
-            var item = await _productContext.ProductItems
-                .Include(inc => inc.Brand)
-                .Include(inc => inc.Features)
-                .Include(inc => inc.Type)
-                .FirstOrDefaultAsync(product => product.Id == productId);
 
-            if (item == default(ProductItem))
+            var items = await _productContext.ProductItems.ToListAsync();
+
+            items.Join(
+                _productContext.ProductBrands,
+                _productContext.ProductTypes,
+                _productContext.ProductFeatures,
+                _productContext.Tags);
+
+            //var item = items.Contains(i => i.Id == productId)
+
+            var item = items.Where(p => p.Id == productId).FirstOrDefault();
+
+            //var item = await _productContext.ProductItems
+            //    .Include(inc => inc.Brand)
+            //    .Include(inc => inc.Features)
+            //    .Include(inc => inc.Type)
+            //    .FirstOrDefaultAsync(product => product.Id == productId);
+
+            if (item == null)
             {
                 _logger.LogDebug($"Product with id '{productId}', not found");
 
@@ -111,23 +124,28 @@ namespace Tailwind.Traders.Product.Api.Controllers
         [ProducesResponseType(204)]
         public async Task<IActionResult> FindProductAsync([FromQuery] int[] brand, [FromQuery] int[] type)
         {
-            var query = _productContext.ProductItems
-                .Include(inc => inc.Brand)
-                .Include(inc => inc.Features)
-                .Include(inc => inc.Type)
+
+            var items = await _productContext.ProductItems.ToListAsync();
+
+            items
                 .OrderByDescending(inc => inc.Name.Contains("gnome"))
-                .AsQueryable();
+                .Join(
+                _productContext.ProductBrands,
+                _productContext.ProductTypes,
+                _productContext.ProductFeatures,
+                _productContext.Tags);
 
-            var items = (await query.ToListAsync()).Where(item => brand.Contains(item.Brand.Id) || type.Contains(item.Type.Id));
 
-            if (!items.Any())
+            var itemsToList = items.Where(item => brand.Contains(item.Brand.Id) || type.Contains(item.Type.Id));
+
+            if (!itemsToList.Any())
             {
                 _logger.LogDebug("Not Products for this criteria");
 
                 return NoContent();
             }
 
-            return Ok(_mapperDtos.MapperToProductDto(items));
+            return Ok(_mapperDtos.MapperToProductDto(itemsToList));
         }
 
         [HttpGet("tag/{tag}")]
@@ -135,7 +153,6 @@ namespace Tailwind.Traders.Product.Api.Controllers
         [ProducesResponseType(204)]
         public async Task<IActionResult> FindProductsByTag(string tag)
         {
-
             var productTag = _productContext.Tags.SingleOrDefault(t => t.Value == tag);
 
             if (productTag == null)
@@ -144,15 +161,17 @@ namespace Tailwind.Traders.Product.Api.Controllers
                 return NoContent();
             }
 
-            var query = await _productContext.ProductItems
-                .Include(inc => inc.Brand)
-                .Include(inc => inc.Features)
-                .Include(inc => inc.Type)
-                .Where(p => p.Tag == productTag)
-                .Take(3)
-                .ToListAsync();
+            var items = await _productContext.ProductItems.ToListAsync();
 
-            var data = query.Select(p => new ClassifiedProductDto()
+            items = items.Where(p => p.TagId == productTag.Id).Take(3).ToList();
+
+            items.Join(
+                _productContext.ProductBrands,
+                _productContext.ProductTypes,
+                _productContext.ProductFeatures,
+                _productContext.Tags);
+                
+            var data = items.Select(p => new ClassifiedProductDto()
             {
                 Id = p.Id,
                 ImageUrl = $"{_settings.ProductImagesUrl}/{p.ImageName}",

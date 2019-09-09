@@ -19,7 +19,7 @@ namespace Tailwind.Traders.Product.Api.Extensions
         {
             service.AddDbContext<ProductContext>(options =>
             {
-                options.UseCosmos(configuration["CosmosDb.Host"], configuration["CosmosDb.Key"], configuration["CosmosDb.Database"])
+                options.UseCosmos(configuration["CosmosDb:Host"], configuration["CosmosDb:Key"], configuration["CosmosDb:Database"])
                 .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
                 });
 

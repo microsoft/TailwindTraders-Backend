@@ -57,7 +57,8 @@ namespace Tailwind.Traders.Product.Api.Infrastructure
                 productItem.Features = productFeatures.Where(feature => feature.ProductItemId == productItem.Id).ToList();
                 if (productItem.TagId != null )
                 {
-                    productItem.Tag = tags.SingleOrDefault(t => t.Id == productItem.TagId);
+                    productItem.Tag = tags.Where(t => t.Id == productItem.TagId).FirstOrDefault();
+                    //productItem.Tag = tags.SingleOrDefault(t => t.Id == productItem.TagId);
                 }
                 else
                 {
