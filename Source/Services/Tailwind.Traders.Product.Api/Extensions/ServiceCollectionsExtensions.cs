@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Cosmos.Storage.Internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -18,13 +19,9 @@ namespace Tailwind.Traders.Product.Api.Extensions
         {
             service.AddDbContext<ProductContext>(options =>
             {
-                options.UseSqlServer(configuration["ConnectionString"], sqlOptions =>
-                {
-                    sqlOptions.MigrationsAssembly(typeof(Startup).GetTypeInfo().Assembly.GetName().Name);
-                    sqlOptions.EnableRetryOnFailure(maxRetryCount: 10, maxRetryDelay: TimeSpan.FromSeconds(30), errorNumbersToAdd: null);
-                })
+                options.UseCosmos(configuration["CosmosDb.Host"], configuration["CosmosDb.Key"], configuration["CosmosDb.Database"])
                 .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
-            });
+                });
 
             return service;
         }
@@ -40,7 +37,10 @@ namespace Tailwind.Traders.Product.Api.Extensions
                 .AddTransient<ClassMap, ProductTagMap>()
                 .AddTransient<MapperDtos>()
                 .AddSingleton<IHttpContextAccessor, HttpContextAccessor>()
-                .AddHttpClient(configuration["ProductVisitsUrl"])
+                .AddHttpClient("productVisits", cc =>
+                {
+                    cc.BaseAddress = new Uri(configuration["ProductVisitsUrl"], UriKind.Absolute);
+                })
                 .SetHandlerLifetime(TimeSpan.FromMinutes(5));
 
             service.Configure<AppSettings>(configuration);

@@ -41,17 +41,19 @@ namespace Tailwind.Traders.Product.Api.Controllers
         [ProducesResponseType(204)]
         public async Task<IActionResult> AllProductsAsync()
         {
-            var items = await _productContext.ProductItems
-                .Include(inc => inc.Brand)
-                .Include(inc => inc.Features)
-                .Include(inc => inc.Type)
+            var items = await _productContext.ProductItems.ToListAsync();
+
+            items
                 .OrderByDescending(inc => inc.Name.Contains("gnome"))
-                .ToListAsync();
+                .Join(
+                _productContext.ProductBrands,
+                _productContext.ProductTypes,
+                _productContext.ProductFeatures,
+                _productContext.Tags);
 
             if (!items.Any())
             {
                 _logger.LogDebug("Products empty");
-
                 return NoContent();
             }
 

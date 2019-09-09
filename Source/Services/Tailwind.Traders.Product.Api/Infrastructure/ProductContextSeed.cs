@@ -23,8 +23,9 @@ namespace Tailwind.Traders.Product.Api.Infrastructure
         public async Task SeedAsync(ProductContext productContext)
         {
             var contentRootPath = _hostingEnvironment.ContentRootPath;
+            var IsDataBaseCreated = productContext.Database.EnsureCreatedAsync();
 
-            if (!productContext.ProductItems.Any())
+            if (IsDataBaseCreated.Result)
             {
                 var brands = _processFile.Process<ProductBrand>(contentRootPath, "ProductBrands");
                 var types = _processFile.Process<ProductType>(contentRootPath, "ProductTypes");
@@ -39,7 +40,7 @@ namespace Tailwind.Traders.Product.Api.Infrastructure
                 await productContext.ProductItems.AddRangeAsync(products);
 
                 await productContext.SaveChangesAsync();
-            }
+           }
         }
 
         private void Join(IEnumerable<ProductItem> productItems, 
@@ -49,9 +50,6 @@ namespace Tailwind.Traders.Product.Api.Infrastructure
             IEnumerable<ProductTag> tags
             )
         {
-
-
-
             foreach (var productItem in productItems)
             {
                 productItem.Brand = productBrands.FirstOrDefault(brand => brand.Id == productItem.BrandId);
