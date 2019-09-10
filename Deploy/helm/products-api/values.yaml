@@ -26,8 +26,8 @@ affinity: {}
 env:
   configmap:
     - name: ApplicationInsights__InstrumentationKey
-    - name: AUTHKEY
-    - name: HOST
+    - name: CosmosDb__Host
+    - name: CosmosDb__Key
     - name: ProductImagesUrl
     - name: ProductDetailImagesUrl
     - name: ProductVisitsUrl
