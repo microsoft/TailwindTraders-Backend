@@ -12,7 +12,6 @@ using Tailwind.Traders.Product.Api.Dtos;
 using Tailwind.Traders.Product.Api.Extensions;
 using Tailwind.Traders.Product.Api.Infrastructure;
 using Tailwind.Traders.Product.Api.Mappers;
-using Tailwind.Traders.Product.Api.Models;
 
 namespace Tailwind.Traders.Product.Api.Controllers
 {
