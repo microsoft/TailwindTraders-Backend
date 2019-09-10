@@ -24,9 +24,9 @@ namespace Tailwind.Traders.Product.Api.Infrastructure
         public async Task SeedAsync(ProductContext productContext)
         {
             var contentRootPath = _hostingEnvironment.ContentRootPath;
-            var IsDataBaseCreated = await productContext.Database.EnsureCreatedAsync();
+            await productContext.Database.EnsureCreatedAsync();
 
-            if (IsDataBaseCreated)
+            if (!productContext.ProductItems.ToList().Any())
             {
                 var brands = _processFile.Process<ProductBrand>(contentRootPath, "ProductBrands");
                 var types = _processFile.Process<ProductType>(contentRootPath, "ProductTypes");
