@@ -65,7 +65,7 @@ namespace Tailwind.Traders.Product.Api.Controllers
         [ProducesResponseType(404)]
         public async Task<IActionResult> ProductByIdAsync(int productId)
         {
-            var items = await _productContext.ProductItems.ToListAsync();
+            var items = await _productContext.ProductItems.Where(p => p.Id == productId).ToListAsync();
 
             items.Join(
                 _productContext.ProductBrands,
@@ -73,7 +73,7 @@ namespace Tailwind.Traders.Product.Api.Controllers
                 _productContext.ProductFeatures,
                 _productContext.Tags);
 
-            var item = items.Where(p => p.Id == productId).FirstOrDefault();
+            var item = items.FirstOrDefault();
 
             if (item == null)
             {
@@ -149,9 +149,7 @@ namespace Tailwind.Traders.Product.Api.Controllers
                 return NoContent();
             }
 
-            var items = await _productContext.ProductItems.ToListAsync();
-
-            items = items.Where(p => p.TagId == productTag.Id).Take(3).ToList();
+            var items = await _productContext.ProductItems.Where(p => p.TagId == productTag.Id).Take(3).ToListAsync();
 
             items.Join(
                 _productContext.ProductBrands,
