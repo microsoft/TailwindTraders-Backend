@@ -20,12 +20,7 @@ namespace Tailwind.Traders.Product.Api.Extensions
                 var context = services.GetRequiredService<TContext>();
                 var seed = services.GetRequiredService<IContextSeed<TContext>>();
                 
-                logger.LogInformation($"Migrating database associated with context {typeof(TContext).Name}");
-
-                context.Database.Migrate();
                 seed.SeedAsync(context).Wait();
-
-                logger.LogInformation($"Migrated database associated with context {typeof(TContext).Name}");
             }
 
             return webHost;

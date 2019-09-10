@@ -2,8 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using System;
-using System.Reflection;
+using Tailwind.Traders.Profile.Api.HealthChecks;
 using Tailwind.Traders.Profile.Api.Infrastructure;
 
 namespace Tailwind.Traders.Profile.Api.Extensions
@@ -13,18 +12,11 @@ namespace Tailwind.Traders.Profile.Api.Extensions
         public static IServiceCollection AddProfileContext(this IServiceCollection service, IConfiguration configuration)
         {
             service.Configure<AppSettings>(configuration);
-
-            service.AddDbContext<ProfileDbContext>(options =>
+            service.AddDbContext<ProfileContext>(options =>
             {
-                options.UseSqlServer(configuration["ConnectionString"], sqlOptions =>
-                {
-                    sqlOptions.MigrationsAssembly(typeof(Startup).GetTypeInfo().Assembly.GetName().Name);
-                    sqlOptions.EnableRetryOnFailure(maxRetryCount: 15, maxRetryDelay: TimeSpan.FromSeconds(45), errorNumbersToAdd: null);
-                })
-               .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
-            },
-                ServiceLifetime.Scoped
-            );
+                options.UseCosmos(configuration["CosmosDb:Host"], configuration["CosmosDb:Key"], configuration["CosmosDb:Database"])
+                .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+            }, ServiceLifetime.Scoped);
 
             return service;
         }
@@ -35,11 +27,14 @@ namespace Tailwind.Traders.Profile.Api.Extensions
 
             hcBuilder.AddCheck("self", () => HealthCheckResult.Healthy());
 
-            hcBuilder
-                .AddSqlServer(
-                    configuration["ConnectionString"],
-                    name: "ProfileDB-check",
-                    tags: new string[] { "profiledb" });
+            hcBuilder.Add(new HealthCheckRegistration(
+                "ProfileDB-check",
+                sp => new CosmosDbHealthCheck(
+                    $"AccountEndpoint={configuration["CosmosDb:Host"]};AccountKey={configuration["CosmosDb:Key"]}",
+                    configuration["CosmosDb:Database"]),
+                HealthStatus.Unhealthy,
+                new string[] { "profileDb"}
+            ));
 
             return services;
         }

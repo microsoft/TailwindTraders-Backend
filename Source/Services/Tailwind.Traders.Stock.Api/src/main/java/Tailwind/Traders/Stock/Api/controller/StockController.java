@@ -46,7 +46,7 @@ public class StockController {
 		int currentStock = stock.getStockCount();
 		if (currentStock > 0) {
 			stock.setStockCount(currentStock - 1);
-			stockItemRepository.save(stock);
+			stockItemRepository.update(stock);
 			return new ResponseEntity<StockItem>(stock, HttpStatus.OK);
 		}
 
