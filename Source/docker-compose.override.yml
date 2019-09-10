@@ -31,8 +31,6 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://0.0.0.0:80
-      - HOST=${COSMOSDB_HOST:-https://10.0.75.1:8081} # Emulator URI
-      - AUTHKEY=${COSMOSDB_AUTHKEY}
       - ProfilesImageUrl=
       - SecurityKey=nEpLzQJGNSCNL5H6DIQCtTdNxf5VgAGcBbtXLms1YDD01KJBAs0WVawaEjn97uwB
       - Issuer=TTFakeLogin
