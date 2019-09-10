@@ -66,7 +66,6 @@ namespace Tailwind.Traders.Product.Api.Controllers
         [ProducesResponseType(404)]
         public async Task<IActionResult> ProductByIdAsync(int productId)
         {
-
             var items = await _productContext.ProductItems.ToListAsync();
 
             items.Join(
@@ -75,15 +74,7 @@ namespace Tailwind.Traders.Product.Api.Controllers
                 _productContext.ProductFeatures,
                 _productContext.Tags);
 
-            //var item = items.Contains(i => i.Id == productId)
-
             var item = items.Where(p => p.Id == productId).FirstOrDefault();
-
-            //var item = await _productContext.ProductItems
-            //    .Include(inc => inc.Brand)
-            //    .Include(inc => inc.Features)
-            //    .Include(inc => inc.Type)
-            //    .FirstOrDefaultAsync(product => product.Id == productId);
 
             if (item == null)
             {
@@ -124,8 +115,9 @@ namespace Tailwind.Traders.Product.Api.Controllers
         [ProducesResponseType(204)]
         public async Task<IActionResult> FindProductAsync([FromQuery] int[] brand, [FromQuery] int[] type)
         {
-
-            var items = await _productContext.ProductItems.ToListAsync();
+            var items = await _productContext.ProductItems
+                .Where(item => brand.Contains(item.BrandId) || type.Contains(item.TypeId))
+                .ToListAsync();
 
             items
                 .OrderByDescending(inc => inc.Name.Contains("gnome"))
@@ -135,17 +127,14 @@ namespace Tailwind.Traders.Product.Api.Controllers
                 _productContext.ProductFeatures,
                 _productContext.Tags);
 
-
-            var itemsToList = items.Where(item => brand.Contains(item.Brand.Id) || type.Contains(item.Type.Id));
-
-            if (!itemsToList.Any())
+            if (!items.Any())
             {
                 _logger.LogDebug("Not Products for this criteria");
 
                 return NoContent();
             }
 
-            return Ok(_mapperDtos.MapperToProductDto(itemsToList));
+            return Ok(_mapperDtos.MapperToProductDto(items));
         }
 
         [HttpGet("tag/{tag}")]
@@ -193,11 +182,15 @@ namespace Tailwind.Traders.Product.Api.Controllers
         [ProducesResponseType(204)]
         public async Task<IActionResult> RecommendedProductsAsync()
         {
-            var items = await _productContext.ProductItems
-                .Include(inc => inc.Brand)
-                .Include(inc => inc.Features)
-                .Include(inc => inc.Type)
-                .ToListAsync();
+            var items = await _productContext.ProductItems.ToListAsync();
+
+            items = items.OrderBy(product => new Random().Next()).Take(3).ToList();
+
+            items.Join(
+              _productContext.ProductBrands,
+              _productContext.ProductTypes,
+              _productContext.ProductFeatures,
+              _productContext.Tags);
 
             if (!items.Any())
             {
@@ -206,7 +199,7 @@ namespace Tailwind.Traders.Product.Api.Controllers
                 return NoContent();
             }
 
-            return Ok(_mapperDtos.MapperToProductDto(items).OrderBy(product => new Random().Next()).Take(3));
+            return Ok(_mapperDtos.MapperToProductDto(items));
         }
     }
 }
