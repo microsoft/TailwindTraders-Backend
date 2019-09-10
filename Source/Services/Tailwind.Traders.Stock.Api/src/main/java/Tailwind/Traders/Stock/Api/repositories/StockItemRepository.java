@@ -64,7 +64,7 @@ public class StockItemRepository
 	
     private Document getItemById(Integer id) {
         List<Document> documentList = documentClient
-                .queryDocuments(getTodoCollection().getSelfLink(), "SELECT * FROM root r WHERE r.id='" + id + "'", null)
+                .queryDocuments(getTodoCollection().getSelfLink(), "SELECT * FROM root r WHERE r.productId='" + id + "'", null)
                 .getQueryIterable().toList();
 
         if (documentList.size() > 0) {
