@@ -25,7 +25,7 @@ public class CosmosDbConfig {
     @Scope("singleton")
     public DocumentClient documentClient() {
             log.debug(String.format("CosmosDb Auth key: %s", MASTER_KEY));
-            log.info(String.format("CosmosDb host: %s", HOST));
+            log.debug(String.format("CosmosDb host: %s", HOST));
             return new DocumentClient(HOST, MASTER_KEY, ConnectionPolicy.GetDefault(), ConsistencyLevel.Session);
     }
 }
