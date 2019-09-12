@@ -449,7 +449,7 @@ The easiest way to run your backend services locally is using _Compose_. To run 
 
 There are some services that connect to a CosmosDb database, hence you require to provide cosmosdb host and key using environment variables, or even better, through an `.env` file.
 
-To do so, just create a file named `.env` in the same `./Source` folder with following content:
+To do so, just create a file named `.env` in the same `./Source` folder with following content pointing to your previously created in the Azure portal:
 
 ```
 COSMOSDB_HOST=<Url of your CosmosDb>
