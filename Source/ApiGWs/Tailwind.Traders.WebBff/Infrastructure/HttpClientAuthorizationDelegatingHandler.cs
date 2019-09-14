@@ -35,7 +35,7 @@ namespace Tailwind.Traders.WebBff.Infrastructure
             if (ctx.User.Identity.IsAuthenticated)
             {
                 var userName = ctx.User.HasClaim(c => c.Type == "name") ? ctx.User.Claims.FirstOrDefault(x => x.Type == "name").Value : ctx.User.Identity.Name;
-                request.Headers.Add("x-tt-name", $"Basic {userName}");
+                request.Headers.Add("x-tt-name", $"{userName}");
             }
 
             return await base.SendAsync(request, cancellationToken);

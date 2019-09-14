@@ -1,9 +1,4 @@
 {{- $name := include "tt-profile.fullname" . -}}
-{{- $sqlsrv := .Values.inf.db.profile.host -}}
-{{- $sqlport := .Values.inf.db.profile.port -}}
-{{- $sqldb := .Values.inf.db.profile.catalog -}}
-{{- $sqluser := .Values.inf.db.profile.user -}}
-{{- $sqlpwd := .Values.inf.db.profile.pwd -}}
 
 apiVersion: v1
 kind: ConfigMap
@@ -15,7 +10,8 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 data:
-  ConnectionString: Server={{ $sqlsrv }},{{ $sqlport }};Initial Catalog={{ $sqldb }};Persist Security Info=False;User ID={{ $sqluser }};Password={{ $sqlpwd }};MultipleActiveResultSets=False;Connection Timeout=30;
+  CosmosDb__Key: {{ .Values.inf.db.profile.auth }}
+  CosmosDb__Host: {{ .Values.inf.db.profile.host }}
   ApplicationInsights__InstrumentationKey:  {{ .Values.inf.appinsights.id }}
   ProfilesImageUrl: {{ .Values.inf.storage.profileimages }}
   ISSUER: {{ .Values.sec.issuer }}

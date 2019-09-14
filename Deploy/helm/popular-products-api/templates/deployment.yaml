@@ -29,21 +29,7 @@ spec:
       {{ range .Values.imagePullSecrets -}}
         - name: {{ .name }}
       {{- end -}}
-      {{- end }}
-      # initContainers:
-      #   - name: "{{ .Chart.Name }}-initdb"
-      #     image: "{{ .Values.initImage.repository }}:{{ .Values.initImage.tag }}"
-      #     imagePullPolicy: {{ .Values.initImage.pullPolicy }}
-      #     env:
-      #     {{- if .Values.env.configmapinit -}}
-      #     {{- range .Values.env.configmapinit }}
-      #       - name: {{ .name }}
-      #         valueFrom:
-      #           configMapKeyRef:
-      #             name: {{ $cfginitname }}
-      #             key: {{ .name }}
-      #     {{- end -}}
-      #     {{- end }}            
+      {{- end }}    
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 using Tailwind.Traders.Profile.Api.Models;
 
 namespace Tailwind.Traders.Profile.Api.DTOs
@@ -15,9 +11,10 @@ namespace Tailwind.Traders.Profile.Api.DTOs
         [Required]
         public string Email { get; set; }
 
-        public Profiles MapUserProfile() =>
+        public Profiles MapUserProfile(int id) =>
             new Profiles()
             {
+                Id = id,
                 Name = this.Name,
                 Address = Address,
                 PhoneNumber = PhoneNumber,

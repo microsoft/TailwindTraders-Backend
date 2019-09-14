@@ -7,35 +7,7 @@ import (
 func GetProducts() ([]models.Product, error) {
 	var products []models.Product
 
-	// TODO: Check azure sql issue when trying to seed data
-
-	/*
-		    db, ctx := CreateConnection()
-
-		    tsql := fmt.Sprintf("SELECT * FROM dbo.Products;")
-
-		    // Execute query
-		    rows, err := db.QueryContext(ctx, tsql)
-		    if err != nil {
-		        return products, err
-		    }
-
-		    defer rows.Close()
-		    defer db.Close()
-
-		    for rows.Next() {
-				var name, imagename string
-				var price float32
-				var id int
-
-		        // Get values from row.
-		        err := rows.Scan(&id, &name, &imagename, &price)
-		        if err != nil {
-		            return products, err
-				}
-				products = append(products, models.Product{ ID: id, Name: name, Price: price, ImageName: imagename })
-		    }
-	*/
+	// TODO: Use an actual database (CosmosDb)
 
 	// Mock result
 	p1 := models.Product{

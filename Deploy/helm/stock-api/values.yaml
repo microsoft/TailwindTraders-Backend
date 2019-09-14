@@ -28,9 +28,8 @@ env:
     - name: APPLICATION_INSIGHTS_IKEY
     - name: ISSUER
     - name: SECURITYKEY
-    - name: sql_server_url
-    - name: sql_user_name
-    - name: sql_user_password
+    - name: COSMOSDB_AUTHKEY
+    - name: COSMOSDB_HOST
   values: {}
 
 probes:
