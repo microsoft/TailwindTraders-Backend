@@ -1,13 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
 using Tailwind.Traders.Profile.Api.Models;
 
 namespace Tailwind.Traders.Profile.Api.Infrastructure
 {
-    public class ProfileContext : DbContext
+    public class ProfileDbContext : DbContext
     {
         public DbSet<Profiles> Profiles { get; set; }
 
-        public ProfileContext(DbContextOptions<ProfileContext> options) : base(options)
+        public ProfileDbContext(DbContextOptions<ProfileDbContext> options) : base(options)
         {
         }
 

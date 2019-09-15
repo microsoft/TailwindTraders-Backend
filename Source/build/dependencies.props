@@ -1,6 +1,6 @@
 <Project>
   <PropertyGroup Label="SDK Versions">
-    <NetCoreTargetVersion>netcoreapp3.0</NetCoreTargetVersion>
+    <NetStandardTargetVersion>netstandard2.0</NetStandardTargetVersion>
   </PropertyGroup>
   <PropertyGroup Label="Global csproj settings">
     <LangVersion>latest</LangVersion>
@@ -9,13 +9,13 @@
   </PropertyGroup>
 
   <PropertyGroup Label="Netcore Versions">
-    <MicrosoftAspNetCoreRazorDesign>2.2.0</MicrosoftAspNetCoreRazorDesign>
-    <MicrosoftAspNetCoreHttpFeatures>2.2.0</MicrosoftAspNetCoreHttpFeatures>
-    <MicrosoftEntityFrameworkCore>3.0.0-preview8.19405.11</MicrosoftEntityFrameworkCore>
-    <MicrosoftEntityFrameworkCoreDesign>3.0.0-preview8.19405.11</MicrosoftEntityFrameworkCoreDesign>
-	  <MicrosoftEntityFrameworkCoreCosmos>3.0.0-preview8.19405.11</MicrosoftEntityFrameworkCoreCosmos>
-    <MicrosoftEntityFrameworkCoreSqlServer>3.0.0-preview8.19405.11</MicrosoftEntityFrameworkCoreSqlServer>
-    <MicrosoftVisualStudioWebCodeGenerationDesign>2.2.3</MicrosoftVisualStudioWebCodeGenerationDesign>
+      <NetCoreTargetVersion>netcoreapp3.0</NetCoreTargetVersion>
+      <MicrosoftAspNetCoreRazorDesign>2.2.0</MicrosoftAspNetCoreRazorDesign>
+      <MicrosoftAspNetCoreHttpFeatures>2.2.0</MicrosoftAspNetCoreHttpFeatures>
+      <MicrosoftEntityFrameworkCore>3.0.0-preview8.19405.11</MicrosoftEntityFrameworkCore>
+      <MicrosoftEntityFrameworkCoreSqlServer>3.0.0-preview8.19405.11</MicrosoftEntityFrameworkCoreSqlServer>
+      <MicrosoftEntityFrameworkCoreDesign>3.0.0-preview8.19405.11</MicrosoftEntityFrameworkCoreDesign>
+      <MicrosoftVisualStudioWebCodeGenerationDesign>2.2.3</MicrosoftVisualStudioWebCodeGenerationDesign>
   </PropertyGroup>
 
   <PropertyGroup Label="External Package Versions">

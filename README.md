@@ -10,6 +10,7 @@ This repository contains all code + deployment scripts for the Tailwind Traders 
 - [Deployment scenarios](#deployment-scenarios)
   - [Deploy Tailwind Traders Backend on Azure AKS and Azure resources (CosmosDb and Storage accounts)](#deploy-resources)
   - [Deploy Tailwind Traders Backend on Windows and Linux containers in AKS](#deploy-win-linux-containers)
+  - [Deploy everything on AKS](#deploy-everything-aks)
 - [Run Tailwind Traders Backend Services Locally](#run-backend-locally)
 - [Run Tailwind Traderes Backend using Devspaces](#run-devspaces)
 - [Test image classiffier](#test-image)
@@ -32,6 +33,7 @@ Tailwind Traders supports three deployment scenarios:
 
 1. [Deploy Tailwind Traders Backend on Azure AKS and Azure resources (CosmosDb and Storage accounts)](#deploy-resources)
 2. [Deploy Tailwind Traders Backend on Windows and Linux containers in AKS](#deploy-win-linux-containers)
+3. [Deploy everything on AKS](#deploy-everything-aks)
 
 ## <a name="deploy-resources"></a>Deploy Tailwind Traders on AKS and Azure Resources (CosmosDb and Storage accounts)
 
@@ -379,7 +381,7 @@ You need to use Powershell and run `./Deploy-Images-Aks.ps1` with following para
 - `-resourceGroup <group>` Name of the resource group
 - `-acrName <name>` Name of the ACR
 - `-tag <tag>` Docker images tag to use. Defaults to `latest`
-- `-charts <charts>` List of comma-separated values with charts to install. Defaults to `*` (all linux containers)
+- `-charts <charts>` List of comma-separated values with charts to install. Defaults to `*` (all linux container)
 - `-valuesFile <values-file>`: Values file to use (defaults to `gvalues.yaml`)
 - `-tlsEnv prod|staging|custom` If **SSL/TLS support has been installed**, you have to use this parameter to enable https endpoints. Value must be `staging`, `prod` or `custom` and must be the same value used when you installed SSL/TLS support. If SSL/TLS is not installed, you can omit this parameter.
 - `-tlsSecretName`: Name of the Kubernetes secret that stores the TLS certificate. Only used if `tlsEnv` is `custom` (ignored otherwise) and defaults to `tt-tls-custom`.
@@ -398,13 +400,13 @@ The parameter `charts` allow for a selective installation of charts. Is a list o
 - `ic` Image classifier API
 - `ct` Shopping cart API
 - `lg` Login API
-- `rr` Rewards Registration (not deployed with *)
+- `rr` Rewards Registration (not deployed with * charts as its a windows container)
 - `mgw` Mobile Api Gateway
 - `wgw` Web Api Gateway
 
 So, using `charts pp,st` will only install the popular products and the stock api.
 
-If you want to deploy the whole win-linux environment (with rewards registration pod) use `-charts "*,rr`.
+If you want to deploy the whole win-linux environment (with rewards registration pod) use `-charts *,rr`.
 
 #### Deploying the images on the storage
 
@@ -439,6 +441,74 @@ Follow the [Step 2: Deploy AKS](#deploy-aks) to deploy the services to AKS.
 
 ---
 
+## <a name="deploy-everything-aks"></a>Deploy everything on AKS
+
+For development scenarios everything can be run on a AKS, so **not external dependencies needed**. Click following button to deploy only an AKS and an ACR only. No other resources will be created:
+
+<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FMicrosoft%2FTailwindTraders-Backend%2Fmaster%2FDeploy%2Fdeployment-only-inf.json"><img src="./Documents/Images/deploy-to-azure.png" alt="Deploy to Azure"/></a>
+
+### Pre-requisites
+
+Same pre-requisites as the [standard AKS deployment (Step 2: Deploy AKS)](#deploy-aks)
+
+### Configure the cluster (installing Helm and the secrets)
+
+You have to follow the following steps of the [standard AKS deployment](#deploy-aks):
+
+- Connecting kubectl to AKS
+- Installing Tiller on AKS
+- Create secrets on the AKS
+- Build & deploy images to ACR
+
+You can skip the step "Configuring services" because there is no need to configure anything.
+
+### Deploying mongodb, sql server and azurite (storage emulator) on AKS
+
+Deploy the infrastructure alongside the Backend is done with the same script used to deploy the Backend: `Deploy-Images-Aks.ps1`. You have to pass the parameter `-useInfrainAKS` to `$true`. Passing this parameter will:
+
+1. Configure the services to use the SQL Server, MongoDb and storage emulator deployed as a containers in the same AKS
+2. Ignore the value passed in the `-valuesFile` parameter (the `gvalues_inf.yaml` which contains needed values is used instead).
+3. Force to you to pass also the parameters `-cartAciGroup` and `-cartAciName` with the Resource Group and name where the ACI running the CosmosDb emulator is.
+
+The parameter `-useInfrainAKS` won't deploy the infrastructure in the AKS. **This is done by adding `infra` to the `-charts` parameter**. Note that the `infra` chart is only deployed if `-charts` contains the `infra` value. So if you want to deploy all services and the infrastructure must use `-charts="*,infra"` (`*` means "all backend services"). Refer to the "Deploying services" section in the [standard AKS deployment](#deploy-aks) for more information.
+
+When `infra` value is used, three additional deployments are installed on the Kubernetes:
+
+- One deployment to run a MongoDb
+- One deployment to run a SQL Server
+- One deployment to run [azurite](https://github.com/Azure/Azurite) (a lightweight linux-compatible storage emulator).
+
+> **Note**: Azurite is exposed outside the cluster through an additional ingress on the `/blobs` endpoint. MongoDb and SQL Server are not exposed outside.
+
+Assuming the images are pushed in the ACR, following commands will install **all Tailwind Traders Backend and infrastructure** in an AKS named `my-aks` in the RG `my-rg`, using images from ACR named `my-acr`. An ACI named `my-aci-tt` will be created in the same RG to run the CosmosDb emulator:
+
+```
+.\Deploy-Images-Aks.ps1 -aksName my-aks -resourceGroup my-rg -acrName my-acr -useInfraInAks $true -cartAciGroup my-rg -cartAciName my-aci-tt  -charts "*,infra"
+```
+
+If you prefer you can deploy only the infrastructure first:
+
+```
+ .\Deploy-Images-Aks.ps1 -aksName my-aks -resourceGroup my-rg -acrName my-acr -charts "infra"
+```
+
+And deploy later just the backend services:
+
+```
+.\Deploy-Images-Aks.ps1 -aksName my-aks -resourceGroup my-rg -acrName my-acr -useInfraInAks $true -cartAciGroup my-rg -cartAciName my-aci-tt -charts "*"
+```
+
+### Deploying the images on the storage
+
+To deploy the needed images on the Azurite running in the AKS just run the `/Deploy/Deploy-Pictures-Aks.ps1` script, with following parameters:
+
+- `-resourceGroup <name>`: Resource group where storage is created
+- `-aksName <name>`: Name of the AKS
+
+Script will create blob containers and copy the images (located in `/Deploy/tt-images` folder) to the storage account.
+
+> **Note** Azurite must be up and running in the AKS for the script to run.
+
 # <a name="run-backend-locally"></a>Run Backend Services Locally
 
 The easiest way to run your backend services locally is using _Compose_. To run the services type `docker-compose up` from terminal located in `./Source` folder. This will build (if needed) the Docker images and bring up all the containers.
@@ -447,9 +517,9 @@ The easiest way to run your backend services locally is using _Compose_. To run 
 
 ## Configurate containers
 
-There are some services that connect to a CosmosDb database, hence you require to provide cosmosdb host and key using environment variables, or even better, through an `.env` file.
+By default compose file configures all containers to use a SQL Server container, so you don't need to provide any specific configuration. But **Shopping cart API requires additional configuration** that must be provided using environment variables, or even better, through an `.env` file.
 
-To do so, just create a file named `.env` in the same `./Source` folder with following content pointing to your previously created in the Azure portal:
+To do so, just create a file named `.env` in the same `./Source` folder with following content:
 
 ```
 COSMOSDB_HOST=<Url of your CosmosDb>

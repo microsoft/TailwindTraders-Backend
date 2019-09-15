@@ -28,8 +28,8 @@ env:
     - name: APPLICATION_INSIGHTS_IKEY
     - name: ISSUER
     - name: SECURITYKEY
-    - name: COSMOSDB_AUTHKEY
-    - name: COSMOSDB_HOST
+    - name: AUTHKEY
+    - name: HOST
   values: {}
 
 probes:

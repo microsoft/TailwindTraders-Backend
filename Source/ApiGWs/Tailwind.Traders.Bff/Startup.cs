@@ -88,11 +88,6 @@ namespace Tailwind.Traders.Bff
 
             app.UseHttpsRedirection();
 
-            app.UseRouting();
-
-            app.UseAuthentication();
-            app.UseAuthorization();
-
             app.UseSwagger();
 
             app.UseSwaggerUI(c =>
@@ -100,6 +95,9 @@ namespace Tailwind.Traders.Bff
                 c.SwaggerEndpoint(swaggerEndpoint, "MobileBFF V1");
                 c.RoutePrefix = string.Empty;
             });
+
+
+            app.UseRouting();
 
             app.UseEndpoints(endpoints =>
             {

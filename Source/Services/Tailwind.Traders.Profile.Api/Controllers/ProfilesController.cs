@@ -19,10 +19,10 @@ namespace Tailwind.Traders.Profile.Api.Controllers
     [Authorize]
     public class ProfileController : ControllerBase
     {
-        private readonly ProfileContext _ctx;
+        private readonly ProfileDbContext _ctx;
         private readonly AppSettings _settings;
 
-        public ProfileController(ProfileContext ctx, IOptions<AppSettings> options)
+        public ProfileController(ProfileDbContext ctx, IOptions<AppSettings> options)
         {
             _ctx = ctx;
             _settings = options.Value;
@@ -58,7 +58,7 @@ namespace Tailwind.Traders.Profile.Api.Controllers
 
             if (Request.Headers.TryGetValue("x-tt-name", out headerValues))
             {
-                nameFilter = headerValues.FirstOrDefault();
+                nameFilter = User.Identity.Name;
             }
 
             var result = await _ctx.Profiles
@@ -75,6 +75,20 @@ namespace Tailwind.Traders.Profile.Api.Controllers
             return Ok(result);
         }
 
+        private ProfileDto GetDefaultUserProfile(string nameFilter)
+        {
+            return new ProfileDto
+            {
+                Email = nameFilter,
+                Address = "7711 W. Pawnee Ave. Beachwood, OH 44122",
+                Name = nameFilter,
+                PhoneNumber = "+1-202-555-0155",
+                Id = 0,
+                ImageUrlMedium = "defaultImage-m.jpg",
+                ImageUrlSmall = "defaultImage-s.jpg"
+            };
+        }
+
         // POST v1/profile
         [HttpPost]
         [ProducesResponseType(typeof(List<Profiles>), (int)HttpStatusCode.OK)]
@@ -86,27 +100,10 @@ namespace Tailwind.Traders.Profile.Api.Controllers
                 return BadRequest();
             }
 
-            // TODO: Auto generated value for int not implemented with CosmosDb EF yet.
-            var newId = _ctx.Profiles.ToList().Count();
-            var profile = user.MapUserProfile(newId);
-            await _ctx.Profiles.AddAsync(profile);
+            await _ctx.Profiles.AddAsync(user.MapUserProfile());
             await _ctx.SaveChangesAsync();
 
             return Ok();
-        }
-
-        private ProfileDto GetDefaultUserProfile(string nameFilter)
-        {
-            return new ProfileDto
-            {
-                Id = 0,
-                Email = nameFilter,
-                Address = "7711 W. Pawnee Ave. Beachwood, OH 44122",
-                Name = nameFilter,
-                PhoneNumber = "+1-202-555-0155",
-                ImageUrlMedium = "defaultImage-m.jpg",
-                ImageUrlSmall = "defaultImage-s.jpg"
-            };
         }
     }
 }

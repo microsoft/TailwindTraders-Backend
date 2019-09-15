@@ -10,8 +10,8 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 data:
-  CosmosDb__Key: {{ .Values.inf.db.products.auth }}
-  CosmosDb__Host: {{ .Values.inf.db.products.host }}
+  AUTHKEY: {{ .Values.inf.db.products.auth }}
+  HOST: {{ .Values.inf.db.products.host }}
   ProductVisitsUrl: {{ .Values.az.productvisitsurl }}
   ProductImagesUrl: {{ .Values.inf.storage.productimages }}
   ProductDetailImagesUrl: {{ .Values.inf.storage.productdetailimages }}

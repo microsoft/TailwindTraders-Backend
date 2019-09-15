@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Tailwind.Traders.Product.Api.Models;
-using Tailwind.Traders.Product.Api.Extensions;
 
 namespace Tailwind.Traders.Product.Api.Infrastructure
 {
@@ -24,9 +23,9 @@ namespace Tailwind.Traders.Product.Api.Infrastructure
         public async Task SeedAsync(ProductContext productContext)
         {
             var contentRootPath = _hostingEnvironment.ContentRootPath;
-            await productContext.Database.EnsureCreatedAsync();
+            var IsDataBaseCreated = productContext.Database.EnsureCreatedAsync();
 
-            if (!productContext.ProductItems.ToList().Any())
+            if (IsDataBaseCreated.Result)
             {
                 var brands = _processFile.Process<ProductBrand>(contentRootPath, "ProductBrands");
                 var types = _processFile.Process<ProductType>(contentRootPath, "ProductTypes");
@@ -36,12 +35,36 @@ namespace Tailwind.Traders.Product.Api.Infrastructure
 
                 await productContext.Tags.AddRangeAsync(tags);
 
-                ProductItemExtensions.Join(products, brands, types, features, tags);
+                Join(products, brands, types, features, tags);
 
                 await productContext.ProductItems.AddRangeAsync(products);
 
                 await productContext.SaveChangesAsync();
            }
+        }
+
+        private void Join(IEnumerable<ProductItem> productItems, 
+            IEnumerable<ProductBrand> productBrands, 
+            IEnumerable<ProductType> productTypes, 
+            IEnumerable<ProductFeature> productFeatures,
+            IEnumerable<ProductTag> tags
+            )
+        {
+            foreach (var productItem in productItems)
+            {
+                productItem.Brand = productBrands.FirstOrDefault(brand => brand.Id == productItem.BrandId);
+                productItem.Type = productTypes.FirstOrDefault(type => type.Id == productItem.TypeId);
+                productItem.Features = productFeatures.Where(feature => feature.ProductItemId == productItem.Id).ToList();
+                if (productItem.TagId != null )
+                {
+                    productItem.Tag = tags.Where(t => t.Id == productItem.TagId).FirstOrDefault();
+                    //productItem.Tag = tags.SingleOrDefault(t => t.Id == productItem.TagId);
+                }
+                else
+                {
+                    productItem.TagId = null;
+                }
+            }
         }
     }
 }

@@ -12,6 +12,7 @@ using Tailwind.Traders.Product.Api.Dtos;
 using Tailwind.Traders.Product.Api.Extensions;
 using Tailwind.Traders.Product.Api.Infrastructure;
 using Tailwind.Traders.Product.Api.Mappers;
+using Tailwind.Traders.Product.Api.Models;
 
 namespace Tailwind.Traders.Product.Api.Controllers
 {
@@ -65,7 +66,8 @@ namespace Tailwind.Traders.Product.Api.Controllers
         [ProducesResponseType(404)]
         public async Task<IActionResult> ProductByIdAsync(int productId)
         {
-            var items = await _productContext.ProductItems.Where(p => p.Id == productId).ToListAsync();
+
+            var items = await _productContext.ProductItems.ToListAsync();
 
             items.Join(
                 _productContext.ProductBrands,
@@ -73,7 +75,15 @@ namespace Tailwind.Traders.Product.Api.Controllers
                 _productContext.ProductFeatures,
                 _productContext.Tags);
 
-            var item = items.FirstOrDefault();
+            //var item = items.Contains(i => i.Id == productId)
+
+            var item = items.Where(p => p.Id == productId).FirstOrDefault();
+
+            //var item = await _productContext.ProductItems
+            //    .Include(inc => inc.Brand)
+            //    .Include(inc => inc.Features)
+            //    .Include(inc => inc.Type)
+            //    .FirstOrDefaultAsync(product => product.Id == productId);
 
             if (item == null)
             {
@@ -114,9 +124,8 @@ namespace Tailwind.Traders.Product.Api.Controllers
         [ProducesResponseType(204)]
         public async Task<IActionResult> FindProductAsync([FromQuery] int[] brand, [FromQuery] int[] type)
         {
-            var items = await _productContext.ProductItems
-                .Where(item => brand.Contains(item.BrandId) || type.Contains(item.TypeId))
-                .ToListAsync();
+
+            var items = await _productContext.ProductItems.ToListAsync();
 
             items
                 .OrderByDescending(inc => inc.Name.Contains("gnome"))
@@ -126,14 +135,17 @@ namespace Tailwind.Traders.Product.Api.Controllers
                 _productContext.ProductFeatures,
                 _productContext.Tags);
 
-            if (!items.Any())
+
+            var itemsToList = items.Where(item => brand.Contains(item.Brand.Id) || type.Contains(item.Type.Id));
+
+            if (!itemsToList.Any())
             {
                 _logger.LogDebug("Not Products for this criteria");
 
                 return NoContent();
             }
 
-            return Ok(_mapperDtos.MapperToProductDto(items));
+            return Ok(_mapperDtos.MapperToProductDto(itemsToList));
         }
 
         [HttpGet("tag/{tag}")]
@@ -149,7 +161,9 @@ namespace Tailwind.Traders.Product.Api.Controllers
                 return NoContent();
             }
 
-            var items = await _productContext.ProductItems.Where(p => p.TagId == productTag.Id).Take(3).ToListAsync();
+            var items = await _productContext.ProductItems.ToListAsync();
+
+            items = items.Where(p => p.TagId == productTag.Id).Take(3).ToList();
 
             items.Join(
                 _productContext.ProductBrands,
@@ -179,15 +193,11 @@ namespace Tailwind.Traders.Product.Api.Controllers
         [ProducesResponseType(204)]
         public async Task<IActionResult> RecommendedProductsAsync()
         {
-            var items = await _productContext.ProductItems.ToListAsync();
-
-            items = items.OrderBy(product => new Random().Next()).Take(3).ToList();
-
-            items.Join(
-              _productContext.ProductBrands,
-              _productContext.ProductTypes,
-              _productContext.ProductFeatures,
-              _productContext.Tags);
+            var items = await _productContext.ProductItems
+                .Include(inc => inc.Brand)
+                .Include(inc => inc.Features)
+                .Include(inc => inc.Type)
+                .ToListAsync();
 
             if (!items.Any())
             {
@@ -196,7 +206,7 @@ namespace Tailwind.Traders.Product.Api.Controllers
                 return NoContent();
             }
 
-            return Ok(_mapperDtos.MapperToProductDto(items));
+            return Ok(_mapperDtos.MapperToProductDto(items).OrderBy(product => new Random().Next()).Take(3));
         }
     }
 }

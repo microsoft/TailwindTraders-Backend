@@ -1,11 +1,13 @@
 ﻿using CsvHelper.Configuration;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Cosmos.Storage.Internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using System;
-using Tailwind.Traders.Product.Api.HealthCheck;
+using System.Reflection;
 using Tailwind.Traders.Product.Api.Infrastructure;
 using Tailwind.Traders.Product.Api.Mappers;
 
@@ -52,15 +54,12 @@ namespace Tailwind.Traders.Product.Api.Extensions
 
             hcBuilder.AddCheck("self", () => HealthCheckResult.Healthy());
 
-            hcBuilder.Add(new HealthCheckRegistration(
-                "ProductsDB-check",
-                sp => new CosmosDbHealthCheck(
-                    $"AccountEndpoint={configuration["CosmosDb:Host"]};AccountKey={configuration["CosmosDb:Key"]}",
-                    configuration["CosmosDb:Database"]),
-                HealthStatus.Unhealthy,
-                new string[] { "productdb" }
-            ));
-
+            hcBuilder
+                .AddSqlServer(
+                    configuration["ConnectionString"],
+                    name: "ProductsDB-check",
+                    tags: new string[] { "productdb" });
+            
             return services;
         }
     }

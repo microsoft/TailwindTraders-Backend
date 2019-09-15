@@ -122,12 +122,12 @@ namespace Tailwind.Traders.WebBff
                     .AllowAnyMethod();
             });
 
+            app.UseAuthentication();
+            app.UseAuthorization();
+
             app.UseHttpsRedirection();
 
             app.UseRouting();
-
-            app.UseAuthentication();
-            app.UseAuthorization();
 
             app.UseSwagger();
     

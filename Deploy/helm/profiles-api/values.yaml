@@ -26,8 +26,8 @@ affinity: {}
 env:
   configmap:
     - name: ApplicationInsights__InstrumentationKey
-    - name: CosmosDb__Host
-    - name: CosmosDb__Key
+    - name: AUTHKEY
+    - name: HOST
     - name: ProfilesImageUrl
     - name: ISSUER
     - name: SECURITYKEY

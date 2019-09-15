@@ -10,8 +10,8 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 data:
-  CosmosDb__Key: {{ .Values.inf.db.profile.auth }}
-  CosmosDb__Host: {{ .Values.inf.db.profile.host }}
+  AUTHKEY: {{ .Values.inf.db.profile.auth }}
+  HOST: {{ .Values.inf.db.profile.host }}
   ApplicationInsights__InstrumentationKey:  {{ .Values.inf.appinsights.id }}
   ProfilesImageUrl: {{ .Values.inf.storage.profileimages }}
   ISSUER: {{ .Values.sec.issuer }}

@@ -42,17 +42,6 @@ public class StockItemRepository
         }
 	}
 
-	public void update(StockItem stockItem) {
-		Document stockItemDocument = getItemById(stockItem.getProductId());
-		stockItemDocument.set("stockCount", stockItem.getStockCount());
-
-        try {
-        	documentClient.replaceDocument(stockItemDocument, null);
-        } catch (DocumentClientException e) {
-            e.printStackTrace();
-        }
-    }
-    
 	public void save(StockItem stockItem) {
 		Document todoItemDocument = new Document(gson.toJson(stockItem));
         todoItemDocument.set("entityType", "stockItem");
@@ -75,7 +64,7 @@ public class StockItemRepository
 	
     private Document getItemById(Integer id) {
         List<Document> documentList = documentClient
-                .queryDocuments(getTodoCollection().getSelfLink(), "SELECT * FROM root r WHERE r.productId=" + id, null)
+                .queryDocuments(getTodoCollection().getSelfLink(), "SELECT * FROM root r WHERE r.id='" + id + "'", null)
                 .getQueryIterable().toList();
 
         if (documentList.size() > 0) {

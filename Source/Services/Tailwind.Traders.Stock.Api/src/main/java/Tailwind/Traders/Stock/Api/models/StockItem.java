@@ -9,16 +9,16 @@ import javax.persistence.Id;
 public class StockItem {
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
-    private String id;
+    private Integer id;
 
     private Integer productId;
 
     private Integer stockCount;
 
-    public String getId() {
+    public Integer getId() {
         return this.id;
     }
-    public void setId(String id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

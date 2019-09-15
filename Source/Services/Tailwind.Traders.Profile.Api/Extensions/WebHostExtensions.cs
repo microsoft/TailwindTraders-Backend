@@ -16,8 +16,15 @@ namespace Tailwind.Traders.Profile.Api.Extensions
                 var services = scope.ServiceProvider;
 
                 var logger = services.GetRequiredService<ILogger<TContext>>();
+
                 var context = services.GetService<TContext>();
+                
+                logger.LogInformation($"Migrating database associated with context {typeof(TContext).Name}");
+
+                context.Database.Migrate();
                 seeder(context, services);
+
+                logger.LogInformation($"Migrated database associated with context {typeof(TContext).Name}");
             }
 
             return webHost;

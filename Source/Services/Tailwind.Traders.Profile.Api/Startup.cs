@@ -78,6 +78,7 @@ namespace Tailwind.Traders.Profile.Api
             app.UseAuthorization();
 
             app.UseHttpsRedirection();
+
             app.UseRouting();
 
             app.UseEndpoints(endpoints =>

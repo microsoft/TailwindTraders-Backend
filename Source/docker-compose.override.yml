@@ -5,8 +5,8 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://0.0.0.0:80
-      - CosmosDb__Host=${COSMOSDB_HOST:-https://10.0.75.1:8081} # Emulator URI
-      - CosmosDb__Key=${COSMOSDB_AUTHKEY:-C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==} # Emulator Key
+      - COSMOSDB__HOST=${COSMOSDB_HOST:-https://10.0.75.1:8081} # Emulator URI
+      - COSMOSDB__AUTHKEY=${COSMOSDB_AUTHKEY}
       - ProductImagesUrl=
       - ProductDetailImagesUrl=
       - ProductVisitsUrl=
@@ -18,8 +18,8 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://0.0.0.0:80
-      - CosmosDb__Host=${COSMOSDB_HOST:-https://10.0.75.1:8081} # Emulator URI
-      - CosmosDb__Key=${COSMOSDB_AUTHKEY:-C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==} # Emulator Key
+      - HOST=${COSMOSDB_HOST:-https://10.0.75.1:8081} # Emulator URI
+      - AUTHKEY=${COSMOSDB_AUTHKEY}
       - ProfilesImageUrl=
       - SecurityKey=nEpLzQJGNSCNL5H6DIQCtTdNxf5VgAGcBbtXLms1YDD01KJBAs0WVawaEjn97uwB
       - Issuer=TTFakeLogin
@@ -31,6 +31,8 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://0.0.0.0:80
+      - HOST=${COSMOSDB_HOST:-https://10.0.75.1:8081} # Emulator URI
+      - AUTHKEY=${COSMOSDB_AUTHKEY}
       - ProfilesImageUrl=
       - SecurityKey=nEpLzQJGNSCNL5H6DIQCtTdNxf5VgAGcBbtXLms1YDD01KJBAs0WVawaEjn97uwB
       - Issuer=TTFakeLogin
@@ -40,10 +42,10 @@ services:
 
   coupon.api:
     environment:
-      - CONNECTIONSTRING= # Connect to CosmosDb
+      - CONNECTIONSTRING=nosql.data:27017/CouponsDb # Connect to CosmosDb
       - PORT=3000
       - COUPON_COLLECTION=CouponCollection
-      - URL_BASE= # Connect to CosmosDb ?
+      - URL_BASE=nosql.data:27017/CouponsDb # Connect to CosmosDb ?
       - ISSUER=TTFakeLogin
       - SECURITYKEY=nEpLzQJGNSCNL5H6DIQCtTdNxf5VgAGcBbtXLms1YDD01KJBAs0WVawaEjn97uwB
       - APPLICATIONINSIGHTSIK=
@@ -62,14 +64,14 @@ services:
       - "5003:80"
 
   stock.api:
+    ports:
+      - "5004:8080"
     environment:
-      - COSMOSDB_HOST=${COSMOSDB_HOST:-https://10.0.75.1:8081} # Emulator URI
+      - COSMOSDB_HOST=${COSMOSDB_HOST:-https://192.168.0.1:8081} # Emulator URI
       - COSMOSDB_AUTHKEY=${COSMOSDB_AUTHKEY:-C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==} # Emulator Key
       - Issuer=TTFakeLogin
       - SecurityKey=nEpLzQJGNSCNL5H6DIQCtTdNxf5VgAGcBbtXLms1YDD01KJBAs0WVawaEjn97uwB
       - APPLICATION_INSIGHTS_IKEY=
-    ports:
-      - "5004:8080"
 
   product-visits.function:
     environment:

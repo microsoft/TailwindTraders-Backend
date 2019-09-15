@@ -1,5 +1,6 @@
 ﻿using CsvHelper.Configuration;
 using Tailwind.Traders.Profile.Api.Csv;
+using Tailwind.Traders.Profile.Api.Models;
 
 namespace Tailwind.Traders.Profile.Api.Helpers
 {
@@ -8,6 +9,7 @@ namespace Tailwind.Traders.Profile.Api.Helpers
         public ProfilesMap()
         {
             AutoMap();
+            Map(m => m.Id).Ignore();
         }
     }
 }
