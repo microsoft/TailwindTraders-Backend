@@ -47,20 +47,24 @@ $acrLogin=$acr.loginServer
 $acrId=$acr.id
 validate
 
-if (-not [string]::IsNullOrEmpty($clientId)) {
+$acrCredentials = $(az acr credential show -n $acrName -g $resourceGroup -o json | ConvertFrom-Json)
+if ($acrCredentials) {
+    Write-Host "Creating ACR auth based secret..." -ForegroundColor Yellow
+    $acrPwd=$acrCredentials.passwords[0].value
+    $acrUser=$acrCredentials.username
+    kubectl delete secret acr-auth
+    kubectl create secret docker-registry acr-auth --docker-server $acrLogin --docker-username $acrUser --docker-password $acrPwd --docker-email not@used.com
+}
+elseif (-not [string]::IsNullOrEmpty($clientId)) {
     Write-Host "Creating Service Principal based auth..." -ForegroundColor Yellow
     az role assignment create --assignee $clientId --scope $acrId --role reader
     kubectl delete secret acr-auth
     kubectl create secret docker-registry acr-auth --docker-server $acrLogin --docker-username $clientId --docker-password $password --docker-email not@used.com
 }
 else {
-    Write-Host "Creating ACR auth based secret..." -ForegroundColor Yellow
-    $acrCredentials = $(az acr credential show -n $acrName -g $resourceGroup -o json | ConvertFrom-Json)
-    $acrPwd=$acrCredentials.passwords[0].value
-    $acrUser=$acrCredentials.username
-    kubectl delete secret acr-auth
-    kubectl create secret docker-registry acr-auth --docker-server $acrLogin --docker-username $acrUser --docker-password $acrPwd --docker-email not@used.com
+    Write-Host "Couldn't create Service Principal to access ACR." -ForegroundColor Red
+    exit 1
 }
 
 Write-Host "Deploying ServiceAccount ttsa" -ForegroundColor Yellow
-kubectl apply -f helm/ttsa.yaml 
+kubectl apply -f helm/ttsa.yaml
