@@ -3,10 +3,15 @@ Param(
     [parameter(Mandatory=$true)][string]$location,
     [parameter(Mandatory=$false)][string]$clientId,
     [parameter(Mandatory=$false)][string]$password,
+    [parameter(Mandatory=$false)][bool]$deployWinLinux,
     [parameter(Mandatory=$false)][bool]$deployAks=$true
 )
 $spCreated=$false
 $script="./deployment.json"
+
+if($deployWinLinux) {
+    $script="./deployment-dual-nodes.json"
+}
 
 if (-not $deployAks) {
     $script="./deployment-no-aks.json"

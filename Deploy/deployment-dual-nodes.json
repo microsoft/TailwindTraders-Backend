@@ -96,7 +96,6 @@
             "osDiskSizeGB": 100,
             "maxPods": 30,
             "type": "VirtualMachineScaleSets",
-            "orchestratorVersion": "1.14.4",
             "enableNodePublicIP": false,
             "osType": "Windows"
           }
@@ -126,12 +125,6 @@
           },
           "httpApplicationRouting": {
             "enabled": true
-          },
-          "omsagent": {
-            "enabled": true,
-            "config": {
-              "logAnalyticsWorkspaceResourceID": "[variables('omsWorkspaceId')]"
-            }
           }
         },
         "nodeResourceGroup": "[concat('MC_', variables('aks_name'), '_', variables('aks_name'), '_', resourceGroup().location)]",
@@ -176,7 +169,6 @@
         "osDiskSizeGB": 100,
         "maxPods": 30,
         "type": "VirtualMachineScaleSets",
-        "orchestratorVersion": "1.14.4",
         "enableNodePublicIP": false,
         "osType": "Windows"
       }
