@@ -91,4 +91,4 @@ Write-Host ($tokens | ConvertTo-Json) -ForegroundColor Yellow
 
 Write-Host "===========================================================" -ForegroundColor Yellow
 
-& .\token-replace.ps1 -inputFile $gvaluesTemplate -outputFile $outputFile -tokens $tokens
+& .\Token-Replace.ps1 -inputFile $gvaluesTemplate -outputFile $outputFile -tokens $tokens

@@ -22,7 +22,7 @@ if ($dockerBuild) {
     Write-Host "Images will be named as $acrLoginServer/imageName:$dockerTag" -ForegroundColor Yellow
     Write-Host "---------------------------------------------------" -ForegroundColor Yellow
 
-    Push-Location ..\Source
+    Push-Location ..\..\Source
     $env:TAG=$dockerTag
     $env:REGISTRY=$acrLoginServer 
     docker-compose -f $dockerComposeFile build
@@ -33,7 +33,7 @@ if ($dockerPush) {
     Write-Host "---------------------------------------------------" -ForegroundColor Yellow
     Write-Host "Pushing images to $acrLoginServer" -ForegroundColor Yellow
     Write-Host "---------------------------------------------------" -ForegroundColor Yellow
-    Push-Location ..\Source
+    Push-Location ..\..\Source
     docker login -p $acrPwd -u $acrUser $acrLoginServer
     $env:TAG=$dockerTag
     $env:REGISTRY=$acrLoginServer 

@@ -7,14 +7,14 @@ Param(
     [parameter(Mandatory=$false)][bool]$deployAks=$true
 )
 $spCreated=$false
-$script="./deployment.json"
+$script="../arm/deployment.json"
 
 if($deployWinLinux) {
-    $script="./deployment-dual-nodes.json"
+    $script="../arm/deployment-dual-nodes.json"
 }
 
 if (-not $deployAks) {
-    $script="./deployment-no-aks.json"
+    $script="../arm/deployment-no-aks.json"
 }
 
 Write-Host "--------------------------------------------------------" -ForegroundColor Yellow

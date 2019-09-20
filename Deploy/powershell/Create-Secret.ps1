@@ -67,4 +67,4 @@ else {
 }
 
 Write-Host "Deploying ServiceAccount ttsa" -ForegroundColor Yellow
-kubectl apply -f helm/ttsa.yaml
+kubectl apply -f ../helm/ttsa.yaml
