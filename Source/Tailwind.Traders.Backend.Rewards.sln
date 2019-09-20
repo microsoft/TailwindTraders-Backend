@@ -1,0 +1,42 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29020.237
+MinimumVisualStudioVersion = 15.0.26124.0
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{E8A4248E-1EAC-48AE-9060-973D4C15B548}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailwind.Traders.Rewards.Registration.Api", "Services\Tailwind.Traders.Rewards.Registration.Api\Tailwind.Traders.Rewards.Registration.Api.csproj", "{05581061-B0A2-4044-85ED-E219C11C2EAA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{05581061-B0A2-4044-85ED-E219C11C2EAA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{05581061-B0A2-4044-85ED-E219C11C2EAA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{05581061-B0A2-4044-85ED-E219C11C2EAA}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{05581061-B0A2-4044-85ED-E219C11C2EAA}.Debug|x64.Build.0 = Debug|Any CPU
+		{05581061-B0A2-4044-85ED-E219C11C2EAA}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{05581061-B0A2-4044-85ED-E219C11C2EAA}.Debug|x86.Build.0 = Debug|Any CPU
+		{05581061-B0A2-4044-85ED-E219C11C2EAA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{05581061-B0A2-4044-85ED-E219C11C2EAA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{05581061-B0A2-4044-85ED-E219C11C2EAA}.Release|x64.ActiveCfg = Release|Any CPU
+		{05581061-B0A2-4044-85ED-E219C11C2EAA}.Release|x64.Build.0 = Release|Any CPU
+		{05581061-B0A2-4044-85ED-E219C11C2EAA}.Release|x86.ActiveCfg = Release|Any CPU
+		{05581061-B0A2-4044-85ED-E219C11C2EAA}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{05581061-B0A2-4044-85ED-E219C11C2EAA} = {E8A4248E-1EAC-48AE-9060-973D4C15B548}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {5D3E7ED9-6991-46BF-BBD8-57AE7000A309}
+	EndGlobalSection
+EndGlobal

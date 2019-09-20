@@ -344,6 +344,10 @@
       "type": "string",
       "value": "[variables('acr_name')]"
     },
+    "aks": {
+      "type": "string",
+      "value": "[variables('aks_name')]"
+    },
     "function": {
       "type": "string",
       "value": "[variables('function_name')]"
@@ -355,6 +359,10 @@
     "shoppingdb": {
       "type": "string",
       "value": "[variables('shopping_cosmosdb_name')]"
+    },
+    "storage": {
+      "type": "string",
+      "value": "[variables('storage_name')]"
     }
   }
 }

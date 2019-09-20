@@ -76,6 +76,9 @@ $tokens.couponspwd=$mongodbKey
 $tokens.storage=$storage.blob
 $tokens.rewardsregistration=If ($rewardsResourceGroup) { $true } Else { $false }
 
+## Install app-insights extension
+az extension add --name application-insights
+
 ## Getting App Insights instrumentation key
 $appinsights=$(az monitor app-insights component show --app tt-app-insights -g $resourceGroup -o json | ConvertFrom-Json)
 Write-Host "App Insights Instrumentation Key: $($appinsights)" -ForegroundColor Yellow

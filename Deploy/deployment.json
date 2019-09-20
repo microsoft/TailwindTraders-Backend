@@ -282,6 +282,10 @@
     "shoppingdb": {
       "type": "string",
       "value": "[variables('shopping_cosmosdb_name')]"
+    },
+    "storage": {
+      "type": "string",
+      "value": "[variables('storage_name')]"
     }
   }
 }

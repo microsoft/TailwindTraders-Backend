@@ -61,7 +61,7 @@ $apiproj = $csprojPath
 Pop-Location
 
 # Build and Push WCF 
-.\Build-Push.ps1 -resourceGroup $resourceGroup -acrName $acrName -isWindows $true
+.\Build-Push.ps1 -resourceGroup $resourceGroup -acrName $acrName -isWindowsMachine $true
 
 # Deploy images in AKS
 .\Deploy-Images-Aks.ps1 -aksName $aksName -resourceGroup $resourceGroup -charts "rr" -acrName $acrName -valuesFile "__values\$gValuesFile"
