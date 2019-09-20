@@ -10,6 +10,10 @@ $gValuesFile="configFile.yaml"
 
 Push-Location $($MyInvocation.InvocationName | Split-Path)
 
+# Update the extension to make sure you have the latest version installed
+az extension add --name aks-preview
+az extension update --name aks-preview
+
 ## Deploy ARM
 .\Deploy-Arm-Azure.ps1 -resourceGroup $resourceGroup -location $location -clientId $clientId -password $password -deployAks $deployAks
 
@@ -21,7 +25,7 @@ Write-Host "Choosing your subscription" -ForegroundColor Yellow
 az account set --subscription $subscription
 
 Write-Host "Retrieving Aks Name" -ForegroundColor Yellow
-$aksName = $(az resource list --resource-group $resourceGroup --resource-type Microsoft.ContainerService/managedClusters -o json | ConvertFrom-Json).name
+$aksName = $(az aks list -g $resourceGroup -o json | ConvertFrom-Json).name
 Write-Host "The name of your AKS: $aksName" -ForegroundColor Yellow
 
 Write-Host "Retrieving credentials" -ForegroundColor Yellow

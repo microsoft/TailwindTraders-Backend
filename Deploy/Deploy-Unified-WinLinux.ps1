@@ -8,8 +8,7 @@ Param(
     [parameter(Mandatory=$true)][string]$rewardsDbPassword,
     [parameter(Mandatory=$true)][string]$csprojPath,
     [parameter(Mandatory=$false)][string]$msBuildPath="C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\MSBuild\Current\Bin",
-    [parameter(Mandatory=$false)][bool]$deployAks=$true,
-    [parameter(Mandatory=$false)][bool]$deployWinLinux=$true
+    [parameter(Mandatory=$false)][bool]$deployAks=$true
 )
 $gValuesFile="configFile.yaml"
 
@@ -20,7 +19,7 @@ az extension add --name aks-preview
 az extension update --name aks-preview
 
 ## Deploy ARM WINDOWS!
-.\Deploy-Arm-Azure.ps1 -resourceGroup $resourceGroup -location $location -clientId $clientId -password $password -deployAks $deployAks -deployWinLinux $deployWinLinux
+.\Deploy-Arm-Azure.ps1 -resourceGroup $resourceGroup -location $location -clientId $clientId -password $password -deployAks $deployAks -deployWinLinux $true
 
 # Connecting kubectl to AKS
 Write-Host "Login in your account" -ForegroundColor Yellow
@@ -30,7 +29,7 @@ Write-Host "Choosing your subscription" -ForegroundColor Yellow
 az account set --subscription $subscription
 
 Write-Host "Retrieving Aks Name" -ForegroundColor Yellow
-$aksName = $(az resource list --resource-group $resourceGroup --resource-type Microsoft.ContainerService/managedClusters -o json | ConvertFrom-Json).name
+$aksName = $(az aks list -g $resourceGroup -o json | ConvertFrom-Json).name
 Write-Host "The name of your AKS: $aksName" -ForegroundColor Yellow
 
 Write-Host "Retrieving credentials" -ForegroundColor Yellow

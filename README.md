@@ -33,7 +33,7 @@ Tailwind Traders supports two deployment scenarios:
 1. [Deploy Tailwind Traders Backend on Azure AKS and Azure resources (CosmosDb and Storage accounts)](#deploy-resources)
 2. [Deploy Tailwind Traders Backend on Windows and Linux containers in AKS](#deploy-win-linux-containers)
 
-## Deploy using one script
+### Deploy using one script
 
 You can deploy all basics scenarios using one script under `/Deploy` folder.
 
