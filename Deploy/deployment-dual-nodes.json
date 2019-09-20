@@ -71,6 +71,35 @@
       }
     },
     {
+      "type": "Microsoft.Resources/deployments",
+      "name": "WorkspaceDeployment",
+      "apiVersion": "2017-05-10",
+      "subscriptionId": "[split(variables('omsWorkspaceId'),'/')[2]]",
+      "resourceGroup": "[split(variables('omsWorkspaceId'),'/')[4]]",
+      "properties": {
+        "mode": "Incremental",
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "parameters": {},
+          "variables": {},
+          "resources": [
+            {
+              "apiVersion": "2015-11-01-preview",
+              "type": "Microsoft.OperationalInsights/workspaces",
+              "location": "[resourceGroup().location]",
+              "name": "[variables('workspaceName')]",
+              "properties": {
+                "sku": {
+                  "name": "standalone"
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
       "type": "Microsoft.ContainerService/managedClusters",
       "apiVersion": "2019-06-01",
       "name": "[variables('aks_name')]",
@@ -86,7 +115,6 @@
             "osDiskSizeGB": 100,
             "maxPods": 30,
             "type": "VirtualMachineScaleSets",
-            "orchestratorVersion": "1.14.4",
             "osType": "Linux"
           },
           {
@@ -96,7 +124,6 @@
             "osDiskSizeGB": 100,
             "maxPods": 30,
             "type": "VirtualMachineScaleSets",
-            "orchestratorVersion": "1.14.4",
             "enableNodePublicIP": false,
             "osType": "Windows"
           }
@@ -126,12 +153,6 @@
           },
           "httpApplicationRouting": {
             "enabled": true
-          },
-          "omsagent": {
-            "enabled": true,
-            "config": {
-              "logAnalyticsWorkspaceResourceID": "[variables('omsWorkspaceId')]"
-            }
           }
         },
         "nodeResourceGroup": "[concat('MC_', variables('aks_name'), '_', variables('aks_name'), '_', resourceGroup().location)]",
@@ -159,7 +180,6 @@
         "osDiskSizeGB": 100,
         "maxPods": 30,
         "type": "VirtualMachineScaleSets",
-        "orchestratorVersion": "1.14.4",
         "osType": "Linux"
       }
     },
@@ -176,7 +196,6 @@
         "osDiskSizeGB": 100,
         "maxPods": 30,
         "type": "VirtualMachineScaleSets",
-        "orchestratorVersion": "1.14.4",
         "enableNodePublicIP": false,
         "osType": "Windows"
       }
@@ -318,35 +337,6 @@
       "dependsOn": [
         "[concat('Microsoft.Resources/deployments/', 'WorkspaceDeployment')]"
       ]
-    },
-    {
-      "type": "Microsoft.Resources/deployments",
-      "name": "WorkspaceDeployment",
-      "apiVersion": "2017-05-10",
-      "subscriptionId": "[split(variables('omsWorkspaceId'),'/')[2]]",
-      "resourceGroup": "[split(variables('omsWorkspaceId'),'/')[4]]",
-      "properties": {
-        "mode": "Incremental",
-        "template": {
-          "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-          "contentVersion": "1.0.0.0",
-          "parameters": {},
-          "variables": {},
-          "resources": [
-            {
-              "apiVersion": "2015-11-01-preview",
-              "type": "Microsoft.OperationalInsights/workspaces",
-              "location": "[resourceGroup().location]",
-              "name": "[variables('workspaceName')]",
-              "properties": {
-                "sku": {
-                  "name": "standalone"
-                }
-              }
-            }
-          ]
-        }
-      }
     }
   ],
   "outputs": {
