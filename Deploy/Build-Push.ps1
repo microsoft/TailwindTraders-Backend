@@ -4,8 +4,10 @@ Param(
     [parameter(Mandatory=$false)][bool]$dockerBuild=$true,
     [parameter(Mandatory=$false)][bool]$dockerPush=$true,
     [parameter(Mandatory=$false)][string]$dockerTag="latest",
-    [parameter(Mandatory=$false)][bool]$isWindows=$false
+    [parameter(Mandatory=$false)][bool]$isWindowsMachine=$false
 )
+
+$sourceFolder=$(Join-Path -Path .. -ChildPath Source)
 
 Write-Host "---------------------------------------------------" -ForegroundColor Yellow
 Write-Host "Getting info from ACR $resourceGroup/$acrName" -ForegroundColor Yellow
@@ -14,7 +16,7 @@ $acrLoginServer=$(az acr show -g $resourceGroup -n $acrName -o json | ConvertFro
 $acrCredentials=$(az acr credential show -g $resourceGroup -n $acrName -o json | ConvertFrom-Json)
 $acrPwd=$acrCredentials.passwords[0].value
 $acrUser=$acrCredentials.username
-$dockerComposeFile= If ($isWindows) {".\docker-compose-win.yml"} Else {".\docker-compose.yml"}
+$dockerComposeFile= If ($isWindowsMachine) {".\docker-compose-win.yml"} Else {".\docker-compose.yml"}
 
 if ($dockerBuild) {
     Write-Host "---------------------------------------------------" -ForegroundColor Yellow
@@ -22,7 +24,7 @@ if ($dockerBuild) {
     Write-Host "Images will be named as $acrLoginServer/imageName:$dockerTag" -ForegroundColor Yellow
     Write-Host "---------------------------------------------------" -ForegroundColor Yellow
 
-    Push-Location ..\Source
+    Push-Location $sourceFolder
     $env:TAG=$dockerTag
     $env:REGISTRY=$acrLoginServer 
     docker-compose -f $dockerComposeFile build
@@ -33,7 +35,8 @@ if ($dockerPush) {
     Write-Host "---------------------------------------------------" -ForegroundColor Yellow
     Write-Host "Pushing images to $acrLoginServer" -ForegroundColor Yellow
     Write-Host "---------------------------------------------------" -ForegroundColor Yellow
-    Push-Location ..\Source
+
+    Push-Location $sourceFolder
     docker login -p $acrPwd -u $acrUser $acrLoginServer
     $env:TAG=$dockerTag
     $env:REGISTRY=$acrLoginServer 
