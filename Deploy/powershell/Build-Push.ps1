@@ -18,7 +18,7 @@ $acrLoginServer=$(az acr show -g $resourceGroup -n $acrName -o json | ConvertFro
 $acrCredentials=$(az acr credential show -g $resourceGroup -n $acrName -o json | ConvertFrom-Json)
 $acrPwd=$acrCredentials.passwords[0].value
 $acrUser=$acrCredentials.username
-$dockerComposeFile= If ($isWindowsMachine) {".\docker-compose-win.yml"} Else {".\docker-compose.yml"}
+$dockerComposeFile= If ($isWindowsMachine) {"docker-compose-win.yml"} Else {"docker-compose.yml"}
 
 
 if ($dockerBuild) {
