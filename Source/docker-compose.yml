@@ -2,70 +2,70 @@ version: "3.4"
 
 services:
   cart.api:
-    image: ${REGISTRY:-msfttailwindtraders}/cart.api:${TAG:-latest}
+    image: ${REGISTRY:-tailwindtraders}/cart.api:${TAG:-latest}
     build:
       context: Services/Tailwind.Traders.Cart.Api
       dockerfile: Dockerfile
 
   product.api:
-    image: ${REGISTRY:-msfttailwindtraders}/product.api:${TAG:-latest}
+    image: ${REGISTRY:-tailwindtraders}/product.api:${TAG:-latest}
     build:
       context: .
       dockerfile: Services/Tailwind.Traders.Product.Api/Dockerfile
 
   profile.api:
-    image: ${REGISTRY:-msfttailwindtraders}/profile.api:${TAG:-latest}
+    image: ${REGISTRY:-tailwindtraders}/profile.api:${TAG:-latest}
     build:
       context: .
       dockerfile: Services/Tailwind.Traders.Profile.Api/Dockerfile
 
   login.api:
-    image: ${REGISTRY:-msfttailwindtraders}/login.api:${TAG:-latest}
+    image: ${REGISTRY:-tailwindtraders}/login.api:${TAG:-latest}
     build:
       context: .
       dockerfile: Services/Tailwind.Traders.Login.Api/Dockerfile
 
   coupon.api:
-    image: ${REGISTRY:-msfttailwindtraders}/coupon.api:${TAG:-latest}
+    image: ${REGISTRY:-tailwindtraders}/coupon.api:${TAG:-latest}
     container_name: coupon-node
     build:
       context: Services/Tailwind.Traders.Coupon.Api
       dockerfile: Dockerfile
 
   popular-product.api:
-    image: ${REGISTRY:-msfttailwindtraders}/popular-product.api:${TAG:-latest}
+    image: ${REGISTRY:-tailwindtraders}/popular-product.api:${TAG:-latest}
     build:
       context: .
       dockerfile: Services/Tailwind.Traders.PopularProduct.Api/Dockerfile
 
   stock.api:
-    image: ${REGISTRY:-msfttailwindtraders}/stock.api:${TAG:-latest}
+    image: ${REGISTRY:-tailwindtraders}/stock.api:${TAG:-latest}
     container_name: stock-java
     build:
       context: ./Services/Tailwind.Traders.Stock.Api/
       dockerfile: Dockerfile
 
   product-visits.function:
-    image: ${REGISTRY:-msfttailwindtraders}/product-visits.function:${TAG:-latest}
+    image: ${REGISTRY:-tailwindtraders}/product-visits.function:${TAG:-latest}
     container_name: product-visits-node
     build:
       context: ./Services/Tailwind.Traders.Visits.Function/
       dockerfile: Dockerfile
 
   image-classifier.api:
-    image: ${REGISTRY:-msfttailwindtraders}/image-classifier.api:${TAG:-latest}
+    image: ${REGISTRY:-tailwindtraders}/image-classifier.api:${TAG:-latest}
     build:
       context: .
       dockerfile: Services/Tailwind.Traders.ImageClassifier.Api/Dockerfile
 
   mobileapigw:
-    image: ${REGISTRY:-msfttailwindtraders}/mobileapigw:${TAG:-latest}
+    image: ${REGISTRY:-tailwindtraders}/mobileapigw:${TAG:-latest}
     build:
       context: .
       dockerfile: ApiGWs/Tailwind.Traders.Bff/Dockerfile
 
   webapigw:
-    image: ${REGISTRY:-msfttailwindtraders}/webapigw:${TAG:-latest}
+    image: ${REGISTRY:-tailwindtraders}/webapigw:${TAG:-latest}
     build:
       context: .
       dockerfile: ApiGWs/Tailwind.Traders.WebBff/Dockerfile
