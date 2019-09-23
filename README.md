@@ -37,7 +37,7 @@ Tailwind Traders supports two deployment scenarios:
 
 You can deploy all basics scenarios using one script under `/Deploy` folder.
 
-- **Linux scenario**
+- **Deploy Tailwind Traders Backend on Azure AKS and Azure resources (CosmosDb and Storage accounts)**
 
   Running the following command you can deploy starting with the infrastructure and ending with deploying the images on the storage:
 
@@ -53,7 +53,7 @@ You can deploy all basics scenarios using one script under `/Deploy` folder.
 
 The process will take few minutes.
 
-- **Windows Linux scenario**
+- **Deploy Tailwind Traders Backend on Windows and Linux containers in AKS**
 
   Running the following command you can deploy starting with the infrastructure and ending with deploying the images on the storage. This command requires more parameters than **Linux scenario** because we need to build and deploy a WCF service.
 

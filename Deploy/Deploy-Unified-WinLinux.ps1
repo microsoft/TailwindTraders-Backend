@@ -25,8 +25,8 @@ az login
 Write-Host "Choosing your subscription" -ForegroundColor Yellow
 az account set --subscription $subscription
 
-## Deploy ARM Windows
-# .\powershell\Deploy-Arm-Azure.ps1 -resourceGroup $resourceGroup -location $location -clientId $clientId -password $password -deployAks $deployAks -deployWinLinux $true
+# Deploy ARM Windows
+.\powershell\Deploy-Arm-Azure.ps1 -resourceGroup $resourceGroup -location $location -clientId $clientId -password $password -deployAks $deployAks -deployWinLinux $true
 
 Write-Host "Retrieving Aks Name" -ForegroundColor Yellow
 $aksName = $(az aks list -g $resourceGroup -o json | ConvertFrom-Json).name
