@@ -7,14 +7,17 @@ Param(
     [parameter(Mandatory=$false)][bool]$deployAks=$true
 )
 $spCreated=$false
-$script="../arm/deployment.json"
+
+Push-Location $($MyInvocation.InvocationName | Split-Path)
+
+$script=".\deployment.json"
 
 if($deployWinLinux) {
-    $script="../arm/deployment-dual-nodes.json"
+    $script=".\deployment-dual-nodes.json"
 }
 
 if (-not $deployAks) {
-    $script="../arm/deployment-no-aks.json"
+    $script=".\deployment-no-aks.json"
 }
 
 Write-Host "--------------------------------------------------------" -ForegroundColor Yellow
@@ -43,12 +46,15 @@ if ($deployAks) {
     Write-Host "AKS last version is $aksLastVersion" -ForegroundColor Yellow
 
     Write-Host "Begining the ARM deployment..." -ForegroundColor Yellow
-    az group create -n $resourceGroup -l $location
+    Push-Location ..\arm
     az group deployment create -g $resourceGroup --template-file $script --parameters servicePrincipalId=$clientId --parameters servicePrincipalSecret=$password --parameters aksVersion=$aksLastVersion
+    Pop-Location 
 }
 else {
     Write-Host "Begining the ARM deployment..." -ForegroundColor Yellow
+    Push-Location ..\arm
     az group deployment create -g $resourceGroup --template-file $script
+    Pop-Location 
 }
 
 if ($spCreated) {
@@ -57,3 +63,5 @@ if ($spCreated) {
     Write-Host ($sp | ConvertTo-Json) -ForegroundColor Yellow
     Write-Host "-----------------------------------------" -ForegroundColor Yellow
 }
+
+Pop-Location 

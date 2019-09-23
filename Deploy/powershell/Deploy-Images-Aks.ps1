@@ -102,9 +102,8 @@ else {
     $aksHost=$tlsHost
 }
 
-validate
-
-Push-Location helm
+Push-Location $($MyInvocation.InvocationName | Split-Path)
+Push-Location ..\helm
 
 Write-Host "Deploying charts $charts" -ForegroundColor Yellow
 
@@ -186,6 +185,7 @@ if ($charts.Contains("wgw") -or  $charts.Contains("*")) {
     cmd /c "$command"
 }
 
+Pop-Location
 Pop-Location
 
 Write-Host "Tailwind traders deployed on AKS" -ForegroundColor Yellow

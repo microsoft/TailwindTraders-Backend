@@ -7,7 +7,9 @@ Param(
     [parameter(Mandatory=$false)][bool]$isWindowsMachine=$false
 )
 
-$sourceFolder=$(Join-Path -Path .. -ChildPath Source)
+Push-Location $($MyInvocation.InvocationName | Split-Path)
+$sourceFolder=$(Join-Path -Path ..\.. -ChildPath Source)
+Write-Host "---------------------------------------------------" -ForegroundColor Yellow
 
 Write-Host "---------------------------------------------------" -ForegroundColor Yellow
 Write-Host "Getting info from ACR $resourceGroup/$acrName" -ForegroundColor Yellow
@@ -18,17 +20,14 @@ $acrPwd=$acrCredentials.passwords[0].value
 $acrUser=$acrCredentials.username
 $dockerComposeFile= If ($isWindowsMachine) {".\docker-compose-win.yml"} Else {".\docker-compose.yml"}
 
+
 if ($dockerBuild) {
     Write-Host "---------------------------------------------------" -ForegroundColor Yellow
     Write-Host "Using docker compose to build & tag images." -ForegroundColor Yellow
     Write-Host "Images will be named as $acrLoginServer/imageName:$dockerTag" -ForegroundColor Yellow
     Write-Host "---------------------------------------------------" -ForegroundColor Yellow
 
-<<<<<<< HEAD:Deploy/powershell/Build-Push.ps1
-    Push-Location ..\..\Source
-=======
     Push-Location $sourceFolder
->>>>>>> master:Deploy/Build-Push.ps1
     $env:TAG=$dockerTag
     $env:REGISTRY=$acrLoginServer 
     docker-compose -f $dockerComposeFile build
@@ -39,15 +38,13 @@ if ($dockerPush) {
     Write-Host "---------------------------------------------------" -ForegroundColor Yellow
     Write-Host "Pushing images to $acrLoginServer" -ForegroundColor Yellow
     Write-Host "---------------------------------------------------" -ForegroundColor Yellow
-<<<<<<< HEAD:Deploy/powershell/Build-Push.ps1
-    Push-Location ..\..\Source
-=======
 
     Push-Location $sourceFolder
->>>>>>> master:Deploy/Build-Push.ps1
     docker login -p $acrPwd -u $acrUser $acrLoginServer
     $env:TAG=$dockerTag
     $env:REGISTRY=$acrLoginServer 
     docker-compose -f $dockerComposeFile push
     Pop-Location
 }
+
+Pop-Location

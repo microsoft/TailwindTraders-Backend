@@ -18,15 +18,15 @@ Push-Location $($MyInvocation.InvocationName | Split-Path)
 az extension add --name aks-preview
 az extension update --name aks-preview
 
-## Deploy ARM WINDOWS!
-.\powershell\Deploy-Arm-Azure.ps1 -resourceGroup $resourceGroup -location $location -clientId $clientId -password $password -deployAks $deployAks -deployWinLinux $true
-
 # Connecting kubectl to AKS
 Write-Host "Login in your account" -ForegroundColor Yellow
 az login
 
 Write-Host "Choosing your subscription" -ForegroundColor Yellow
 az account set --subscription $subscription
+
+## Deploy ARM Windows
+# .\powershell\Deploy-Arm-Azure.ps1 -resourceGroup $resourceGroup -location $location -clientId $clientId -password $password -deployAks $deployAks -deployWinLinux $true
 
 Write-Host "Retrieving Aks Name" -ForegroundColor Yellow
 $aksName = $(az aks list -g $resourceGroup -o json | ConvertFrom-Json).name
@@ -39,7 +39,7 @@ az aks get-credentials -n $aksName -g $resourceGroup
 .\powershell\Add-Tiller.ps1
 
 ## Generate Config
-.\powershell\Generate-Config.ps1 -resourceGroup $resourceGroup -outputFile "helm\__values\$gValuesFile" -rewardsResourceGroup $rewardsResourceGroup -rewardsDbPassword $rewardsDbPassword
+.\powershell\Generate-Config.ps1 -resourceGroup $resourceGroup -outputFile "..\helm\__values\$gValuesFile" -rewardsResourceGroup $rewardsResourceGroup -rewardsDbPassword $rewardsDbPassword
 
 ## Create Secrets
 $acrName = $(az acr list --resource-group $resourceGroup --subscription $subscription -o json | ConvertFrom-Json).name
@@ -61,27 +61,23 @@ $apiproj = $csprojPath
 Pop-Location
 
 # Build and Push WCF 
-<<<<<<< HEAD
-.\powershell\Build-Push.ps1 -resourceGroup $resourceGroup -acrName $acrName -isWindows $true
-=======
-.\Build-Push.ps1 -resourceGroup $resourceGroup -acrName $acrName -isWindowsMachine $true
->>>>>>> master
+.\powershell\Build-Push.ps1 -resourceGroup $resourceGroup -acrName $acrName -isWindowsMachine $true
 
 # Deploy images in AKS
-.\Deploy-Images-Aks.ps1 -aksName $aksName -resourceGroup $resourceGroup -charts "rr" -acrName $acrName -valuesFile "__values\$gValuesFile"
+.\powershell\Deploy-Images-Aks.ps1 -aksName $aksName -resourceGroup $resourceGroup -charts "rr" -acrName $acrName -valuesFile "__values\$gValuesFile"
 
 # Change to Linux 
 & $pathDockerCli -SwitchLinuxEngine
 
 # Build and Push
-.\Build-Push.ps1 -resourceGroup $resourceGroup -acrName $acrName -isWindows $false
+.\powershell\Build-Push.ps1 -resourceGroup $resourceGroup -acrName $acrName -isWindows $false
 
 # Deploy images in AKS
-.\Deploy-Images-Aks.ps1 -aksName $aksName -resourceGroup $resourceGroup -charts "*" -acrName $acrName -valuesFile "__values\$gValuesFile"
+.\powershell\Deploy-Images-Aks.ps1 -aksName $aksName -resourceGroup $resourceGroup -charts "*" -acrName $acrName -valuesFile "__values\$gValuesFile"
 
 # Deploy pictures in AKS
 $storageName = $(az resource list --resource-group $resourceGroup --resource-type Microsoft.Storage/storageAccounts -o json | ConvertFrom-Json).name
-.\Deploy-Pictures-Azure.ps1 -resourceGroup $resourceGroup -storageName $storageName
+.\powershell\Deploy-Pictures-Azure.ps1 -resourceGroup $resourceGroup -storageName $storageName
 
 Pop-Location
 

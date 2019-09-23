@@ -67,4 +67,7 @@ else {
 }
 
 Write-Host "Deploying ServiceAccount ttsa" -ForegroundColor Yellow
+
+Push-Location $($MyInvocation.InvocationName | Split-Path)
 kubectl apply -f ../helm/ttsa.yaml
+Pop-Location
