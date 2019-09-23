@@ -3,10 +3,15 @@ Param(
     [parameter(Mandatory=$true)][string]$location,
     [parameter(Mandatory=$false)][string]$clientId,
     [parameter(Mandatory=$false)][string]$password,
+    [parameter(Mandatory=$false)][bool]$deployWinLinux,
     [parameter(Mandatory=$false)][bool]$deployAks=$true
 )
 $spCreated=$false
 $script="./deployment.json"
+
+if($deployWinLinux) {
+    $script="./deployment-dual-nodes.json"
+}
 
 if (-not $deployAks) {
     $script="./deployment-no-aks.json"
@@ -17,13 +22,13 @@ Write-Host "Deploying ARM script $script" -ForegroundColor Yellow
 Write-Host "-------------------------------------------------------- " -ForegroundColor Yellow
 
 $rg = $(az group show -n $resourceGroup -o json | ConvertFrom-Json)
-if ($deployAks) {
-    # Deployment including AKS must be done in a non-existent resource group
-    if ($rg) {
-        Write-Host "Resource group $resourceGroup already exists. Exiting." -ForegroundColor Red
-        exit 1
-    }
+# Deployment without AKS can be done in a existing or non-existing resource group.
+if (-not $rg) {
+    Write-Host "Creating resource group $resourceGroup in $location"
+    az group create -n $resourceGroup -l $location
+}
 
+if ($deployAks) {
     if (-not $clientId -or -not $password) {
         Write-Host "Service principal will be created..." -ForegroundColor Yellow
         $sp = $(az ad sp create-for-rbac -o json | ConvertFrom-Json)
@@ -42,11 +47,6 @@ if ($deployAks) {
     az group deployment create -g $resourceGroup --template-file $script --parameters servicePrincipalId=$clientId --parameters servicePrincipalSecret=$password --parameters aksVersion=$aksLastVersion
 }
 else {
-    # Deployment without AKS can be done in a existing or non-existing resource group.
-    if (-not $rg) {
-        Write-Host "Creating resource group $resourceGroup in $location"
-        az group create -n $resourceGroup -l $location
-    }
     Write-Host "Begining the ARM deployment..." -ForegroundColor Yellow
     az group deployment create -g $resourceGroup --template-file $script
 }
