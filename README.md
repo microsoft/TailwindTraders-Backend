@@ -455,7 +455,7 @@ To deploy the needed images on the Azure Storage account just run the `/Deploy/D
 - `-resourceGroup <name>`: Resource group where storage is created
 - `-storageName <name>`: Name of the storage account
 
-Script will create blob containers and copy the images (located in `/Deploy/tt-images` folder) to the storage account.
+Script will create blob containers and copy the images (located in `/Deploy/tailwindtraders-images` folder) to the storage account.
 
 ---
 
