@@ -3,7 +3,7 @@ Param (
     [parameter(Mandatory=$false)][string]$outputFile=$null,
     [parameter(Mandatory=$false)][string]$rewardsResourceGroup="",
     [parameter(Mandatory=$false)][string]$rewardsDbPassword="",
-    [parameter(Mandatory=$false)][string]$gvaluesTemplate=".\\helm\\gvalues.template"
+    [parameter(Mandatory=$false)][string]$gvaluesTemplate="..\\helm\\gvalues.template"
 )
 
 function EnsureAndReturnFistItem($arr, $restype) {
@@ -94,4 +94,6 @@ Write-Host ($tokens | ConvertTo-Json) -ForegroundColor Yellow
 
 Write-Host "===========================================================" -ForegroundColor Yellow
 
-& .\token-replace.ps1 -inputFile $gvaluesTemplate -outputFile $outputFile -tokens $tokens
+Push-Location $($MyInvocation.InvocationName | Split-Path)
+& .\Token-Replace.ps1 -inputFile $gvaluesTemplate -outputFile $outputFile -tokens $tokens
+Pop-Location

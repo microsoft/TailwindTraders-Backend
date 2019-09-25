@@ -37,7 +37,7 @@ Tailwind Traders supports two deployment scenarios:
 
 You can deploy all basics scenarios using one script under `/Deploy` folder.
 
-- **Linux scenario**
+- **Deploy Tailwind Traders Backend on Azure AKS and Azure resources (CosmosDb and Storage accounts)**
 
   Running the following command you can deploy starting with the infrastructure and ending with deploying the images on the storage:
 
@@ -53,7 +53,7 @@ You can deploy all basics scenarios using one script under `/Deploy` folder.
 
 The process will take few minutes.
 
-- **Windows Linux scenario**
+- **Deploy Tailwind Traders Backend on Windows and Linux containers in AKS**
 
   Running the following command you can deploy starting with the infrastructure and ending with deploying the images on the storage. This command requires more parameters than **Linux scenario** because we need to build and deploy a WCF service.
 
@@ -81,7 +81,7 @@ To run Tailwind Traders you need to create the Azure infrastructure. There are t
 
 An ARM script is provided so you can automate the creation of the resources required for the backend services just clicking following button:
 
-<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FMicrosoft%2FTailwindTraders-Backend%2Fmaster%2FDeploy%2Fdeployment.json"><img src="Documents/Images/deploy-to-azure.png" alt="Deploy to Azure"/></a>
+<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FMicrosoft%2FTailwindTraders-Backend%2Fmaster%2FDeploy%2Farm%2Fdeployment.json"><img src="Documents/Images/deploy-to-azure.png" alt="Deploy to Azure"/></a>
 
 Azure portal will ask you for the following parameters:
 
@@ -95,7 +95,7 @@ The deployment could take more than 10 minutes, and once finished all needed res
 
 ### <a name="create-infrastructure-cli"></a>Step 1 - Option 2: Create the resources using the CLI
 
-You can use the CLI to deploy the ARM script. Open a Powershell window from the `/Deploy` folder and run the `Deploy-Arm-Azure.ps1` with following parameters:
+You can use the CLI to deploy the ARM script. Open a Powershell window from the `/Deploy/powershell` folder and run the `Deploy-Arm-Azure.ps1` with following parameters:
 
 - `-resourceGroup`: Name of the resource group
 - `-location`: Location of the resource group
@@ -145,7 +145,7 @@ At this point if you type `kubectl config current-context` the name of your AKS 
 
 Helm is a tool to deploy resources in a Kubernetes cluster in a clean and simple manner. It is composed of two tools, one client-side (the Helm client) that needs to be installed on your machine, and a server component called _Tiller_ that has to be installed on the Kubernetes cluster.
 
-To install Helm, refer to its [installation page](https://docs.helm.sh/using_helm/#installing-helm). Once Helm is installed, _Tiller_ must be deployed on the cluster. For deploying _Tiller_ run the `add-tiller.sh` (from Bash) or the `Add-Tiller.ps1` (from Powershell).
+To install Helm, refer to its [installation page](https://docs.helm.sh/using_helm/#installing-helm). Once Helm is installed, _Tiller_ must be deployed on the cluster. For deploying _Tiller_ run the `add-tiller.sh` (from Bash) or the `./Add-Tiller.ps1` (from Powershell).
 
 Once installed, helm commands like `helm ls` should work without any error.
 
@@ -181,10 +181,10 @@ Generating a valid _gvalues_ file can be a bit harder, so there is a Powershell 
 
 > **Note** The Generate-Config.ps1 uses the _application-insights_ CLI extension to find the application insights id. Install it with `az extension add --name application-insights`
 
-To auto-generate your _gvalues_ file just go to `/Deploy` folder and from a Powershell window, type the following:
+To auto-generate your _gvalues_ file just go to `/Deploy/powershell` folder and from a Powershell window, type the following:
 
 ```
-.\Generate-Config.ps1 -resourceGroup <your-resource-group> -outputFile helm\__values\<name-of-your-file>
+.\Generate-Config.ps1 -resourceGroup <your-resource-group> -outputFile ..\helm\__values\<name-of-your-file>
 ```
 
 The parameters that `Generate-Config.ps1` accepts are:
@@ -250,7 +250,7 @@ Additionaly there is a Powershell script in the `Deploy` folder, named `Build-Pu
 
 This script uses `az` CLI to get ACR information, and then uses `docker-compose` to build and push the images to ACR.
 
-To build and push images tagged with v1 to a ACR named my-acr in resource group named my-rg:
+To build and push images tagged with v1 to a ACR named my-acr in resource group named my-rg, execute the following command inside /Deploy/powershell
 
 ```
 .\Build-Push.ps1 -resourceGroup my-rg -dockerTag v1 -acrName my-acr
@@ -455,7 +455,7 @@ To deploy the needed images on the Azure Storage account just run the `/Deploy/D
 - `-resourceGroup <name>`: Resource group where storage is created
 - `-storageName <name>`: Name of the storage account
 
-Script will create blob containers and copy the images (located in `/Deploy/tt-images` folder) to the storage account.
+Script will create blob containers and copy the images (located in `/Deploy/tailwindtraders-images` folder) to the storage account.
 
 ---
 
@@ -471,7 +471,7 @@ We have added an ARM template so you can automate the creation of the resources 
 
 Click the following button to deploy:
 
-<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FMicrosoft%2FTailwindTraders-Backend%2Fmaster%2FDeploy%2Fdeployment-dual-nodes.json"><img src="./Documents/Images/deploy-to-azure.png" alt="Deploy to Azure"/></a>
+<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FMicrosoft%2FTailwindTraders-Backend%2Fmaster%2FDeploy%2Farm%2Fdeployment-dual-nodes.json"><img src="./Documents/Images/deploy-to-azure.png" alt="Deploy to Azure"/></a>
 
 For mixed (Windows and Linux containers) scenario we need to deploy [Tailwind Traders Rewards](https://github.com/Microsoft/TailwindTraders-Rewards). The data base deployed in Tailwind Traders Rewards is used by a WCF service of this project.
 

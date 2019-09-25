@@ -7,7 +7,9 @@ Param(
     [parameter(Mandatory=$false)][bool]$isWindowsMachine=$false
 )
 
-$sourceFolder=$(Join-Path -Path .. -ChildPath Source)
+Push-Location $($MyInvocation.InvocationName | Split-Path)
+$sourceFolder=$(Join-Path -Path ..\.. -ChildPath Source)
+Write-Host "---------------------------------------------------" -ForegroundColor Yellow
 
 Write-Host "---------------------------------------------------" -ForegroundColor Yellow
 Write-Host "Getting info from ACR $resourceGroup/$acrName" -ForegroundColor Yellow
@@ -17,6 +19,7 @@ $acrCredentials=$(az acr credential show -g $resourceGroup -n $acrName -o json |
 $acrPwd=$acrCredentials.passwords[0].value
 $acrUser=$acrCredentials.username
 $dockerComposeFile= If ($isWindowsMachine) {"docker-compose-win.yml"} Else {"docker-compose.yml"}
+
 
 if ($dockerBuild) {
     Write-Host "---------------------------------------------------" -ForegroundColor Yellow
@@ -43,3 +46,5 @@ if ($dockerPush) {
     docker-compose -f $dockerComposeFile push
     Pop-Location
 }
+
+Pop-Location
