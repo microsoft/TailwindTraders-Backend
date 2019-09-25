@@ -8,6 +8,12 @@
     "servicePrincipalSecret": {
       "type": "securestring"
     },
+    "sqlServerAdministratorLogin": {
+      "type": "string"
+    },
+    "sqlServerAdministratorLoginPassword": {
+      "type": "securestring"
+    },
     "aksVersion": {
       "type": "string"
     },
