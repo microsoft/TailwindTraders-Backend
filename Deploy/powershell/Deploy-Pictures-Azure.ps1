@@ -22,10 +22,10 @@ Write-Host "Copying images..." -ForegroundColor Green
 
 $accountName=$storage.name
 Write-Host "location---->$(Get-Location)"
-az storage blob upload-batch --destination "$url" --destination coupon-list  --source .\tt-images\coupon-list --account-name $accountName
-az storage blob upload-batch --destination "$url" --destination product-detail --source .\tt-images\product-detail --account-name  $accountName
-az storage blob upload-batch --destination "$url" --destination product-list --source .\tt-images\product-list --account-name $accountName
-az storage blob upload-batch --destination "$url" --destination profiles-list --source .\tt-images\profiles-list --account-name $accountName
+az storage blob upload-batch --destination "$url" --destination coupon-list  --source .\tailwindtraders-images\coupon-list --account-name $accountName
+az storage blob upload-batch --destination "$url" --destination product-detail --source .\tailwindtraders-images\product-detail --account-name  $accountName
+az storage blob upload-batch --destination "$url" --destination product-list --source .\tailwindtraders-images\product-list --account-name $accountName
+az storage blob upload-batch --destination "$url" --destination profiles-list --source .\tailwindtraders-images\profiles-list --account-name $accountName
 
 
 
