@@ -52,14 +52,14 @@ if ($acrCredentials) {
     Write-Host "Creating ACR auth based secret..." -ForegroundColor Yellow
     $acrPwd=$acrCredentials.passwords[0].value
     $acrUser=$acrCredentials.username
-    kubectl delete secret acr-auth
-    kubectl create secret docker-registry acr-auth --docker-server $acrLogin --docker-username $acrUser --docker-password $acrPwd --docker-email not@used.com
+    kubectl delete secret acr-auth --namespace $namespace
+    kubectl create secret docker-registry acr-auth --docker-server $acrLogin --docker-username $acrUser --docker-password $acrPwd --docker-email not@used.com --namespace $namespace
 }
 elseif (-not [string]::IsNullOrEmpty($clientId)) {
     Write-Host "Creating Service Principal based auth..." -ForegroundColor Yellow
     az role assignment create --assignee $clientId --scope $acrId --role reader
-    kubectl delete secret acr-auth
-    kubectl create secret docker-registry acr-auth --docker-server $acrLogin --docker-username $clientId --docker-password $password --docker-email not@used.com
+    kubectl delete secret acr-auth --namespace $namespace
+    kubectl create secret docker-registry acr-auth --docker-server $acrLogin --docker-username $clientId --docker-password $password --docker-email not@used.com --namespace $namespace
 }
 else {
     Write-Host "Couldn't create Service Principal to access ACR." -ForegroundColor Red
@@ -69,5 +69,5 @@ else {
 Write-Host "Deploying ServiceAccount ttsa" -ForegroundColor Yellow
 
 Push-Location $($MyInvocation.InvocationName | Split-Path)
-kubectl apply -f ../helm/ttsa.yaml
+kubectl apply -f ../helm/ttsa.yaml -n $namespace
 Pop-Location

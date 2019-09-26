@@ -1,4 +1,0 @@
-env:
-  values:
-    - name: DISABLE_SSL
-      value: "true"  

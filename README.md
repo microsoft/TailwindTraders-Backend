@@ -189,7 +189,7 @@ To auto-generate your _gvalues_ file just go to `/Deploy/powershell` folder and 
 
 The parameters that `Generate-Config.ps1` accepts are:
 
-- `-resourceGroup`: Resource group where all Azure resources are. **Mandatory**.
+- `-resourceGroup`: Resource group where all Azure resources are. **Required**.
 - `-outputFile`: Full path of the output file to generate. A good idea is to generate a file in `/Deploy/helm/__values/` folder as this folder is ignored by Git. If not passed the result file is written on screen.
 - `-gvaluesTemplate`: Template of the _gvalues_ file to use. The parameter defaults to the `/Deploy/helm/gvalues.template` which is the only template provided.
 
@@ -198,7 +198,7 @@ The script checks that all needed resources exists in the resource group. If som
 If you come from the [Windows and Linux containers in AKS](#deploy-win-linux-containers) scenario and you want to use the rewards registration service you have to pass also the following parameters:
 
 - `-rewardsResourceGroup`: Fill it if you are going to use Rewards DB (this is used, for example in the [Windows and Linux containers in AKS](#deploy-win-linux-containers) scenarios).
-- `-rewardsDbPassword`: The database password for the administrator user. Mandatory if a rewardsResourceGroup is provided.
+- `-rewardsDbPassword`: The database password for the administrator user. Required if a rewardsResourceGroup is provided.
 
 Otherwise the script will disable the rewards registration service.
 
@@ -241,8 +241,8 @@ Once set, you can use `docker-compose build` and `docker-compose push` to build 
 
 Additionaly there is a Powershell script in the `Deploy` folder, named `Build-Push.ps1`. You can use this script for building and pushing ALL images to ACR. Parameters of this script are:
 
-- `resourceGroup`: Resource group where ACR is. Mandatory.
-- `acrName`: ACR name (not login server). Mandatory.
+- `resourceGroup`: Resource group where ACR is. **Required**.
+- `acrName`: ACR name (not login server). **Required**.
 - `dockerTag`: Tag to use for generated images (defaults to `latest`)
 - `dockerBuild`: If `$true` (default value) docker images will be built using `docker-compose build`.
 - `dockerPush`: If `$true` (default value) docker images will be push to ACR using `docker-compose push`.
@@ -562,13 +562,17 @@ Then the devspace is created. You can check that the devspace is created by typi
 *  dev      True
 ```
 
-### Deploying the serviceaccount in the namespace
+### Deploying the serviceaccount and secrets in the namespace
 
-All pods created by Helm charts run under the `ttsa` service account. You **must deploy the service account before deploying any DevSpaces workload**. Just apply the file `/Deploy/helm/ttsa.yaml` on the Devspace namespace (i. e. `dev`):
+Run Create-Secret.ps1 inside /Deploy/powershell it will create ttsa and ACR secret related to your **namespace**.
 
-```
-kubectl apply -f <path/to/deploy/helm/ttsa.yaml> -n dev
-```
+- `-resourceGroup`: Name of the resource group **Required for this demo**.
+- `-acrName`: Name of your Azure Container Registry **Required for this demo**.
+- `-clientId`: Service Principal Id.
+- `-password`: Service Principal Password.
+- `-namespace`: Name of your namespace defined above, default is empty. **Required for this demo for example `dev`**.
+
+It will create pods needed to deploy images, ttsa and acr-secrets pods inside selected namespace.
 
 ### Deploying to the parent Devspace using CLI
 
@@ -576,10 +580,16 @@ Like deploying without devspaces you need a configuration file (a _gvalues.yml_ 
 
 > **Note**: File `/Deploy/helm/gvalues.azds.yaml` is in the `.gitignore`, so it is ignored by Git.
 
-You should have to copy your configuration file to the `/Deploy/helm` and rename to `gvalues.azds.yaml`. The powershell script `/Source/prepare-devspaces.ps1` can do it for you:
+You should have to copy your configuration file to the `/Deploy/helm` and rename to `gvalues.azds.yaml`. The powershell script `/Deploy/demos/devspaces/Prepare-Devspaces.ps1` can do it for you:
 
 ```
-.\prepare-devspaces.ps1 -file \Path\To\My\Config\File.yml
+.\Prepare-Devspaces.ps1 -file \Path\To\My\Config\File.yaml
+```
+
+Example (inside devspaces folder run):
+
+```
+.\prepare-devspaces.ps1 -file ..\..\helm\__values\configFile.yaml
 ```
 
 The script just copies the file passed in to the `/Deploy/helm` folder with the right name. If file already exists is overwritted.

@@ -1,4 +1,4 @@
-FROM microsoft/dotnet:2.2-sdk
+FROM mcr.microsoft.com/dotnet/core/sdk:3.0
 ARG BUILD_CONFIGURATION=Debug
 ENV ASPNETCORE_ENVIRONMENT=Development
 ENV DOTNET_USE_POLLING_FILE_WATCHER=true
@@ -8,7 +8,7 @@ WORKDIR /src
 COPY ["Directory.Build.props", "."]
 COPY ["build/", "./build"]
 COPY ["ApiGWs/Tailwind.Traders.WebBff/Tailwind.Traders.WebBff.csproj", "ApiGWs/Tailwind.Traders.WebBff/"]
-RUN dotnet restore ApiGWs/Tailwind.Traders.WebBff/Tailwind.Traders.WebBff.csproj -nowarn:msb3202,nu1503
+RUN dotnet restore ApiGWs/Tailwind.Traders.WebBff/Tailwind.Traders.WebBff.csproj 
 COPY . .
 WORKDIR "/src/ApiGWs/Tailwind.Traders.WebBff/"
 RUN dotnet build  --no-restore -c $BUILD_CONFIGURATION

@@ -102,6 +102,7 @@ else {
     $aksHost=$tlsHost
 }
 
+validate
 Push-Location $($MyInvocation.InvocationName | Split-Path)
 Push-Location ..\helm
 
