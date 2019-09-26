@@ -217,7 +217,7 @@ To do so from a Bash terminal run the file `./create-secret.sh` with following p
 
 Please, note that the Service principal must already exist. To create a service principal you can run the command `az ad sp create-for-rbac`.
 
-If using Powershell run the `./Create-Secret.ps1` with following parameters:
+If using Powershell run the `./Create-Secret.ps1` inside `powershell` folder with following parameters:
 
 - `-resourceGroup <group>` Resource group where AKS is
 - `-acrName <name>` Name of the ACR
@@ -562,7 +562,7 @@ Then the devspace is created. You can check that the devspace is created by typi
 *  dev      True
 ```
 
-### Deploying the serviceaccount and secrets in the namespace
+### Deploying the service account and secrets in the namespace
 
 Run Create-Secret.ps1 inside /Deploy/powershell it will create ttsa and ACR secret related to your **namespace**.
 
