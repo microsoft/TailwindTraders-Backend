@@ -37,7 +37,7 @@ Tailwind Traders supports two deployment scenarios:
 
 You can deploy all basics scenarios using one script under `/Deploy` folder.
 
-- **Linux scenario**
+- **Deploy Tailwind Traders Backend on Azure AKS and Azure resources (CosmosDb and Storage accounts)**
 
   Running the following command you can deploy starting with the infrastructure and ending with deploying the images on the storage:
 
@@ -53,7 +53,7 @@ You can deploy all basics scenarios using one script under `/Deploy` folder.
 
 The process will take few minutes.
 
-- **Windows Linux scenario**
+- **Deploy Tailwind Traders Backend on Windows and Linux containers in AKS**
 
   Running the following command you can deploy starting with the infrastructure and ending with deploying the images on the storage. This command requires more parameters than **Linux scenario** because we need to build and deploy a WCF service.
 
@@ -81,7 +81,7 @@ To run Tailwind Traders you need to create the Azure infrastructure. There are t
 
 An ARM script is provided so you can automate the creation of the resources required for the backend services just clicking following button:
 
-<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FMicrosoft%2FTailwindTraders-Backend%2Fmaster%2FDeploy%2Fdeployment.json"><img src="Documents/Images/deploy-to-azure.png" alt="Deploy to Azure"/></a>
+<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FMicrosoft%2FTailwindTraders-Backend%2Fmaster%2FDeploy%2Farm%2Fdeployment.json"><img src="Documents/Images/deploy-to-azure.png" alt="Deploy to Azure"/></a>
 
 Azure portal will ask you for the following parameters:
 
@@ -95,7 +95,7 @@ The deployment could take more than 10 minutes, and once finished all needed res
 
 ### <a name="create-infrastructure-cli"></a>Step 1 - Option 2: Create the resources using the CLI
 
-You can use the CLI to deploy the ARM script. Open a Powershell window from the `/Deploy` folder and run the `Deploy-Arm-Azure.ps1` with following parameters:
+You can use the CLI to deploy the ARM script. Open a Powershell window from the `/Deploy/powershell` folder and run the `Deploy-Arm-Azure.ps1` with following parameters:
 
 - `-resourceGroup`: Name of the resource group
 - `-location`: Location of the resource group
@@ -145,7 +145,7 @@ At this point if you type `kubectl config current-context` the name of your AKS 
 
 Helm is a tool to deploy resources in a Kubernetes cluster in a clean and simple manner. It is composed of two tools, one client-side (the Helm client) that needs to be installed on your machine, and a server component called _Tiller_ that has to be installed on the Kubernetes cluster.
 
-To install Helm, refer to its [installation page](https://docs.helm.sh/using_helm/#installing-helm). Once Helm is installed, _Tiller_ must be deployed on the cluster. For deploying _Tiller_ run the `add-tiller.sh` (from Bash) or the `Add-Tiller.ps1` (from Powershell).
+To install Helm, refer to its [installation page](https://docs.helm.sh/using_helm/#installing-helm). Once Helm is installed, _Tiller_ must be deployed on the cluster. For deploying _Tiller_ run the `add-tiller.sh` (from Bash) or the `./Add-Tiller.ps1` (from Powershell).
 
 Once installed, helm commands like `helm ls` should work without any error.
 
@@ -181,15 +181,15 @@ Generating a valid _gvalues_ file can be a bit harder, so there is a Powershell 
 
 > **Note** The Generate-Config.ps1 uses the _application-insights_ CLI extension to find the application insights id. Install it with `az extension add --name application-insights`
 
-To auto-generate your _gvalues_ file just go to `/Deploy` folder and from a Powershell window, type the following:
+To auto-generate your _gvalues_ file just go to `/Deploy/powershell` folder and from a Powershell window, type the following:
 
 ```
-.\Generate-Config.ps1 -resourceGroup <your-resource-group> -outputFile helm\__values\<name-of-your-file>
+.\Generate-Config.ps1 -resourceGroup <your-resource-group> -outputFile ..\helm\__values\<name-of-your-file>
 ```
 
 The parameters that `Generate-Config.ps1` accepts are:
 
-- `-resourceGroup`: Resource group where all Azure resources are. **Mandatory**.
+- `-resourceGroup`: Resource group where all Azure resources are. **Required**.
 - `-outputFile`: Full path of the output file to generate. A good idea is to generate a file in `/Deploy/helm/__values/` folder as this folder is ignored by Git. If not passed the result file is written on screen.
 - `-gvaluesTemplate`: Template of the _gvalues_ file to use. The parameter defaults to the `/Deploy/helm/gvalues.template` which is the only template provided.
 
@@ -198,7 +198,7 @@ The script checks that all needed resources exists in the resource group. If som
 If you come from the [Windows and Linux containers in AKS](#deploy-win-linux-containers) scenario and you want to use the rewards registration service you have to pass also the following parameters:
 
 - `-rewardsResourceGroup`: Fill it if you are going to use Rewards DB (this is used, for example in the [Windows and Linux containers in AKS](#deploy-win-linux-containers) scenarios).
-- `-rewardsDbPassword`: The database password for the administrator user. Mandatory if a rewardsResourceGroup is provided.
+- `-rewardsDbPassword`: The database password for the administrator user. Required if a rewardsResourceGroup is provided.
 
 Otherwise the script will disable the rewards registration service.
 
@@ -217,7 +217,7 @@ To do so from a Bash terminal run the file `./create-secret.sh` with following p
 
 Please, note that the Service principal must already exist. To create a service principal you can run the command `az ad sp create-for-rbac`.
 
-If using Powershell run the `./Create-Secret.ps1` with following parameters:
+If using Powershell run the `./Create-Secret.ps1` inside `powershell` folder with following parameters:
 
 - `-resourceGroup <group>` Resource group where AKS is
 - `-acrName <name>` Name of the ACR
@@ -241,8 +241,8 @@ Once set, you can use `docker-compose build` and `docker-compose push` to build 
 
 Additionaly there is a Powershell script in the `Deploy` folder, named `Build-Push.ps1`. You can use this script for building and pushing ALL images to ACR. Parameters of this script are:
 
-- `resourceGroup`: Resource group where ACR is. Mandatory.
-- `acrName`: ACR name (not login server). Mandatory.
+- `resourceGroup`: Resource group where ACR is. **Required**.
+- `acrName`: ACR name (not login server). **Required**.
 - `dockerTag`: Tag to use for generated images (defaults to `latest`)
 - `dockerBuild`: If `$true` (default value) docker images will be built using `docker-compose build`.
 - `dockerPush`: If `$true` (default value) docker images will be push to ACR using `docker-compose push`.
@@ -250,7 +250,7 @@ Additionaly there is a Powershell script in the `Deploy` folder, named `Build-Pu
 
 This script uses `az` CLI to get ACR information, and then uses `docker-compose` to build and push the images to ACR.
 
-To build and push images tagged with v1 to a ACR named my-acr in resource group named my-rg:
+To build and push images tagged with v1 to a ACR named my-acr in resource group named my-rg, execute the following command inside /Deploy/powershell
 
 ```
 .\Build-Push.ps1 -resourceGroup my-rg -dockerTag v1 -acrName my-acr
@@ -455,7 +455,7 @@ To deploy the needed images on the Azure Storage account just run the `/Deploy/D
 - `-resourceGroup <name>`: Resource group where storage is created
 - `-storageName <name>`: Name of the storage account
 
-Script will create blob containers and copy the images (located in `/Deploy/tt-images` folder) to the storage account.
+Script will create blob containers and copy the images (located in `/Deploy/tailwindtraders-images` folder) to the storage account.
 
 ---
 
@@ -471,7 +471,7 @@ We have added an ARM template so you can automate the creation of the resources 
 
 Click the following button to deploy:
 
-<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FMicrosoft%2FTailwindTraders-Backend%2Fmaster%2FDeploy%2Fdeployment-dual-nodes.json"><img src="./Documents/Images/deploy-to-azure.png" alt="Deploy to Azure"/></a>
+<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FMicrosoft%2FTailwindTraders-Backend%2Fmaster%2FDeploy%2Farm%2Fdeployment-dual-nodes.json"><img src="./Documents/Images/deploy-to-azure.png" alt="Deploy to Azure"/></a>
 
 For mixed (Windows and Linux containers) scenario we need to deploy [Tailwind Traders Rewards](https://github.com/Microsoft/TailwindTraders-Rewards). The data base deployed in Tailwind Traders Rewards is used by a WCF service of this project.
 
@@ -562,13 +562,17 @@ Then the devspace is created. You can check that the devspace is created by typi
 *  dev      True
 ```
 
-### Deploying the serviceaccount in the namespace
+### Deploying the service account and secrets in the namespace
 
-All pods created by Helm charts run under the `ttsa` service account. You **must deploy the service account before deploying any DevSpaces workload**. Just apply the file `/Deploy/helm/ttsa.yaml` on the Devspace namespace (i. e. `dev`):
+Run Create-Secret.ps1 inside /Deploy/powershell it will create ttsa and ACR secret related to your **namespace**.
 
-```
-kubectl apply -f <path/to/deploy/helm/ttsa.yaml> -n dev
-```
+- `-resourceGroup`: Name of the resource group **Required for this demo**.
+- `-acrName`: Name of your Azure Container Registry **Required for this demo**.
+- `-clientId`: Service Principal Id.
+- `-password`: Service Principal Password.
+- `-namespace`: Name of your namespace defined above, default is empty. **Required for this demo for example `dev`**.
+
+It will create pods needed to deploy images, ttsa and acr-secrets pods inside selected namespace.
 
 ### Deploying to the parent Devspace using CLI
 
@@ -576,10 +580,16 @@ Like deploying without devspaces you need a configuration file (a _gvalues.yml_ 
 
 > **Note**: File `/Deploy/helm/gvalues.azds.yaml` is in the `.gitignore`, so it is ignored by Git.
 
-You should have to copy your configuration file to the `/Deploy/helm` and rename to `gvalues.azds.yaml`. The powershell script `/Source/prepare-devspaces.ps1` can do it for you:
+You should have to copy your configuration file to the `/Deploy/helm` and rename to `gvalues.azds.yaml`. The powershell script `/Deploy/demos/devspaces/Prepare-Devspaces.ps1` can do it for you:
 
 ```
-.\prepare-devspaces.ps1 -file \Path\To\My\Config\File.yml
+.\Prepare-Devspaces.ps1 -file \Path\To\My\Config\File.yaml
+```
+
+Example (inside devspaces folder run):
+
+```
+.\prepare-devspaces.ps1 -file ..\..\helm\__values\configFile.yaml
 ```
 
 The script just copies the file passed in to the `/Deploy/helm` folder with the right name. If file already exists is overwritted.

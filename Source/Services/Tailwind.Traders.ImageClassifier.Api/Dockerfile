@@ -1,5 +1,5 @@
-ARG sdkTag=3.0-buster
-ARG runtimeTag=3.0.0-rc1-buster-slim
+ARG sdkTag=3.0
+ARG runtimeTag=3.0
 ARG image=mcr.microsoft.com/dotnet/core/aspnet
 ARG sdkImage=mcr.microsoft.com/dotnet/core/sdk
 

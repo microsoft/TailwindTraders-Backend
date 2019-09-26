@@ -4,5 +4,5 @@ Param(
 
 
 Write-Host "Copying $file to /Deploy/helm/gvalues.azds.yaml"
-Copy-Item "$file" -Destination "..\Deploy\helm\gvalues.azds.yaml" -Force
+Copy-Item "$file" -Destination "..\..\helm\gvalues.azds.yaml" -Force
 

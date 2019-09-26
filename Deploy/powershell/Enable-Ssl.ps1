@@ -71,7 +71,7 @@ if ([String]::IsNullOrEmpty($domain)) {
 
 Write-Host "TLS/SSL will be bound to domain $domain"
 
-Push-Location helm
+Push-Location ..\helm
 
 if ($sslSupport -eq "staging") {
     Write-Host "Adding TLS/SSL support using Let's Encrypt Staging environment" -ForegroundColor Yellow
