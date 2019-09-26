@@ -562,13 +562,17 @@ Then the devspace is created. You can check that the devspace is created by typi
 *  dev      True
 ```
 
-### Deploying the serviceaccount in the namespace
+### Deploying the serviceaccount and secrets in the namespace
 
-All pods created by Helm charts run under the `ttsa` service account. You **must deploy the service account before deploying any DevSpaces workload**. Just apply the file `/Deploy/helm/ttsa.yaml` on the Devspace namespace (i. e. `dev`):
+Run Create-Secret.ps1 inside /Deploy/demos/devspaces it will create ttsa and ACR secret related to your namespace.
 
-```
-kubectl apply -f <path/to/deploy/helm/ttsa.yaml> -n dev
-```
+- `-resourceGroup`: Name of the resource group **Mandatory**.
+- `-acrName`: Name of your Azure Container Registry **Mandatory**.
+- `-clientId`: Service Principal Id.
+- `-password`: Service Principal Password.
+- `-namespace`: Name of your namespace defined above, default is `dev`.
+
+It will create pods needed to deploy images, ttsa and acr-secrets pods inside selected namespace.
 
 ### Deploying to the parent Devspace using CLI
 
@@ -576,10 +580,16 @@ Like deploying without devspaces you need a configuration file (a _gvalues.yml_ 
 
 > **Note**: File `/Deploy/helm/gvalues.azds.yaml` is in the `.gitignore`, so it is ignored by Git.
 
-You should have to copy your configuration file to the `/Deploy/helm` and rename to `gvalues.azds.yaml`. The powershell script `/Source/prepare-devspaces.ps1` can do it for you:
+You should have to copy your configuration file to the `/Deploy/helm` and rename to `gvalues.azds.yaml`. The powershell script `/Deploy/demos/devspaces/Prepare-Devspaces.ps1` can do it for you:
 
 ```
-.\prepare-devspaces.ps1 -file \Path\To\My\Config\File.yml
+.\Prepare-Devspaces.ps1 -file \Path\To\My\Config\File.yaml
+```
+
+Example (inside devspaces folder run):
+
+```
+.\prepare-devspaces.ps1 -file ..\..\helm\__values\configFile.yaml
 ```
 
 The script just copies the file passed in to the `/Deploy/helm` folder with the right name. If file already exists is overwritted.
