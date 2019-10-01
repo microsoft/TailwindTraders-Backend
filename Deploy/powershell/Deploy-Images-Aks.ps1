@@ -6,7 +6,6 @@ Param(
     [parameter(Mandatory=$false)][string]$tag="latest",
     [parameter(Mandatory=$false)][string]$charts = "*",
     [parameter(Mandatory=$false)][string]$valuesFile = "",
-    [parameter(Mandatory=$false)][string]$afHost = "http://your-product-visits-af-here",
     [parameter(Mandatory=$false)][string]$namespace = "",
     [parameter(Mandatory=$false)][string][ValidateSet('prod','staging','none','custom', IgnoreCase=$false)]$tlsEnv = "none",
     [parameter(Mandatory=$false)][string]$tlsHost="",
@@ -116,7 +115,7 @@ Write-Host "Configuration file used is $valuesFile" -ForegroundColor Yellow
 
 if ($charts.Contains("pr") -or  $charts.Contains("*")) {
     Write-Host "Products chart - pr" -ForegroundColor Yellow
-    $command = "helm upgrade --install $name-product products-api -f $valuesFile --set az.productvisitsurl=$afHost --set ingress.hosts={$aksHost} --set image.repository=$acrLogin/product.api --set image.tag=$tag --set hpa.activated=$autoscale"
+    $command = "helm upgrade --install $name-product products-api -f $valuesFile --set ingress.hosts={$aksHost} --set image.repository=$acrLogin/product.api --set image.tag=$tag --set hpa.activated=$autoscale"
     $command = createHelmCommand $command 
     cmd /c "$command"
 }

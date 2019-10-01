@@ -23,15 +23,13 @@ namespace Tailwind.Traders.Product.Api.Controllers
         private readonly ProductContext _productContext;
         private readonly ILogger<ProductController> _logger;
         private readonly MapperDtos _mapperDtos;
-        private readonly IHttpClientFactory _httpClientFactory;
         private readonly AppSettings _settings;
 
-        public ProductController(ProductContext productContext, ILogger<ProductController> logger, MapperDtos mapperDtos, IHttpClientFactory httpClientFactory, IOptions<AppSettings> options)
+        public ProductController(ProductContext productContext, ILogger<ProductController> logger, MapperDtos mapperDtos, IOptions<AppSettings> options)
         {
             _productContext = productContext;
             _logger = logger;
             _mapperDtos = mapperDtos;
-            _httpClientFactory = httpClientFactory;
             _settings = options.Value;
         }
 
@@ -80,30 +78,6 @@ namespace Tailwind.Traders.Product.Api.Controllers
                 _logger.LogDebug($"Product with id '{productId}', not found");
 
                 return NotFound();
-            }
-
-            try
-            {
-                var data = new
-                {
-                    UserId = ((ClaimsIdentity)User.Identity).Claims.Single(claim => claim.Type == "emails").Value,
-                    Product = item
-                };
-                StringContent dataSerialized = new StringContent(JsonConvert.SerializeObject(data));
-
-                await _httpClientFactory.CreateClient().PostAsync(RoutePathExtensions.VisitsHttpTrigger(_settings.ProductVisitsUrl), dataSerialized)
-                .ContinueWith(task =>
-                {
-                    if (task.IsFaulted)
-                    {
-                        _logger.LogError("Can not send data to products visits");
-                    }
-                });
-            }
-            catch (Exception)
-            {
-                _logger.LogError($"Call to AF ProductsVisit failed!");
-
             }
 
             return Ok(_mapperDtos.MapperToProductDto(item, isDetail: true));
