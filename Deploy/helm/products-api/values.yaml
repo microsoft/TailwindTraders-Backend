@@ -30,7 +30,6 @@ env:
     - name: CosmosDb__Key
     - name: ProductImagesUrl
     - name: ProductDetailImagesUrl
-    - name: ProductVisitsUrl
     - name: ISSUER
     - name: SECURITYKEY
   values:

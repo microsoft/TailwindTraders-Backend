@@ -34,12 +34,7 @@ namespace Tailwind.Traders.Product.Api.Extensions
                 .AddTransient<ClassMap, ProductTypeMap>()
                 .AddTransient<ClassMap, ProductTagMap>()
                 .AddTransient<MapperDtos>()
-                .AddSingleton<IHttpContextAccessor, HttpContextAccessor>()
-                .AddHttpClient("productVisits", cc =>
-                {
-                    cc.BaseAddress = new Uri(configuration["ProductVisitsUrl"], UriKind.Absolute);
-                })
-                .SetHandlerLifetime(TimeSpan.FromMinutes(5));
+                .AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
             service.Configure<AppSettings>(configuration);
 

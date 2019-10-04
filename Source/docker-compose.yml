@@ -45,13 +45,6 @@ services:
       context: ./Services/Tailwind.Traders.Stock.Api/
       dockerfile: Dockerfile
 
-  product-visits.function:
-    image: ${REGISTRY:-tailwindtraders}/product-visits.function:${TAG:-latest}
-    container_name: product-visits-node
-    build:
-      context: ./Services/Tailwind.Traders.Visits.Function/
-      dockerfile: Dockerfile
-
   image-classifier.api:
     image: ${REGISTRY:-tailwindtraders}/image-classifier.api:${TAG:-latest}
     build:
@@ -76,5 +69,4 @@ services:
       - coupon.api
       - popular-product.api
       - stock.api
-      - product-visits.function
       - image-classifier.api

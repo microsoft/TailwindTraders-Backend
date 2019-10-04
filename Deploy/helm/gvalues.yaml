@@ -77,8 +77,6 @@ inf:
   registrationusers:
     registerusers: false
     registrationusersurl: http://rewards-registration/UserService.svc
-az:
-  productvisitsurl: ""
 
 # Shared ingress configurations
 ingress:
