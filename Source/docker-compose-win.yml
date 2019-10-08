@@ -1,0 +1,10 @@
+version: '3.4'
+
+services:
+  rewards.registration.api:
+    image: ${REGISTRY:-tailwindtraders}/rewards.registration.api:${TAG:-latest}
+    build:
+      context: ./Services/Tailwind.Traders.Rewards.Registration.Api
+      dockerfile: Dockerfile    
+    ports:
+      - "80:808"

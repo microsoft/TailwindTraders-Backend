@@ -16,7 +16,8 @@ resources:
   requests:
     cpu: "100m"
 
-nodeSelector: {}
+nodeSelector:
+  "kubernetes.io/os": linux
 
 tolerations: []
 
@@ -24,6 +25,7 @@ affinity: {}
 
 env:
   configmap:
+    - name: ApplicationInsights__InstrumentationKey
     - name: ConnectionString
     - name: ProfilesImageUrl
     - name: SecurityKey
@@ -31,3 +33,10 @@ env:
   values:
     - name: ASPNETCORE_ENVIRONMENT
       value: Development
+
+probes:
+  liveness:
+    path: /liveness
+    initialDelaySeconds: 20
+    periodSeconds: 30
+    port: 80

@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -20,8 +19,6 @@ namespace Tailwind.Traders.MobileBff.Controllers
     [ApiVersion("1.0")]
     public class ProductsController : Controller
     {
-        private const string COGNITIVE_CONTAINER = "http://smart-cognitivecontainer/image";
-
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly AppSettings _settings;
         private readonly ILogger _logger;
@@ -126,29 +123,6 @@ namespace Tailwind.Traders.MobileBff.Controllers
             }
         }
 
-        private async Task<ClassificationResult> DoCognitiveClassifierAction(IFormFile file)
-        {
-            var client = _httpClientFactory.CreateClient(HttpClients.ApiGW);
-            var response = await client.PostAsync(COGNITIVE_CONTAINER, new StreamContent(file.OpenReadStream()));
-
-            if (response.IsSuccessStatusCode)
-            {
-                dynamic cognitiveResponse = await response.Content.ReadAsAsync<JObject>();
-                var prediction = cognitiveResponse.predictions[0];
-
-                var classifiedResult = new ClassificationResult()
-                {
-                    Probability = prediction.probability,
-                    Label = prediction.tagName
-                };
-
-                return classifiedResult;
-            }
-
-            return ClassificationResult.InvalidResult(response.StatusCode);
-
-        }
-
         // POST: v1/products/imageclassifier
         [HttpPost("imageclassifier")]
         [ProducesResponseType((int)HttpStatusCode.OK)]
@@ -160,16 +134,13 @@ namespace Tailwind.Traders.MobileBff.Controllers
                 _logger.LogInformation($"Beginning a ML.NET based classification");
                 result = await DoMlNetClassifierAction(file);
             }
-            else
-            {
-                _logger.LogInformation($"Beginning a Cognitive-service containerized Classification");
-                result = await DoCognitiveClassifierAction(file);
-            }
 
-            if (!result.IsOk)
+            if (result == null || !result.IsOk)
             {
-                _logger.LogInformation($"Classification failed due to HTTP CODE {result.Code}");
-                return StatusCode((int)result.Code, "Request to inner container returned HTTP " + result.Code);
+                var resultCode = (int)HttpStatusCode.NotImplemented;
+                if (result != null) resultCode = (int)result.Code;
+                _logger.LogInformation($"Classification failed due to HTTP CODE {resultCode}");
+                return StatusCode(resultCode, "Request to inner container returned HTTP " + resultCode);
             }
 
             _logger.LogInformation($"Classification ended up with tag {result.Label} with a prob (0-1) of {result.Probability}");

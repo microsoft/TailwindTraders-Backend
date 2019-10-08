@@ -16,7 +16,8 @@ resources:
   requests:
     cpu: "100m"
 
-nodeSelector: {}
+nodeSelector:
+  "kubernetes.io/os": linux
 
 tolerations: []
 
@@ -25,7 +26,8 @@ affinity: {}
 env:
   configmap:
     - name: ApplicationInsights__InstrumentationKey
-    - name: ConnectionString
+    - name: CosmosDb__Host
+    - name: CosmosDb__Key
     - name: ProfilesImageUrl
     - name: ISSUER
     - name: SECURITYKEY

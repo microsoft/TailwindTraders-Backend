@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using System;
 using System.Linq;
 using System.Net.Http;
@@ -11,7 +12,6 @@ using Tailwind.Traders.Product.Api.Dtos;
 using Tailwind.Traders.Product.Api.Extensions;
 using Tailwind.Traders.Product.Api.Infrastructure;
 using Tailwind.Traders.Product.Api.Mappers;
-using Tailwind.Traders.Product.Api.Models;
 
 namespace Tailwind.Traders.Product.Api.Controllers
 {
@@ -23,15 +23,13 @@ namespace Tailwind.Traders.Product.Api.Controllers
         private readonly ProductContext _productContext;
         private readonly ILogger<ProductController> _logger;
         private readonly MapperDtos _mapperDtos;
-        private readonly IHttpClientFactory _httpClientFactory;
         private readonly AppSettings _settings;
 
-        public ProductController(ProductContext productContext, ILogger<ProductController> logger, MapperDtos mapperDtos, IHttpClientFactory httpClientFactory, IOptions<AppSettings> options)
+        public ProductController(ProductContext productContext, ILogger<ProductController> logger, MapperDtos mapperDtos, IOptions<AppSettings> options)
         {
             _productContext = productContext;
             _logger = logger;
             _mapperDtos = mapperDtos;
-            _httpClientFactory = httpClientFactory;
             _settings = options.Value;
         }
 
@@ -40,17 +38,19 @@ namespace Tailwind.Traders.Product.Api.Controllers
         [ProducesResponseType(204)]
         public async Task<IActionResult> AllProductsAsync()
         {
-            var items = await _productContext.ProductItems
-                .Include(inc => inc.Brand)
-                .Include(inc => inc.Features)
-                .Include(inc => inc.Type)
+            var items = await _productContext.ProductItems.ToListAsync();
+
+            items
                 .OrderByDescending(inc => inc.Name.Contains("gnome"))
-                .ToListAsync();
+                .Join(
+                _productContext.ProductBrands,
+                _productContext.ProductTypes,
+                _productContext.ProductFeatures,
+                _productContext.Tags);
 
             if (!items.Any())
             {
                 _logger.LogDebug("Products empty");
-
                 return NoContent();
             }
 
@@ -63,38 +63,21 @@ namespace Tailwind.Traders.Product.Api.Controllers
         [ProducesResponseType(404)]
         public async Task<IActionResult> ProductByIdAsync(int productId)
         {
-            var item = await _productContext.ProductItems
-                .Include(inc => inc.Brand)
-                .Include(inc => inc.Features)
-                .Include(inc => inc.Type)
-                .FirstOrDefaultAsync(product => product.Id == productId);
+            var items = await _productContext.ProductItems.Where(p => p.Id == productId).ToListAsync();
 
-            if (item == default(ProductItem))
+            items.Join(
+                _productContext.ProductBrands,
+                _productContext.ProductTypes,
+                _productContext.ProductFeatures,
+                _productContext.Tags);
+
+            var item = items.FirstOrDefault();
+
+            if (item == null)
             {
                 _logger.LogDebug($"Product with id '{productId}', not found");
 
                 return NotFound();
-            }
-
-            try
-            {
-                await _httpClientFactory.CreateClient().PostAsJsonAsync(RoutePathExtensions.VisitsHttpTrigger(_settings.ProductVisitsUrl), new
-                {
-                    UserId = ((ClaimsIdentity)User.Identity).Claims.Single(claim => claim.Type == "emails").Value,
-                    Product = item
-                })
-                .ContinueWith(task =>
-                {
-                    if (task.IsFaulted)
-                    {
-                        _logger.LogError("Can not send data to products visits");
-                    }
-                });
-            }
-            catch (Exception)
-            {
-                _logger.LogError($"Call to AF ProductsVisit failed!");
-
             }
 
             return Ok(_mapperDtos.MapperToProductDto(item, isDetail: true));
@@ -105,16 +88,17 @@ namespace Tailwind.Traders.Product.Api.Controllers
         [ProducesResponseType(204)]
         public async Task<IActionResult> FindProductAsync([FromQuery] int[] brand, [FromQuery] int[] type)
         {
-            var query = _productContext.ProductItems
-                .Include(inc => inc.Brand)
-                .Include(inc => inc.Features)
-                .Include(inc => inc.Type)
+            var items = await _productContext.ProductItems
+                .Where(item => brand.Contains(item.BrandId) || type.Contains(item.TypeId))
+                .ToListAsync();
+
+            items
                 .OrderByDescending(inc => inc.Name.Contains("gnome"))
-                .AsQueryable();
-
-            var predicate = QueryFilterExtension.Or<ProductItem>(item => brand.Contains(item.Brand.Id), item => type.Contains(item.Type.Id));
-
-            var items = await query.Where(predicate).ToListAsync();
+                .Join(
+                _productContext.ProductBrands,
+                _productContext.ProductTypes,
+                _productContext.ProductFeatures,
+                _productContext.Tags);
 
             if (!items.Any())
             {
@@ -131,7 +115,6 @@ namespace Tailwind.Traders.Product.Api.Controllers
         [ProducesResponseType(204)]
         public async Task<IActionResult> FindProductsByTag(string tag)
         {
-
             var productTag = _productContext.Tags.SingleOrDefault(t => t.Value == tag);
 
             if (productTag == null)
@@ -140,15 +123,15 @@ namespace Tailwind.Traders.Product.Api.Controllers
                 return NoContent();
             }
 
-            var query = await _productContext.ProductItems
-                .Include(inc => inc.Brand)
-                .Include(inc => inc.Features)
-                .Include(inc => inc.Type)
-                .Where(p => p.Tag == productTag)
-                .Take(3)
-                .ToListAsync();
+            var items = await _productContext.ProductItems.Where(p => p.TagId == productTag.Id).Take(3).ToListAsync();
 
-            var data = query.Select(p => new ClassifiedProductDto()
+            items.Join(
+                _productContext.ProductBrands,
+                _productContext.ProductTypes,
+                _productContext.ProductFeatures,
+                _productContext.Tags);
+                
+            var data = items.Select(p => new ClassifiedProductDto()
             {
                 Id = p.Id,
                 ImageUrl = $"{_settings.ProductImagesUrl}/{p.ImageName}",
@@ -170,11 +153,15 @@ namespace Tailwind.Traders.Product.Api.Controllers
         [ProducesResponseType(204)]
         public async Task<IActionResult> RecommendedProductsAsync()
         {
-            var items = await _productContext.ProductItems
-                .Include(inc => inc.Brand)
-                .Include(inc => inc.Features)
-                .Include(inc => inc.Type)
-                .ToListAsync();
+            var items = await _productContext.ProductItems.ToListAsync();
+
+            items = items.OrderBy(product => new Random().Next()).Take(3).ToList();
+
+            items.Join(
+              _productContext.ProductBrands,
+              _productContext.ProductTypes,
+              _productContext.ProductFeatures,
+              _productContext.Tags);
 
             if (!items.Any())
             {
@@ -183,7 +170,7 @@ namespace Tailwind.Traders.Product.Api.Controllers
                 return NoContent();
             }
 
-            return Ok(_mapperDtos.MapperToProductDto(items).OrderBy(product => new Random().Next()).Take(3));
+            return Ok(_mapperDtos.MapperToProductDto(items));
         }
     }
 }

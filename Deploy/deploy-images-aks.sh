@@ -91,7 +91,7 @@ echo Deploying charts "$charts"
 if [[ "$charts" == *"pr"* ]]  || [[ "$charts" == "*" ]]
 then
     echo "Products chart - pr"
-    helm install --name $name-product -f $valuesFile --set az.productvisitsurl=$afHost --set ingress.hosts={$aksHost} --set image.repository=$acrLogin/product.api --set image.tag=$tag  products-api
+    helm install --name $name-product -f $valuesFile --set ingress.hosts={$aksHost} --set image.repository=$acrLogin/product.api --set image.tag=$tag  products-api
 fi
 
 if [[ "$charts" == *"cp"* ]]  || [[ "$charts" == "*" ]]

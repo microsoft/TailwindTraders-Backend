@@ -1,9 +1,12 @@
 ﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Tailwind.Traders.Login.Api.Extensions;
 using Tailwind.Traders.Login.Api.Services;
 
 namespace Tailwind.Traders.Login.Api
@@ -22,7 +25,16 @@ namespace Tailwind.Traders.Login.Api
         {
 
             // Services
-            services.AddSingleton<ITokenHandlerService, TokenHandlerService>();
+            services
+                .AddSingleton<ITokenHandlerService, TokenHandlerService>()
+                .AddHealthChecks(_configuration);
+
+            var appInsightsIK = _configuration["ApplicationInsights:InstrumentationKey"];
+
+            if (!string.IsNullOrEmpty(appInsightsIK))
+            {
+                services.AddApplicationInsightsTelemetry(appInsightsIK);
+            }
 
             services.AddApiVersioning(options =>
             {
@@ -31,11 +43,11 @@ namespace Tailwind.Traders.Login.Api
                 options.ApiVersionReader = new QueryStringApiVersionReader();
             });
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddControllers().SetCompatibilityVersion(CompatibilityVersion.Version_3_0).AddNewtonsoftJson();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
 
             if (env.IsDevelopment())
@@ -47,8 +59,24 @@ namespace Tailwind.Traders.Login.Api
                 app.UseHsts();
             }
 
+            app.UseCors(builder =>
+            {
+                builder
+                    .AllowAnyOrigin()
+                    .AllowAnyHeader()
+                    .AllowAnyMethod();
+            });
+
             app.UseHttpsRedirection();
-            app.UseMvc();
+
+            app.UseRouting();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapHealthChecks("/liveness", new HealthCheckOptions() { Predicate = r => r.Name.Contains("self") });
+                endpoints.MapDefaultControllerRoute();
+                endpoints.MapControllers();
+            });
         }
     }
 }

@@ -1,18 +1,25 @@
 package main
 
 import (
-	
-    configuration "github.com/you/tailwindtraderspopularproducts/config"
-	"github.com/you/tailwindtraderspopularproducts/middlewares"
-	"github.com/you/tailwindtraderspopularproducts/router"
 	"log"
 	"net/http"
+
+	"github.com/microsoft/ApplicationInsights-Go/appinsights"
+	configuration "github.com/you/tailwindtraderspopularproducts/config"
+	"github.com/you/tailwindtraderspopularproducts/middlewares"
+	"github.com/you/tailwindtraderspopularproducts/router"
 )
 
 func main() {
 
 	// Load app configuration
 	configuration.Load()
+
+	ApplicationInsightsInstrumentationKey := configuration.Values.ApplicationInsightsIK
+
+	if ApplicationInsightsInstrumentationKey != "" {
+		appinsights.NewTelemetryClient(ApplicationInsightsInstrumentationKey)
+	}
 
 	// Seed data
 	// db.Seed()

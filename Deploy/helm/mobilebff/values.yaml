@@ -16,7 +16,8 @@ resources:
   requests:
     cpu: "100m"
 
-nodeSelector: {}
+nodeSelector:
+  "kubernetes.io/os": linux
 
 tolerations: []
 
@@ -28,13 +29,34 @@ env:
     - name: PopularProductsApiUrl
     - name: ProductsApiUrl
     - name: ProfileApiUrl
+    - name: LoginApiUrl
     - name: CouponsApiUrl
     - name: ImageClassifierApiUrl
+    - name: StockApiUrl
     - name: ISSUER
     - name: SECURITYKEY
-    - name: LoginApiUrl
+    - name: UseB2C
+    - name: B2CIssuer
+    - name: Authority
     - name: RegisterUsers
     - name: RegistrationUsersEndpoint
   values:
     - name: ASPNETCORE_ENVIRONMENT
       value: Development
+    - name: gwPath
+      value: mobilebff
+    - name: UseMlNetClassifier
+      value: "true"
+
+probes:
+  liveness:
+    path: /liveness
+    initialDelaySeconds: 20
+    periodSeconds: 30
+    port: 80
+  readiness:
+    path: /readiness
+    timeoutSeconds: 5
+    initialDelaySeconds: 100
+    periodSeconds: 60
+    port: 80

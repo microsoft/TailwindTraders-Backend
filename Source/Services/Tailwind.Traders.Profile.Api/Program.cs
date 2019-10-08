@@ -15,10 +15,10 @@ namespace Tailwind.Traders.Profile.Api
         {
             CreateWebHostBuilder(args)
                 .Build()
-                .MigrateDbContext<ProfileDbContext>((context, services) =>
+                .MigrateDbContext<ProfileContext>((context, services) =>
                 {
-                    var env = services.GetService<IHostingEnvironment>();
-                    var logger = services.GetService<ILogger<ProfileDbContext>>();
+                    var env = services.GetService<IWebHostEnvironment>();
+                    var logger = services.GetService<ILogger<ProfileContext>>();
                     var csvReader = services.GetRequiredService<CsvReaderHelper>();
 
                     new ProfileContextSeed(csvReader, logger)

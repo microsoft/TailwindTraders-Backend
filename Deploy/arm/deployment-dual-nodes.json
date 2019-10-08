@@ -1,0 +1,368 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "components_app_insights_name": {
+      "defaultValue": "tt-app-insights",
+      "type": "string"
+    },
+    "servicePrincipalId": {
+      "type": "string"
+    },
+    "servicePrincipalSecret": {
+      "type": "securestring"
+    },
+    "aksVersion": {
+      "type": "string"
+    },
+    "windowsProfileAdminUsername": {
+      "type": "string",
+      "defaultValue": "winadmin"
+    },
+    "windowsProfileAdminPassword": {
+      "type": "string",
+      "defaultValue": "Passw0rd"
+    },
+    "linuxProfileAdminUsername": {
+      "type": "string",
+      "defaultValue": "linadmin"
+    },
+    "linuxProfileAdminKeyData": {
+      "type": "securestring",
+      "defaultValue": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCvgpiai6L6+zdCJjAKQbiqGe900toED31fJgGgf9stvPDAsymbfXibjZMgLlui9aIt4lv7YC9FaFxORfKPPd0FQI/CjXGduLf0U1oReEFvHI5rc1nOkJp0Nn5PkPGRSXif3FKk5N8I2RSDQXCLNPzea8dmywcI5DYA5OLC4MVoYiVrGp4AzoRff3fUVA2393MBOqIXVSj/x+NJkMYGdxsa0cMZ1TZbR1/EN2PsUa7MA3G/jX+mVwMpKAA3czhN6q/ivEFerdtse3TvkYWEsNz4WfEmJkXKTxLqmq7P8ELY+WHE+8Xo196VfujEdmfT6slFL8GUq6Qe4GxM2il7NRWz admin@hostname",
+      "metadata": {
+        "description": "Configure all linux machines with the SSH RSA public key string.  Your key should include three parts, for example 'ssh-rsa AAAAB...snip...UcyupgH azureuser@linuxvm'"
+      }
+    }
+  },
+  "variables": {
+    "acr_name": "[concat('ttacr',uniqueString(resourceGroup().id))]",
+    "aks_name": "[concat('tailwindtradersaks',uniqueString(resourceGroup().id))]",
+    "storage_name": "[concat('ttstorage',uniqueString(resourceGroup().id))]",
+    "function_name": "[concat('ttfunction',uniqueString(resourceGroup().id))]",
+    "cuopons_cosmosdb_name": "[concat('ttcuoponsdb',uniqueString(resourceGroup().id))]",
+    "shopping_cosmosdb_name": "[concat('ttshoppingdb',uniqueString(resourceGroup().id))]",
+    "workspaceName": "[concat('ttoms', uniqueString(resourceGroup().id))]",
+    "omsWorkspaceId": "[concat('/subscriptions/', subscription().subscriptionId,'/resourceGroups/',resourceGroup().name,'/providers/Microsoft.OperationalInsights/workspaces/', variables('workspaceName'))]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Insights/components",
+      "apiVersion": "2015-05-01",
+      "name": "[parameters('components_app_insights_name')]",
+      "location": "[resourceGroup().location]",
+      "kind": "web",
+      "properties": {
+        "Application_Type": "web",
+        "Flow_Type": "Redfield",
+        "Request_Source": "IbizaAIExtension"
+      }
+    },
+    {
+      "type": "Microsoft.ContainerRegistry/registries",
+      "sku": {
+        "name": "Standard"
+      },
+      "name": "[variables('acr_name')]",
+      "apiVersion": "2017-10-01",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "adminUserEnabled": true
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "name": "WorkspaceDeployment",
+      "apiVersion": "2017-05-10",
+      "subscriptionId": "[split(variables('omsWorkspaceId'),'/')[2]]",
+      "resourceGroup": "[split(variables('omsWorkspaceId'),'/')[4]]",
+      "properties": {
+        "mode": "Incremental",
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "parameters": {},
+          "variables": {},
+          "resources": [
+            {
+              "apiVersion": "2015-11-01-preview",
+              "type": "Microsoft.OperationalInsights/workspaces",
+              "location": "[resourceGroup().location]",
+              "name": "[variables('workspaceName')]",
+              "properties": {
+                "sku": {
+                  "name": "standalone"
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "Microsoft.ContainerService/managedClusters",
+      "apiVersion": "2019-06-01",
+      "name": "[variables('aks_name')]",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "kubernetesVersion": "[parameters('aksVersion')]",
+        "dnsPrefix": "[concat('tt-win-lin-', variables('aks_name'), '-acd681')]",
+        "agentPoolProfiles": [
+          {
+            "name": "nplinux",
+            "count": 2,
+            "vmSize": "Standard_DS2_v2",
+            "osDiskSizeGB": 100,
+            "maxPods": 30,
+            "type": "VirtualMachineScaleSets",
+            "osType": "Linux"
+          },
+          {
+            "name": "npwin",
+            "count": 2,
+            "vmSize": "Standard_D2s_v3",
+            "osDiskSizeGB": 100,
+            "maxPods": 30,
+            "type": "VirtualMachineScaleSets",
+            "enableNodePublicIP": false,
+            "osType": "Windows"
+          }
+        ],
+        "linuxProfile": {
+          "adminUsername": "[parameters('linuxProfileAdminUsername')]",
+          "ssh": {
+            "publicKeys": [
+              {
+                "keyData": "[parameters('linuxProfileAdminKeyData')]"
+              }
+            ]
+          }
+        },
+        "windowsProfile": {
+          "adminUsername": "[parameters('windowsProfileAdminUsername')]",
+          "adminPassword": "[parameters('windowsProfileAdminPassword')]"
+        },
+        "servicePrincipalProfile": {
+          "clientId": "[parameters('servicePrincipalId')]",
+          "secret": "[parameters('servicePrincipalSecret')]"
+        },
+        "addonProfiles": {
+          "azurepolicy": {
+            "enabled": true,
+            "config": {}
+          },
+          "httpApplicationRouting": {
+            "enabled": true
+          }
+        },
+        "nodeResourceGroup": "[concat('MC_', variables('aks_name'), '_', variables('aks_name'), '_', resourceGroup().location)]",
+        "enableRBAC": true,
+        "enablePodSecurityPolicy": false,
+        "networkProfile": {
+          "networkPlugin": "azure",
+          "loadBalancerSku": "basic",
+          "serviceCidr": "10.0.0.0/16",
+          "dnsServiceIP": "10.0.0.10",
+          "dockerBridgeCidr": "172.17.0.1/16"
+        }
+      }
+    },
+    {
+      "type": "Microsoft.ContainerService/managedClusters/agentPools",
+      "apiVersion": "2019-06-01",
+      "name": "[concat(variables('aks_name'), '/nplinux')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.ContainerService/managedClusters', variables('aks_name'))]"
+      ],
+      "properties": {
+        "count": 2,
+        "vmSize": "Standard_DS2_v2",
+        "osDiskSizeGB": 100,
+        "maxPods": 30,
+        "type": "VirtualMachineScaleSets",
+        "osType": "Linux"
+      }
+    },
+    {
+      "type": "Microsoft.ContainerService/managedClusters/agentPools",
+      "apiVersion": "2019-06-01",
+      "name": "[concat(variables('aks_name'), '/npwin')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.ContainerService/managedClusters', variables('aks_name'))]"
+      ],
+      "properties": {
+        "count": 2,
+        "vmSize": "Standard_D2s_v3",
+        "osDiskSizeGB": 100,
+        "maxPods": 30,
+        "type": "VirtualMachineScaleSets",
+        "enableNodePublicIP": false,
+        "osType": "Windows"
+      }
+    },
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "sku": {
+        "name": "Standard_LRS"
+      },
+      "kind": "StorageV2",
+      "name": "[variables('storage_name')]",
+      "apiVersion": "2018-07-01",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "accessTier": "Hot",
+        "supportsHttpsTrafficOnly": false
+      },
+      "dependsOn": []
+    },
+    {
+      "type": "Microsoft.Web/sites",
+      "kind": "functionapp",
+      "name": "[variables('function_name')]",
+      "apiVersion": "2016-03-01",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "name": "[variables('function_name')]",
+        "siteConfig": {
+          "appSettings": [
+            {
+              "name": "FUNCTIONS_WORKER_RUNTIME",
+              "value": "dotnet"
+            },
+            {
+              "name": "AzureWebJobsStorage",
+              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storage_name'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storage_name')), '2015-05-01-preview').key1)]"
+            },
+            {
+              "name": "FUNCTIONS_EXTENSION_VERSION",
+              "value": "~2"
+            },
+            {
+              "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
+              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storage_name'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storage_name')), '2015-05-01-preview').key1)]"
+            },
+            {
+              "name": "WEBSITE_NODE_DEFAULT_VERSION",
+              "value": "8.11.1"
+            }
+          ]
+        },
+        "clientAffinityEnabled": false,
+        "reserved": false
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts', variables('storage_name'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.DocumentDB/databaseAccounts",
+      "kind": "GlobalDocumentDB",
+      "name": "[variables('shopping_cosmosdb_name')]",
+      "apiVersion": "2015-04-08",
+      "location": "[resourceGroup().location]",
+      "tags": {
+        "defaultExperience": "Core (SQL)"
+      },
+      "properties": {
+        "databaseAccountOfferType": "Standard",
+        "locations": [
+          {
+            "id": "[concat(variables('shopping_cosmosdb_name'), '-', resourceGroup().location)]",
+            "failoverPriority": 0,
+            "locationName": "[resourceGroup().location]"
+          }
+        ],
+        "enableMultipleWriteLocations": true,
+        "isVirtualNetworkFilterEnabled": false,
+        "virtualNetworkRules": [],
+        "dependsOn": []
+      }
+    },
+    {
+      "apiVersion": "2015-04-08",
+      "kind": "MongoDB",
+      "type": "Microsoft.DocumentDB/databaseAccounts",
+      "name": "[variables('cuopons_cosmosdb_name')]",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "databaseAccountOfferType": "Standard",
+        "locations": [
+          {
+            "id": "[concat(variables('cuopons_cosmosdb_name'), '-', resourceGroup().location)]",
+            "failoverPriority": 0,
+            "locationName": "[resourceGroup().location]"
+          }
+        ],
+        "enableMultipleWriteLocations": true,
+        "isVirtualNetworkFilterEnabled": false,
+        "virtualNetworkRules": [],
+        "dependsOn": []
+      },
+      "tags": {
+        "defaultExperience": "Azure Cosmos DB for MongoDB API"
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "name": "SolutionDeployment",
+      "apiVersion": "2017-05-10",
+      "subscriptionId": "[subscription().subscriptionId]",
+      "resourceGroup": "[resourceGroup().name]",
+      "properties": {
+        "mode": "Incremental",
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "parameters": {},
+          "variables": {},
+          "resources": [
+            {
+              "apiVersion": "2015-11-01-preview",
+              "type": "Microsoft.OperationsManagement/solutions",
+              "location": "[resourceGroup().location]",
+              "name": "[concat('ContainerInsights', '(', split(variables('omsWorkspaceId'),'/')[8], ')')]",
+              "properties": {
+                "workspaceResourceId": "[variables('omsWorkspaceId')]"
+              },
+              "plan": {
+                "name": "[concat('ContainerInsights', '(', split(variables('omsWorkspaceId'),'/')[8], ')')]",
+                "product": "[concat('OMSGallery/', 'ContainerInsights')]",
+                "promotionCode": "",
+                "publisher": "Microsoft"
+              }
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[concat('Microsoft.Resources/deployments/', 'WorkspaceDeployment')]"
+      ]
+    }
+  ],
+  "outputs": {
+    "acr": {
+      "type": "string",
+      "value": "[variables('acr_name')]"
+    },
+    "aks": {
+      "type": "string",
+      "value": "[variables('aks_name')]"
+    },
+    "function": {
+      "type": "string",
+      "value": "[variables('function_name')]"
+    },
+    "cuoponsdb": {
+      "type": "string",
+      "value": "[variables('cuopons_cosmosdb_name')]"
+    },
+    "shoppingdb": {
+      "type": "string",
+      "value": "[variables('shopping_cosmosdb_name')]"
+    },
+    "storage": {
+      "type": "string",
+      "value": "[variables('storage_name')]"
+    }
+  }
+}

@@ -1,4 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.Extensions.Configuration;
+using System.IO;
 using Tailwind.Traders.Product.Api.Models;
 
 namespace Tailwind.Traders.Product.Api.Infrastructure
@@ -18,7 +21,7 @@ namespace Tailwind.Traders.Product.Api.Infrastructure
         public ProductContext(DbContextOptions<ProductContext> options) : base(options)
         {
         }
-       
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             builder.Entity<ProductType>()

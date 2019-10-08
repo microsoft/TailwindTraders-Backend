@@ -8,17 +8,26 @@ inf:
   sa: ttsa
   db:
     products:
-      host: # DB HOST LIKE tailwindtradersserver-dev.database.windows.net
-      port: "1433"
-      catalog: # DB NAME LIKE  Microsoft.Tailwind.Products-dev
-      user: # ADMIN USERNAME LIKE tailadmin
-      pwd: # ADMIN PWD
+      host: # COSMOS HOST FOR PRODUCTS like https://ttwebbasket-dev.documents.azure.com:443/
+      auth: # COSMOS AUTH KEY
     profile:
+      host: # COSMOS HOST FOR PROFILE like https://ttwebbasket-dev.documents.azure.com:443/
+      auth: # COSMOS AUTH KEY
+    popularproducts:
+      host: # COSMOS HOST FOR POPULAR PRODUCTS like https://ttwebbasket-dev.documents.azure.com:443/
+      auth: # COSMOS AUTH KEY
+    stock:
+      host: # COSMOS HOST FOR STOCK like https://ttwebbasket-dev.documents.azure.com:443/
+      auth: # COSMOS AUTH KEY
+    cart:
+      host: # COSMOS HOST FOR THE CART like https://ttwebbasket-dev.documents.azure.com:443/
+      auth: # COSMOS AUTH KEY
+    rewards:
       host: # DB HOST LIKE tailwindtradersserver-dev.database.windows.net
       port: "1433"
-      catalog: # DB NAME LIKE  Microsoft.Tailwind.Profile-dev
+      catalog: rewardsdb
       user: # ADMIN USERNAME LIKE tailadmin
-      pwd: # ADMIN PWD
+      pwd: # ADMIN PWD  
     coupons:
       user: # COSMOS USER tailwindtraders-coupons-dev
       pwd: # COSMOS PWD 
@@ -26,22 +35,7 @@ inf:
       port: "10255"
       dbName: Coupon
       constr: # COSMOS CONSTR
-      collection: CouponCollection   
-    popularproducts:
-      host: # DB HOST LIKE tailwindtradersserver-dev.database.windows.net
-      port: "1433"
-      catalog: # DB NAME LIKE  Microsoft.Tailwind.PopularProduct-dev
-      user: # ADMIN USERNAME LIKE tailadmin
-      pwd: # ADMIN PWD  
-    stock:
-      host: # PostgreSQL Host LIKE tailwindtradersdev.postgres.database.azure.com
-      port: "5432"
-      catalog: # DB NAME LIKE stockdb
-      user: # ADMIN USERNAME LIKE tailadmin
-      pwd: # ADMIN PWD  
-    cart:
-      host: # COMSOS HOST FOR THE CART like https://ttwebbasket-dev.documents.azure.com:443/
-      auth: # COSMOS AUTH KEY
+      collection: CouponCollection
   storage:
     productimages: https://tailwindtraders.blob.core.windows.net/product-list
     productdetailimages: https://tailwindtraders.blob.core.windows.net/product-detail
@@ -70,6 +64,8 @@ inf:
       path: /login-api
     cart:
       path: /cart-api
+    rewardsregistration:
+      path: /rewards-registration-api
   apiurls:
     popularproductsapiurl: http://popularproducts
     productsapiurl: http://product 
@@ -79,10 +75,8 @@ inf:
     imageclassifierapiurl: http://imageclassifier
     loginapiurl: http://login
   registrationusers:
-    registerusers: "false"
-    registrationusersurl: "TODO DEMI"
-az:
-  productvisitsurl: ""
+    registerusers: false
+    registrationusersurl: http://rewards-registration/UserService.svc
 
 # Shared ingress configurations
 ingress:

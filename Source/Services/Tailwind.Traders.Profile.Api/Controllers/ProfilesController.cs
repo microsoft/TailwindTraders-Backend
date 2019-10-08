@@ -16,12 +16,13 @@ namespace Tailwind.Traders.Profile.Api.Controllers
     [Route("v{version:apiVersion}/[controller]")]
     [ApiController]
     [ApiVersion("1.0")]
+    [Authorize]
     public class ProfileController : ControllerBase
     {
-        private readonly ProfileDbContext _ctx;
+        private readonly ProfileContext _ctx;
         private readonly AppSettings _settings;
 
-        public ProfileController(ProfileDbContext ctx, IOptions<AppSettings> options)
+        public ProfileController(ProfileContext ctx, IOptions<AppSettings> options)
         {
             _ctx = ctx;
             _settings = options.Value;
@@ -31,7 +32,6 @@ namespace Tailwind.Traders.Profile.Api.Controllers
         [HttpGet]
         [ProducesResponseType(typeof(List<Profiles>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
-        [Authorize]
         public async Task<IActionResult> GetAllProfiles()
         {
             var result = await _ctx.Profiles
@@ -51,7 +51,6 @@ namespace Tailwind.Traders.Profile.Api.Controllers
         [HttpGet("me")]
         [ProducesResponseType(typeof(List<Profiles>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        [Authorize]
         public async Task<IActionResult> GetProfile()
         {
             StringValues headerValues;
@@ -59,7 +58,7 @@ namespace Tailwind.Traders.Profile.Api.Controllers
 
             if (Request.Headers.TryGetValue("x-tt-name", out headerValues))
             {
-                nameFilter = User.Identity.Name;
+                nameFilter = headerValues.FirstOrDefault();
             }
 
             var result = await _ctx.Profiles
@@ -76,25 +75,10 @@ namespace Tailwind.Traders.Profile.Api.Controllers
             return Ok(result);
         }
 
-        private ProfileDto GetDefaultUserProfile(string nameFilter)
-        {
-            return new ProfileDto
-            {
-                Email = $"{nameFilter}@{nameFilter}.com",
-                Address = "7711 W. Pawnee Ave. Beachwood, OH 44122",
-                Name = nameFilter,
-                PhoneNumber = "+1-202-555-0155",
-                Id = 0,
-                ImageUrlMedium = "defaultImage-m.jpg",
-                ImageUrlSmall = "defaultImage-s.jpg"
-            };
-        }
-
         // POST v1/profile
         [HttpPost]
         [ProducesResponseType(typeof(List<Profiles>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        [Authorize]
         public async Task<IActionResult> Post([FromBody] CreateUser user)
         {
             if (!ModelState.IsValid)
@@ -102,10 +86,27 @@ namespace Tailwind.Traders.Profile.Api.Controllers
                 return BadRequest();
             }
 
-            await _ctx.Profiles.AddAsync(user.MapUserProfile());
+            // TODO: Auto generated value for int not implemented with CosmosDb EF yet.
+            var newId = _ctx.Profiles.ToList().Count();
+            var profile = user.MapUserProfile(newId);
+            await _ctx.Profiles.AddAsync(profile);
             await _ctx.SaveChangesAsync();
 
             return Ok();
+        }
+
+        private ProfileDto GetDefaultUserProfile(string nameFilter)
+        {
+            return new ProfileDto
+            {
+                Id = 0,
+                Email = nameFilter,
+                Address = "7711 W. Pawnee Ave. Beachwood, OH 44122",
+                Name = nameFilter,
+                PhoneNumber = "+1-202-555-0155",
+                ImageUrlMedium = "defaultImage-m.jpg",
+                ImageUrlSmall = "defaultImage-s.jpg"
+            };
         }
     }
 }

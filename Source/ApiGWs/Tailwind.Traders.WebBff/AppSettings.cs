@@ -4,8 +4,6 @@ namespace Tailwind.Traders.WebBff
 {
     public class AppSettings
     {
-        private IConfigurationRoot configuration;
-        
         public string ProductsApiUrl { get; set; }
         public string PopularProductsApiUrl { get; set; }
         public string ProfileApiUrl { get; set; }

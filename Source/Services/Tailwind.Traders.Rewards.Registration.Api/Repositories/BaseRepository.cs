@@ -9,7 +9,8 @@ namespace Tailwind.Traders.Rewards.Registration.Api.Repositories
         private readonly SqlConnection _sqlConnection;
         public BaseRepository(string connectionString)
         {
-            _sqlConnection = new SqlConnection(connectionString);
+            var actualConnection = Environment.GetEnvironmentVariable("ConnectionString") ?? connectionString;
+            _sqlConnection = new SqlConnection(actualConnection);
         }
 
         protected SqlConnection Connection

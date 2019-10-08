@@ -1,0 +1,33 @@
+replicaCount: 1
+applicationName: tailwindtraders
+
+image:
+  repository: tailwindtradersacr.azurecr.io/rewards.registration.api
+  tag: prod
+  pullPolicy: Always
+
+service:
+  type: ClusterIP
+  port: 80
+
+resources:
+  limits:
+    cpu: "500m"
+  requests:
+    cpu: "100m"
+
+nodeSelector:
+  "kubernetes.io/os": windows
+
+tolerations: []
+
+affinity: {}
+
+env:
+  configmap:
+    - name: ConnectionString
+    - name: SecurityKey
+    - name: Issuer
+  values:
+    - name: ASPNETCORE_ENVIRONMENT
+      value: Development

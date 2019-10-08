@@ -1,0 +1,66 @@
+trigger:
+- master
+
+resources:
+- repo: self
+
+variables:
+  # subscription: ''
+  # acrName: ''
+  # resourceGroup: ''
+  deployfrom: 'Deploy'
+
+jobs:
+- job: Deploy_Scripts
+  pool:
+    vmImage: 'ubuntu-16.04'
+  steps:
+  - task: CopyFiles@2
+    displayName: Copy release scripts
+    inputs:
+      SourceFolder: '$(deployfrom)'
+      Contents: '**'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)'
+  - task: PublishBuildArtifacts@1
+    displayName: Publish scripts artifact
+    inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+      ArtifactName: 'deploy'
+      publishLocation: 'Container'
+- job: Build_Linux
+  pool:
+    vmImage: 'ubuntu-16.04'
+  steps:
+  - task: AzureCLI@1
+    displayName: Build and Push to ACR 
+    inputs:
+      azureSubscription: '$(subscription)'
+      scriptLocation: 'inlineScript'
+      inlineScript: 'pwsh -File Build-Push.ps1 -resourceGroup $(resourceGroup) -acrName $(acrName) -dockerTag $(Build.BuildId)'
+      addSpnToEnvironment: true
+      useGlobalConfig: true
+      workingDirectory: 'Deploy/powershell'
+- job: Build_Windows
+  pool:
+    vmImage: 'windows-2019'
+  steps:
+  - task: NuGetCommand@2
+    inputs:
+      command: 'restore'
+      restoreSolution: '**/Tailwind.Traders.Backend.Rewards.sln'
+      feedsToUse: 'select'
+  - task: MSBuild@1
+    inputs:
+      solution: '**/Tailwind.Traders.Rewards.Registration.Api.csproj'
+      msbuildArchitecture: 'x64'
+      msbuildArguments: '/p:DeployOnBuild=true /p:PublishProfile=FolderProfile.pubxml'
+      clean: true
+  - task: AzureCLI@1
+    displayName: Build and Push to ACR 
+    inputs:
+      azureSubscription: '$(subscription)'
+      scriptLocation: 'inlineScript'
+      inlineScript: 'pwsh -Command .\Build-Push.ps1 -resourceGroup $(resourceGroup) -acrName $(acrName) -dockerTag $(Build.BuildId) -isWindowsMachine 1'
+      addSpnToEnvironment: true
+      useGlobalConfig: true
+      workingDirectory: 'Deploy\powershell'

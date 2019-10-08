@@ -1,5 +1,5 @@
-ARG sdkTag=2.2
-ARG runtimeTag=2.2
+ARG sdkTag=3.0
+ARG runtimeTag=3.0
 ARG image=mcr.microsoft.com/dotnet/core/aspnet
 ARG sdkImage=mcr.microsoft.com/dotnet/core/sdk
 
@@ -9,11 +9,11 @@ EXPOSE 80
 
 # install System.Drawing native dependencies
 RUN apt-get update \
-    && apt-get install -y --allow-unauthenticated \
+        && apt-get install -y --allow-unauthenticated \
         libc6-dev \
         libgdiplus \
         libx11-dev \
-     && rm -rf /var/lib/apt/lists/*
+        && rm -rf /var/lib/apt/lists/*
 
 FROM ${sdkImage}:${sdkTag} AS build
 WORKDIR /src

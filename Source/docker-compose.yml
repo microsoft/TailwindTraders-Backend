@@ -1,23 +1,6 @@
-version: '3.4'
+version: "3.4"
 
 services:
-  sql.data:
-    image: microsoft/mssql-server-linux:2017-latest
-
-  nosql.data:
-    image: mongo
-
-  stock.data:
-    image: postgres:11.3
-
-  adminer:
-    image: adminer
-    ports:
-      - 8080:8080
-    depends_on: 
-    - sql.data
-    - stock.data
-
   cart.api:
     image: ${REGISTRY:-tailwindtraders}/cart.api:${TAG:-latest}
     build:
@@ -28,23 +11,19 @@ services:
     image: ${REGISTRY:-tailwindtraders}/product.api:${TAG:-latest}
     build:
       context: .
-      dockerfile: Services/Tailwind.Traders.Product.Api/Dockerfile    
-    depends_on:
-      - sql.data
+      dockerfile: Services/Tailwind.Traders.Product.Api/Dockerfile
 
   profile.api:
     image: ${REGISTRY:-tailwindtraders}/profile.api:${TAG:-latest}
     build:
       context: .
-      dockerfile: Services/Tailwind.Traders.Profile.Api/Dockerfile    
-    depends_on:
-      - sql.data
+      dockerfile: Services/Tailwind.Traders.Profile.Api/Dockerfile
 
   login.api:
     image: ${REGISTRY:-tailwindtraders}/login.api:${TAG:-latest}
     build:
       context: .
-      dockerfile: Services/Tailwind.Traders.Login.Api/Dockerfile    
+      dockerfile: Services/Tailwind.Traders.Login.Api/Dockerfile
 
   coupon.api:
     image: ${REGISTRY:-tailwindtraders}/coupon.api:${TAG:-latest}
@@ -52,31 +31,18 @@ services:
     build:
       context: Services/Tailwind.Traders.Coupon.Api
       dockerfile: Dockerfile
-    depends_on:
-      - nosql.data
 
   popular-product.api:
     image: ${REGISTRY:-tailwindtraders}/popular-product.api:${TAG:-latest}
     build:
       context: .
-      dockerfile: Services/Tailwind.Traders.PopularProduct.Api/Dockerfile    
-    depends_on:
-      - sql.data
+      dockerfile: Services/Tailwind.Traders.PopularProduct.Api/Dockerfile
 
   stock.api:
     image: ${REGISTRY:-tailwindtraders}/stock.api:${TAG:-latest}
     container_name: stock-java
     build:
       context: ./Services/Tailwind.Traders.Stock.Api/
-      dockerfile: Dockerfile  
-    depends_on: 
-      - stock.data
-
-  product-visits.function:
-    image: ${REGISTRY:-tailwindtraders}/product-visits.function:${TAG:-latest}
-    container_name: product-visits-node
-    build:
-      context: ./Services/Tailwind.Traders.Visits.Function/
       dockerfile: Dockerfile
 
   image-classifier.api:
@@ -89,19 +55,18 @@ services:
     image: ${REGISTRY:-tailwindtraders}/mobileapigw:${TAG:-latest}
     build:
       context: .
-      dockerfile: ApiGWs/Tailwind.Traders.Bff/Dockerfile 
+      dockerfile: ApiGWs/Tailwind.Traders.Bff/Dockerfile
 
   webapigw:
     image: ${REGISTRY:-tailwindtraders}/webapigw:${TAG:-latest}
     build:
       context: .
       dockerfile: ApiGWs/Tailwind.Traders.WebBff/Dockerfile
-    depends_on: 
+    depends_on:
       - product.api
       - profile.api
       - login.api
       - coupon.api
       - popular-product.api
       - stock.api
-      - product-visits.function
       - image-classifier.api

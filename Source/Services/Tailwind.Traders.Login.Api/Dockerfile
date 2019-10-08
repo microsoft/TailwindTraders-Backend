@@ -1,5 +1,5 @@
-ARG sdkTag=2.2
-ARG runtimeTag=2.2
+ARG sdkTag=3.0
+ARG runtimeTag=3.0
 ARG image=mcr.microsoft.com/dotnet/core/aspnet
 ARG sdkImage=mcr.microsoft.com/dotnet/core/sdk
 

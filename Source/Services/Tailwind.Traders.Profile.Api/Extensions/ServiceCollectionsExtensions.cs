@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Reflection;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Tailwind.Traders.Profile.Api.HealthChecks;
 using Tailwind.Traders.Profile.Api.Infrastructure;
 
 namespace Tailwind.Traders.Profile.Api.Extensions
@@ -12,20 +12,31 @@ namespace Tailwind.Traders.Profile.Api.Extensions
         public static IServiceCollection AddProfileContext(this IServiceCollection service, IConfiguration configuration)
         {
             service.Configure<AppSettings>(configuration);
-
-            service.AddDbContext<ProfileDbContext>(options =>
+            service.AddDbContext<ProfileContext>(options =>
             {
-                options.UseSqlServer(configuration["ConnectionString"], sqlOptions =>
-                {
-                    sqlOptions.MigrationsAssembly(typeof(Startup).GetTypeInfo().Assembly.GetName().Name);
-                    sqlOptions.EnableRetryOnFailure(maxRetryCount: 15, maxRetryDelay: TimeSpan.FromSeconds(45), errorNumbersToAdd: null);
-                })
+                options.UseCosmos(configuration["CosmosDb:Host"], configuration["CosmosDb:Key"], configuration["CosmosDb:Database"])
                 .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
-            },
-                ServiceLifetime.Scoped
-            );
+            }, ServiceLifetime.Scoped);
 
             return service;
+        }
+
+        public static IServiceCollection AddHealthChecks(this IServiceCollection services, IConfiguration configuration)
+        {
+            var hcBuilder = services.AddHealthChecks();
+
+            hcBuilder.AddCheck("self", () => HealthCheckResult.Healthy());
+
+            hcBuilder.Add(new HealthCheckRegistration(
+                "ProfileDB-check",
+                sp => new CosmosDbHealthCheck(
+                    $"AccountEndpoint={configuration["CosmosDb:Host"]};AccountKey={configuration["CosmosDb:Key"]}",
+                    configuration["CosmosDb:Database"]),
+                HealthStatus.Unhealthy,
+                new string[] { "profileDb"}
+            ));
+
+            return services;
         }
     }
 }

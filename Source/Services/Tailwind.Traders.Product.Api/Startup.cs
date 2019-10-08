@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Tailwind.Traders.Product.Api.Extensions;
 
 namespace Tailwind.Traders.Product.Api
@@ -19,12 +21,22 @@ namespace Tailwind.Traders.Product.Api
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc()
+            services
+                .AddControllers()
                 .SetCompatibilityVersion(CompatibilityVersion.Latest)
-                .Services
+                .AddNewtonsoftJson()
+                .Services     
+                .AddHealthChecks(Configuration)
                 .AddApplicationInsightsTelemetry(Configuration)
                 .AddProductsContext(Configuration)
                 .AddModulesProducts(Configuration);
+
+            var appInsightsIK = Configuration["ApplicationInsights:InstrumentationKey"];
+
+            if (!string.IsNullOrEmpty(appInsightsIK))
+            {
+                services.AddApplicationInsightsTelemetry(appInsightsIK);
+            }
 
             services.AddApiVersioning(options =>
             {
@@ -34,7 +46,7 @@ namespace Tailwind.Traders.Product.Api
             });
         }
 
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -47,13 +59,25 @@ namespace Tailwind.Traders.Product.Api
 
             app.UseCors(builder =>
             {
-                builder.AllowAnyOrigin()
+                builder
+                    .AllowAnyOrigin()
                     .AllowAnyHeader()
                     .AllowAnyMethod();
             });
 
             app.UseHttpsRedirection();
-            app.UseMvc();
+
+            app.UseRouting();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapHealthChecks("/liveness", new HealthCheckOptions() { Predicate = r => r.Name.Contains("self") });
+                endpoints.MapHealthChecks("/readiness", new HealthCheckOptions() { });
+                endpoints.MapDefaultControllerRoute();
+                endpoints.MapControllers();
+            });
+
+            
         }
     }
 }

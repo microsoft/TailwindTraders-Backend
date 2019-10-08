@@ -19,11 +19,11 @@ namespace Tailwind.Traders.Profile.Api.Infrastructure
             _logger = logger;
         }
 
-        public async Task SeedAsync(ProfileDbContext profileContext, IHostingEnvironment env)
+        public async Task SeedAsync(ProfileContext profileContext, IWebHostEnvironment env)
         {
             var contentRootPath = env.ContentRootPath;
-
-            if (!profileContext.Profiles.Any())
+            await profileContext.Database.EnsureCreatedAsync();
+            if (!profileContext.Profiles.ToList().Any())
             {
                 var records = _csvHelper.LoadCsv<ProfileData>(contentRootPath, "Profiles");
                 var profiles = records.Select(r => new Profiles()

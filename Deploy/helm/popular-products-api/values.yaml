@@ -2,15 +2,14 @@ replicaCount: 1
 applicationName: tailwindtraders
 
 image:
-  repository:  tailwindtradersacr.azurecr.io/popular-product.api
+  repository: tailwindtradersacr.azurecr.io/popular-product.api
   tag: prod
   pullPolicy: Always
 
 initImage:
-  repository:  tailwindtradersacr.azurecr.io/popular-product-seed.api
+  repository: tailwindtradersacr.azurecr.io/popular-product-seed.api
   tag: prod
   pullPolicy: Always
-
 
 service:
   type: ClusterIP
@@ -22,7 +21,8 @@ resources:
   requests:
     cpu: "100m"
 
-nodeSelector: {}
+nodeSelector:
+  "kubernetes.io/os": linux
 
 tolerations: []
 
@@ -30,16 +30,19 @@ affinity: {}
 
 env:
   configmap:
-    - name: ApplicationInsights__InstrumentationKey
-    - name: ConnectionString
+    - name: ApplicationInsightsIK
+    - name: AUTHKEY
+    - name: HOST
     - name: AzureStorageUrl
     - name: ISSUER
     - name: SECURITYKEY
-  configmapinit:
-    - name: dbserver
-    - name: dbuser
-    - name: dbpassword
-    - name: dbcatalog
   values:
     - name: ASPNETCORE_ENVIRONMENT
       value: Development
+
+probes:
+  liveness:
+    path: /liveness
+    initialDelaySeconds: 20
+    periodSeconds: 30
+    port: http

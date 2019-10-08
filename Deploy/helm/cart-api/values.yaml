@@ -16,7 +16,8 @@ resources:
   requests:
     cpu: "100m"
 
-nodeSelector: {}
+nodeSelector:
+  "kubernetes.io/os": linux
 
 tolerations: []
 
@@ -24,9 +25,11 @@ affinity: {}
 
 env:
   configmap:
+    - name: APPLICATIONINSIGHTSIK
     - name: AUTHKEY
     - name: HOST
     - name: ISSUER
+    - name: UseB2C
     - name: SECURITYKEY
     - name: tenantID
     - name: clientID
@@ -35,4 +38,11 @@ env:
     - name: issuer
   values:
     - name: DISABLE_SSL
-      value: "false"  
+      value: "false"
+
+probes:
+  liveness:
+    path: /liveness
+    initialDelaySeconds: 20
+    periodSeconds: 30
+    port: http
