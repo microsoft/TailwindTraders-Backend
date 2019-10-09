@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: popularproducts
+  name: {{ template "tt-popularproducts.fullname" . }}
   labels:
     app: {{ template "tt-popularproducts.name" . }}
     chart: {{ template "tt-popularproducts.chart" . }}

@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: mobilebff
+  name: {{ template "tt-mobilebff.fullname" . }}
   labels:
     app: {{ template "tt-mobilebff.name" . }}
     chart: {{ template "tt-mobilebff.chart" . }}
