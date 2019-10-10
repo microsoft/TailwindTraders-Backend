@@ -1,3 +1,5 @@
+#! /usr/bin/pwsh
+
 # Token replace (https://gist.github.com/eiximenis/55361a2f60722f123ec49febb1399004)
 
 Param(
@@ -16,7 +18,7 @@ if ([string]::IsNullOrEmpty($content)) {
     $content = Get-Content -Raw $inputFile
 }
 
-$tokens.Keys | % ($_) {
+$tokens.Keys | ForEach-Object ($_) {
   $content = $content -replace "{{$_}}",  $tokens[$_]
 }
 

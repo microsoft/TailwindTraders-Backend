@@ -1,3 +1,5 @@
+#! /usr/bin/pwsh
+
 Param (
     [parameter(Mandatory=$false)][string][ValidateSet('prod','staging','none','custom', IgnoreCase=$false)]$sslSupport = "none",
     [parameter(Mandatory=$false)][string]$name = "tailwindtraders",
@@ -11,7 +13,6 @@ Param (
 
 function validate {
     $valid = $true
-
 
     if ([string]::IsNullOrEmpty($aksName)) {
         Write-Host "No AKS name. Use -aksName to specify name" -ForegroundColor Red
@@ -70,17 +71,16 @@ if ([String]::IsNullOrEmpty($domain)) {
 }
 
 Write-Host "TLS/SSL will be bound to domain $domain"
-
-Push-Location ..\helm
+Join-Path .. helm | Push-Location
 
 if ($sslSupport -eq "staging") {
     Write-Host "Adding TLS/SSL support using Let's Encrypt Staging environment" -ForegroundColor Yellow
-    Write-Host "helm install --name $name-ssl -f tls-support\values-staging.yaml --set domain=$domain tls-support" -ForegroundColor Yellow
-    cmd /c "helm install --name $name-ssl-staging -f tls-support\values-staging.yaml --set domain=$domain tls-support"
+    Write-Host "helm install --name $name-ssl -f $(Join-Path tls-support values-staging.yaml) --set domain=$domain tls-support" -ForegroundColor Yellow
+    cmd /c "helm install --name $name-ssl-staging -f $(Join-Path tls-support values-staging.yaml) --set domain=$domain tls-support"
 }
 if ($sslSupport -eq "prod") {
     Write-Host "Adding TLS/SSL support using Let's Encrypt PRODUCTION environment" -ForegroundColor Yellow
-    cmd /c "helm install --name $name-ssl-prod -f tls-support\values-prod.yaml --set domain=$domain tls-support"
+    cmd /c "helm install --name $name-ssl-prod -f $(Join-Path tls-support values-prod.yaml) --set domain=$domain tls-support"
 }
 if ($sslSupport -eq "custom") {
     Write-Host "TLS support is custom bound to domain $domain" -ForegroundColor Yellow
@@ -89,4 +89,3 @@ if ($sslSupport -eq "custom") {
 }
 
 Pop-Location
-

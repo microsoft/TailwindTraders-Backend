@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ template "tt-imageclassifier.fullname" . }}
+  name: imageclassifier
   labels:
     app: {{ template "tt-imageclassifier.name" . }}
     chart: {{ template "tt-imageclassifier.chart" . }}

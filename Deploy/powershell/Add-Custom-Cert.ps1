@@ -1,3 +1,5 @@
+#! /usr/bin/pwsh
+
 Param(
     [parameter(Mandatory=$true)][string]$keyFile,
     [parameter(Mandatory=$true)][string]$cerFile,

@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ template "tt-stock.fullname" . }}
+  name: stock
   labels:
     app: {{ template "tt-stock.name" . }}
     chart: {{ template "tt-stock.chart" . }}

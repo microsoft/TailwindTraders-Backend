@@ -1,3 +1,5 @@
+#! /usr/bin/pwsh
+
 Param(
     [parameter(Mandatory=$false)][string]$resourceGroup,
     [parameter(Mandatory=$false)][string]$acrName,
@@ -35,6 +37,17 @@ function validate {
     }
 }
 
+function createSecret($_clientId, $_password) {
+    if ([string]::IsNullOrEmpty($namespace)) {
+        kubectl delete secret acr-auth
+        kubectl create secret docker-registry acr-auth --docker-server $acrLogin --docker-username $_clientId --docker-password $_password --docker-email not@used.com
+    }
+    else {
+        kubectl delete secret acr-auth --namespace $namespace
+        kubectl create secret docker-registry acr-auth --docker-server $acrLogin --docker-username $_clientId --docker-password $_password --docker-email not@used.com --namespace $namespace
+    }
+}
+
 Write-Host "--------------------------------------------------------" -ForegroundColor Yellow
 Write-Host "Deploying secret for accessing ACR" -ForegroundColor Yellow
 Write-Host "Additional parameters are: " -ForegroundColor Yellow
@@ -47,19 +60,21 @@ $acrLogin=$acr.loginServer
 $acrId=$acr.id
 validate
 
+if ([string]::IsNullOrEmpty($namespace)) {
+    $namespace=$(kubectl config view --minify --output "jsonpath={..namespace}")
+}
+
 $acrCredentials = $(az acr credential show -n $acrName -g $resourceGroup -o json | ConvertFrom-Json)
 if ($acrCredentials) {
     Write-Host "Creating ACR auth based secret..." -ForegroundColor Yellow
     $acrPwd=$acrCredentials.passwords[0].value
     $acrUser=$acrCredentials.username
-    kubectl delete secret acr-auth --namespace $namespace
-    kubectl create secret docker-registry acr-auth --docker-server $acrLogin --docker-username $acrUser --docker-password $acrPwd --docker-email not@used.com --namespace $namespace
+    createSecret $acrUser $acrPwd
 }
 elseif (-not [string]::IsNullOrEmpty($clientId)) {
     Write-Host "Creating Service Principal based auth..." -ForegroundColor Yellow
     az role assignment create --assignee $clientId --scope $acrId --role reader
-    kubectl delete secret acr-auth --namespace $namespace
-    kubectl create secret docker-registry acr-auth --docker-server $acrLogin --docker-username $clientId --docker-password $password --docker-email not@used.com --namespace $namespace
+    createSecret $clientId $password
 }
 else {
     Write-Host "Couldn't create Service Principal to access ACR." -ForegroundColor Red
@@ -69,5 +84,11 @@ else {
 Write-Host "Deploying ServiceAccount ttsa" -ForegroundColor Yellow
 
 Push-Location $($MyInvocation.InvocationName | Split-Path)
-kubectl apply -f ../helm/ttsa.yaml -n $namespace
+$ttsaPath=$(./Join-Path-Recursively.ps1 -pathParts ..,helm,ttsa.yaml)
+if ([string]::IsNullOrEmpty($namespace)) {
+    kubectl apply -f $ttsaPath
+}
+else {
+    kubectl apply -f $ttsaPath -n $namespace
+}
 Pop-Location

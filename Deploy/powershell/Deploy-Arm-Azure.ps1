@@ -1,3 +1,5 @@
+#! /usr/bin/pwsh
+
 Param(
     [parameter(Mandatory=$true)][string]$resourceGroup,
     [parameter(Mandatory=$true)][string]$location,
@@ -7,17 +9,18 @@ Param(
     [parameter(Mandatory=$false)][bool]$deployAks=$true
 )
 $spCreated=$false
+$sourceFolder=$(Join-Path -Path .. -ChildPath arm)
 
 Push-Location $($MyInvocation.InvocationName | Split-Path)
 
-$script=".\deployment.json"
+$script="deployment.json"
 
 if($deployWinLinux) {
-    $script=".\deployment-dual-nodes.json"
+    $script="deployment-dual-nodes.json"
 }
 
 if (-not $deployAks) {
-    $script=".\deployment-no-aks.json"
+    $script="deployment-no-aks.json"
 }
 
 Write-Host "--------------------------------------------------------" -ForegroundColor Yellow
@@ -27,7 +30,7 @@ Write-Host "-------------------------------------------------------- " -Foregrou
 $rg = $(az group show -n $resourceGroup -o json | ConvertFrom-Json)
 # Deployment without AKS can be done in a existing or non-existing resource group.
 if (-not $rg) {
-    Write-Host "Creating resource group $resourceGroup in $location"
+    Write-Host "Creating resource group $resourceGroup in $location" -ForegroundColor Yellow
     az group create -n $resourceGroup -l $location
 }
 
@@ -46,13 +49,13 @@ if ($deployAks) {
     Write-Host "AKS last version is $aksLastVersion" -ForegroundColor Yellow
 
     Write-Host "Begining the ARM deployment..." -ForegroundColor Yellow
-    Push-Location ..\arm
+    Push-Location $sourceFolder
     az group deployment create -g $resourceGroup --template-file $script --parameters servicePrincipalId=$clientId --parameters servicePrincipalSecret=$password --parameters aksVersion=$aksLastVersion
     Pop-Location 
 }
 else {
     Write-Host "Begining the ARM deployment..." -ForegroundColor Yellow
-    Push-Location ..\arm
+    Push-Location $sourceFolder
     az group deployment create -g $resourceGroup --template-file $script
     Pop-Location 
 }
