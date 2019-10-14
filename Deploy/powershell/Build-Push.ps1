@@ -1,3 +1,5 @@
+#! /usr/bin/pwsh
+
 Param(
     [parameter(Mandatory=$true)][string]$resourceGroup,
     [parameter(Mandatory=$true)][string]$acrName,
@@ -8,7 +10,7 @@ Param(
 )
 
 Push-Location $($MyInvocation.InvocationName | Split-Path)
-$sourceFolder=$(Join-Path -Path ..\.. -ChildPath Source)
+$sourceFolder=$(./Join-Path-Recursively.ps1 -pathParts ..,..,Source)
 Write-Host "---------------------------------------------------" -ForegroundColor Yellow
 
 Write-Host "---------------------------------------------------" -ForegroundColor Yellow

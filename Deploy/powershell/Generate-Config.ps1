@@ -1,9 +1,12 @@
+#! /usr/bin/pwsh
+
 Param (
     [parameter(Mandatory=$true)][string]$resourceGroup,
-    [parameter(Mandatory=$false)][string]$outputFile=$null,
+    [parameter(Mandatory=$false)][string[]]$outputFile=$null,
     [parameter(Mandatory=$false)][string]$rewardsResourceGroup="",
     [parameter(Mandatory=$false)][string]$rewardsDbPassword="",
-    [parameter(Mandatory=$false)][string]$gvaluesTemplate="..\\helm\\gvalues.template"
+    [parameter(Mandatory=$false)][string[]]$gvaluesTemplate="..,helm,gvalues.template",
+    [parameter(Mandatory=$false)][string]$ingressClass="addon-http-application-routing"
 )
 
 function EnsureAndReturnFistItem($arr, $restype) {
@@ -11,6 +14,7 @@ function EnsureAndReturnFistItem($arr, $restype) {
         Write-Host "Fatal: No $restype found (or found more than one)" -ForegroundColor Red
         exit 1
     }
+
     return $arr[0]
 }
 
@@ -76,24 +80,32 @@ $tokens.couponspwd=$mongodbKey
 $tokens.storage=$storage.blob
 $tokens.rewardsregistration=If ($rewardsResourceGroup) { $true } Else { $false }
 
-## Install app-insights extension
-az extension add --name application-insights
+$appinsightsId=""
 
-## Getting App Insights instrumentation key
-$appinsights=$(az monitor app-insights component show --app tt-app-insights -g $resourceGroup -o json | ConvertFrom-Json)
-Write-Host "App Insights Instrumentation Key: $($appinsights)" -ForegroundColor Yellow
+## Getting App Insights instrumentation key, if required
+$appInsightsName=$(az resource list -g tt-linux-cicd --resource-type Microsoft.Insights/components --query [].name | ConvertFrom-Json)
+if ($appInsightsName -and $appInsightsName.Length -eq 1) {
+    $appinsightsConfig=$(az monitor app-insights component show --app $appInsightsName[0] -g $resourceGroup -o json | ConvertFrom-Json)
 
-$tokens.appinsightsik=$appinsights.instrumentationKey
+    if ($appinsightsConfig) {
+        $appinsightsId = $appinsightsConfig.instrumentationKey
+        Write-Host "App Insights Instrumentation Key: $($appinsightsId)" -ForegroundColor Yellow    
+    }
+}
+
+Write-Host "App Insights Instrumentation Key: $($appinsightsId)" -ForegroundColor Yellow
+$tokens.appinsightsik=$appinsightsId
 
 # Standard fixed tokens
-$tokens.ingressclass="addon-http-application-routing"
+$tokens.ingressclass=$ingressClass
 $tokens.secissuer="TTFakeLogin"
 $tokens.seckey="nEpLzQJGNSCNL5H6DIQCtTdNxf5VgAGcBbtXLms1YDD01KJBAs0WVawaEjn97uwB"
 
 Write-Host ($tokens | ConvertTo-Json) -ForegroundColor Yellow
-
 Write-Host "===========================================================" -ForegroundColor Yellow
 
 Push-Location $($MyInvocation.InvocationName | Split-Path)
-& .\Token-Replace.ps1 -inputFile $gvaluesTemplate -outputFile $outputFile -tokens $tokens
+$gvaluesTemplatePath=$(./Join-Path-Recursively -pathParts $gvaluesTemplate.Split(","))
+$outputFilePath=$(./Join-Path-Recursively -pathParts $outputFile.Split(","))
+& ./Token-Replace.ps1 -inputFile $gvaluesTemplatePath -outputFile $outputFilePath -tokens $tokens
 Pop-Location

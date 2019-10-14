@@ -1,3 +1,5 @@
+#! /usr/bin/pwsh
+
 Param(
     [parameter(Mandatory=$true)][string]$resourceGroup,
     [parameter(Mandatory=$true)][string]$location,
@@ -14,14 +16,16 @@ Push-Location $($MyInvocation.InvocationName | Split-Path)
 az extension add --name aks-preview
 az extension update --name aks-preview
 
-Write-Host "Login in your account" -ForegroundColor Yellow
+# Write-Host "Login in your account" -ForegroundColor Yellow
 az login
 
-Write-Host "Choosing your subscription" -ForegroundColor Yellow
+# Write-Host "Choosing your subscription" -ForegroundColor Yellow
 az account set --subscription $subscription
 
+Push-Location powershell
+
 # Deploy ARM
-.\powershell\Deploy-Arm-Azure.ps1 -resourceGroup $resourceGroup -location $location -clientId $clientId -password $password -deployAks $deployAks
+& ./Deploy-Arm-Azure.ps1 -resourceGroup $resourceGroup -location $location -clientId $clientId -password $password -deployAks $deployAks
 
 # Connecting kubectl to AKS
 Write-Host "Retrieving Aks Name" -ForegroundColor Yellow
@@ -32,24 +36,27 @@ Write-Host "The name of your AKS: $aksName" -ForegroundColor Yellow
 az aks get-credentials -n $aksName -g $resourceGroup
 
 # Add Tiller
-.\powershell\Add-Tiller.ps1
+& ./Add-Tiller.ps1
 
 # Generate Config
-.\powershell\Generate-Config.ps1 -resourceGroup $resourceGroup -outputFile "..\helm\__values\$gValuesFile"
+$gValuesLocation=$(./Join-Path-Recursively.ps1 -pathParts ..,helm,__values,$gValuesFile)
+& ./Generate-Config.ps1 -resourceGroup $resourceGroup -outputFile $gValuesLocation
 
 # Create Secrets
 $acrName = $(az acr list --resource-group $resourceGroup --subscription $subscription -o json | ConvertFrom-Json).name
 Write-Host "The Name of your ACR: $acrName" -ForegroundColor Yellow
-.\powershell\Create-Secret.ps1 -resourceGroup $resourceGroup -acrName $acrName
+& ./Create-Secret.ps1 -resourceGroup $resourceGroup -acrName $acrName
 
 # Build an Push
-.\powershell\Build-Push.ps1 -resourceGroup $resourceGroup -acrName $acrName -isWindows $false
+& ./Build-Push.ps1 -resourceGroup $resourceGroup -acrName $acrName -isWindows $false
 
 # Deploy images in AKS
-.\powershell\Deploy-Images-Aks.ps1 -aksName $aksName -resourceGroup $resourceGroup -charts "*" -acrName $acrName -valuesFile "__values\$gValuesFile"
+$gValuesLocation=$(./Join-Path-Recursively.ps1 -pathParts __values,$gValuesFile)
+& ./Deploy-Images-Aks.ps1 -aksName $aksName -resourceGroup $resourceGroup -charts "*" -acrName $acrName -valuesFile $gValuesLocation
 
 # Deploy pictures in AKS
 $storageName = $(az resource list --resource-group $resourceGroup --resource-type Microsoft.Storage/storageAccounts -o json | ConvertFrom-Json).name
-.\powershell\Deploy-Pictures-Azure.ps1 -resourceGroup $resourceGroup -storageName $storageName
+& ./Deploy-Pictures-Azure.ps1 -resourceGroup $resourceGroup -storageName $storageName
 
+Pop-Location
 Pop-Location

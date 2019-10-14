@@ -1,3 +1,5 @@
+#! /usr/bin/pwsh
+
 Param(
     [parameter(Mandatory=$true)][string]$resourceGroup,
     [parameter(Mandatory=$true)][string]$storageName
@@ -21,15 +23,13 @@ az storage container create --name "profiles-list" --public-access blob --connec
 Write-Host "Copying images..." -ForegroundColor Green
 
 $accountName=$storage.name
-az storage blob upload-batch --destination "$url" --destination coupon-list  --source .\tailwindtraders-images\coupon-list --account-name $accountName
-az storage blob upload-batch --destination "$url" --destination product-detail --source .\tailwindtraders-images\product-detail --account-name  $accountName
-az storage blob upload-batch --destination "$url" --destination product-list --source .\tailwindtraders-images\product-list --account-name $accountName
-az storage blob upload-batch --destination "$url" --destination profiles-list --source .\tailwindtraders-images\profiles-list --account-name $accountName
+Push-Location $($MyInvocation.InvocationName | Split-Path)
+Push-Location ..
 
+az storage blob upload-batch --destination "$url" --destination coupon-list  --source $(Join-Path tailwindtraders-images coupon-list) --account-name $accountName
+az storage blob upload-batch --destination "$url" --destination product-detail --source $(Join-Path tailwindtraders-images product-detail) --account-name  $accountName
+az storage blob upload-batch --destination "$url" --destination product-list --source $(Join-Path tailwindtraders-images product-list) --account-name $accountName
+az storage blob upload-batch --destination "$url" --destination profiles-list --source $(Join-Path tailwindtraders-images profiles-list) --account-name $accountName
 
-
-
-
-
-
-
+Pop-Location
+Pop-Location

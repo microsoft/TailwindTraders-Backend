@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ template "tt-profile.fullname" . }}
+  name: profile
   labels:
     app: {{ template "tt-profile.name" . }}
     chart: {{ template "tt-profile.chart" . }}

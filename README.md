@@ -118,9 +118,7 @@ Once script finishes, everything is installed. If a service principal has been c
 Pre-requisites for this deployment are to have:
 
 - The AKS and all related resources deployed in Azure
-- A terminal with
-  - Bash environment with [jq](https://stedolan.github.io/jq/) installed **-OR-**
-  - Powershell environment
+- A terminal with Powershell environment
 - [Azure CLI 2.0](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest) installed.
 - [Kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) installed with the last version (v1.15.0 at this moment).
 - Docker installed
@@ -145,7 +143,7 @@ At this point if you type `kubectl config current-context` the name of your AKS 
 
 Helm is a tool to deploy resources in a Kubernetes cluster in a clean and simple manner. It is composed of two tools, one client-side (the Helm client) that needs to be installed on your machine, and a server component called _Tiller_ that has to be installed on the Kubernetes cluster.
 
-To install Helm, refer to its [installation page](https://docs.helm.sh/using_helm/#installing-helm). Once Helm is installed, _Tiller_ must be deployed on the cluster. For deploying _Tiller_ run the `add-tiller.sh` (from Bash) or the `./Add-Tiller.ps1` (from Powershell).
+To install Helm, refer to its [installation page](https://docs.helm.sh/using_helm/#installing-helm). Once Helm is installed, _Tiller_ must be deployed on the cluster. For deploying _Tiller_ run the `./Add-Tiller.ps1` (from Powershell).
 
 Once installed, helm commands like `helm ls` should work without any error.
 
@@ -208,16 +206,7 @@ Docker images are stored in a ACR (a private Docker Registry hosted in Azure).
 
 Before deploying anything on AKS, a secret must be installed to allow AKS to connect to the ACR through a Kubernetes' service account.
 
-To do so from a Bash terminal run the file `./create-secret.sh` with following parameters:
-
-- `-g <group>` Resource group where AKS is
-- `--acr-name <name>` Name of the ACR
-- `--clientid <id>` Client id of the service principal to use
-- `--password <pwd>` Service principal password
-
-Please, note that the Service principal must already exist. To create a service principal you can run the command `az ad sp create-for-rbac`.
-
-If using Powershell run the `./Create-Secret.ps1` inside `powershell` folder with following parameters:
+To do so from a Powershell terminal run the `./Create-Secret.ps1` inside `powershell` folder with following parameters:
 
 - `-resourceGroup <group>` Resource group where AKS is
 - `-acrName <name>` Name of the ACR
@@ -293,7 +282,7 @@ If Let's Encrypt is choose, then [cert-manager](https://github.com/jetstack/cert
 
 **Using Let's Encrypt and Cert manager**
 
-To enable SSL/TLS support you must do it **before deploying your images**. The first step is to add cert-manager to the cluster by running `./add-cert-manager.sh` or `./Add-Cert-Manager.ps1`. Both scripts accept no parameters and they use helm to configure cert-manager in the cluster. **This needs to be done only once.**
+To enable SSL/TLS support you must do it **before deploying your images**. The first step is to add cert-manager to the cluster by running `./Add-Cert-Manager.ps1`. It has no parameters and use helm to configure cert-manager in the cluster. **This needs to be done only once.**
 
 Then you should run `./Enable-Ssl.ps1` with following parameters:
 
