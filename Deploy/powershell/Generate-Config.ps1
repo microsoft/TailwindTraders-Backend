@@ -9,7 +9,7 @@ Param (
     [parameter(Mandatory=$false)][string]$ingressClass="addon-http-application-routing"
 )
 
-function EnsureAndReturnFistItem($arr, $restype) {
+function EnsureAndReturnFirstItem($arr, $restype) {
     if (-not $arr -or $arr.Length -ne 1) {
         Write-Host "Fatal: No $restype found (or found more than one)" -ForegroundColor Red
         exit 1
@@ -31,23 +31,23 @@ $tokens=@{}
 
 ## Getting storage info
 $storage=$(az storage account list -g $resourceGroup --query "[].{name: name, blob: primaryEndpoints.blob}" -o json | ConvertFrom-Json)
-$storage=EnsureAndReturnFistItem $storage "Storage Account"
+$storage=EnsureAndReturnFirstItem $storage "Storage Account"
 Write-Host "Storage Account: $($storage.name)" -ForegroundColor Yellow
 
 ## Getting CosmosDb info
 $docdb=$(az cosmosdb list -g $resourceGroup --query "[?kind=='GlobalDocumentDB'].{name: name, kind:kind, documentEndpoint:documentEndpoint}" -o json | ConvertFrom-Json)
-$docdb=EnsureAndReturnFistItem $docdb "CosmosDB (Document Db)"
+$docdb=EnsureAndReturnFirstItem $docdb "CosmosDB (Document Db)"
 $docdbKey=$(az cosmosdb list-keys -g $resourceGroup -n $docdb.name -o json --query primaryMasterKey | ConvertFrom-Json)
 Write-Host "Document Db Account: $($docdb.name)" -ForegroundColor Yellow
 
 $mongodb=$(az cosmosdb list -g $resourceGroup --query "[?kind=='MongoDB'].{name: name, kind:kind}" -o json | ConvertFrom-Json)
-$mongodb=EnsureAndReturnFistItem $mongodb "CosmosDB (MongoDb mode)"
+$mongodb=EnsureAndReturnFirstItem $mongodb "CosmosDB (MongoDb mode)"
 $mongodbKey=$(az cosmosdb list-keys -g $resourceGroup -n $mongodb.name -o json --query primaryMasterKey | ConvertFrom-Json)
 Write-Host "Mongo Db Account: $($mongodb.name)" -ForegroundColor Yellow
 
 If ($rewardsResourceGroup){
     $sqlsrv=$(az sql server list -g $rewardsResourceGroup --query "[].{administratorLogin:administratorLogin, name:name, fullyQualifiedDomainName: fullyQualifiedDomainName}" -o json | ConvertFrom-Json)
-    $sqlsrv=EnsureAndReturnFistItem $sqlsrv "SQL Server"
+    $sqlsrv=EnsureAndReturnFirstItem $sqlsrv "SQL Server"
     Write-Host "Rewards Sql Server: $($sqlsrv.name)" -ForegroundColor Yellow
 
     if (-not $rewardsDbPassword) {
@@ -83,7 +83,7 @@ $tokens.rewardsregistration=If ($rewardsResourceGroup) { $true } Else { $false }
 $appinsightsId=""
 
 ## Getting App Insights instrumentation key, if required
-$appInsightsName=$(az resource list -g tt-linux-cicd --resource-type Microsoft.Insights/components --query [].name | ConvertFrom-Json)
+$appInsightsName=$(az resource list -g $resourceGroup --resource-type Microsoft.Insights/components --query [].name | ConvertFrom-Json)
 if ($appInsightsName -and $appInsightsName.Length -eq 1) {
     $appinsightsConfig=$(az monitor app-insights component show --app $appInsightsName[0] -g $resourceGroup -o json | ConvertFrom-Json)
 
