@@ -83,7 +83,7 @@ $tokens.rewardsregistration=If ($rewardsResourceGroup) { $true } Else { $false }
 $appinsightsId=""
 
 ## Getting App Insights instrumentation key, if required
-$appInsightsName=$(az resource list -g tt-linux-cicd --resource-type Microsoft.Insights/components --query [].name | ConvertFrom-Json)
+$appInsightsName=$(az resource list -g $resourceGroup --resource-type Microsoft.Insights/components --query [].name | ConvertFrom-Json)
 if ($appInsightsName -and $appInsightsName.Length -eq 1) {
     $appinsightsConfig=$(az monitor app-insights component show --app $appInsightsName[0] -g $resourceGroup -o json | ConvertFrom-Json)
 
