@@ -59,7 +59,7 @@ inf:
     mobilebff:
       path: /mobilebff
     webbff:
-      path: /webbff    
+      path: /webbff
     login:
       path: /login-api
     cart:
@@ -85,8 +85,8 @@ ingress:
     kubernetes.io/ingress.class: addon-http-application-routing
     ingress.kubernetes.io/ssl-redirect: "false"
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
-    ingress.kubernetes.io/rewrite-target: /
-    nginx.ingress.kubernetes.io/rewrite-target: /
+    ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
 #  hosts:
 #    - <guid>.<region>.aksapp.io   # NOT NEEDED. SET BY SCRIPTS
 

@@ -70,7 +70,7 @@ function createHelmCommand([string]$command) {
     }
 
     if (-not [string]::IsNullOrEmpty($tlsSecretNameToUse)) {
-        $newcommand = "$newcommand --set ingress.tls[0].secretName=$tlsSecretNameToUse --set ingress.tls[0].hosts={$aksHost}"
+        $newcommand = "$newcommand --set ingress.tls[0].secretName=$tlsSecretNameToUse --set ingress.tls[0].hosts='{$aksHost}'"
     }
 
     return "$newcommand";

@@ -127,8 +127,10 @@ namespace Tailwind.Traders.WebBff.Controllers
                 }
             };
 
-            var formDataContent = new MultipartFormDataContent();
-            formDataContent.Add(fileContent, "file", file.FileName);
+            var formDataContent = new MultipartFormDataContent
+            {
+                { fileContent, "file", file.FileName }
+            };
 
             var response = await client.PostAsync(API.Products.ImageClassifier.PostImage(_settings.ImageClassifierApiUrl, VERSION_API), formDataContent);
 

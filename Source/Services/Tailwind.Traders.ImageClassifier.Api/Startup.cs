@@ -107,8 +107,6 @@ namespace Tailwind.Traders.ImageClassifier.Api
                   c.RoutePrefix = string.Empty;
               });
 
-            app.UseHttpsRedirection();
-
             app.UseRouting();
 
             app.UseEndpoints(endpoints =>

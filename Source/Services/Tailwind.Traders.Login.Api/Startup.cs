@@ -67,8 +67,6 @@ namespace Tailwind.Traders.Login.Api
                     .AllowAnyMethod();
             });
 
-            app.UseHttpsRedirection();
-
             app.UseRouting();
 
             app.UseEndpoints(endpoints =>
