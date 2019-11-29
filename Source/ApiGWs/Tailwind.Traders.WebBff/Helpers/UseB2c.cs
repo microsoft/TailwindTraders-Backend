@@ -1,12 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Tailwind.Traders.WebBff.Helpers
 {
-
     public static class UseBc2
     {
         public static  bool GetUseB2CBoolean(IConfiguration _configuration)

@@ -65,8 +65,6 @@ namespace Tailwind.Traders.Product.Api
                     .AllowAnyMethod();
             });
 
-            app.UseHttpsRedirection();
-
             app.UseRouting();
 
             app.UseEndpoints(endpoints =>
@@ -76,8 +74,6 @@ namespace Tailwind.Traders.Product.Api
                 endpoints.MapDefaultControllerRoute();
                 endpoints.MapControllers();
             });
-
-            
         }
     }
 }

@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
@@ -82,6 +81,7 @@ namespace Tailwind.Traders.WebBff.Controllers
             {
                 Profile = profile
             };
+
             return Ok(aggresponse);
         }
     }

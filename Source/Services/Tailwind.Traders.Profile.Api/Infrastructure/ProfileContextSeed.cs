@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Logging;
 using System.Linq;
 using System.Threading.Tasks;
 using Tailwind.Traders.Profile.Api.Csv;
@@ -11,12 +10,10 @@ namespace Tailwind.Traders.Profile.Api.Infrastructure
     public class ProfileContextSeed
     {
         private readonly CsvReaderHelper _csvHelper;
-        private readonly ILogger _logger;
 
-        public ProfileContextSeed(CsvReaderHelper csvHelper, ILogger logger)
+        public ProfileContextSeed(CsvReaderHelper csvHelper)
         {
             _csvHelper = csvHelper;
-            _logger = logger;
         }
 
         public async Task SeedAsync(ProfileContext profileContext, IWebHostEnvironment env)

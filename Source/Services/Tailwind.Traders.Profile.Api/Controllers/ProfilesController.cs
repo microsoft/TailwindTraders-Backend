@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using Microsoft.Extensions.Primitives;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -53,14 +52,7 @@ namespace Tailwind.Traders.Profile.Api.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> GetProfile()
         {
-            StringValues headerValues;
-            var nameFilter = string.Empty;
-
-            if (Request.Headers.TryGetValue("x-tt-name", out headerValues))
-            {
-                nameFilter = headerValues.FirstOrDefault();
-            }
-
+            var nameFilter = User.Identity.Name ?? string.Empty;
             var result = await _ctx.Profiles
                             .Where(p => p.Email == nameFilter)
                             .Select(p => p.ToProfileDto(_settings))

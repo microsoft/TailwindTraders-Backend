@@ -86,15 +86,12 @@ namespace Tailwind.Traders.Bff
                     .AllowAnyMethod();
             });
 
-            app.UseHttpsRedirection();
-
             app.UseRouting();
 
             app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseSwagger();
-
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint(swaggerEndpoint, "MobileBFF V1");

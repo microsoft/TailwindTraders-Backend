@@ -10,7 +10,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
 using RegistrationUserService;
 using System;
 using System.ServiceModel;
@@ -37,25 +36,15 @@ namespace Tailwind.Traders.WebBff
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddHttpClientServices(Configuration);
-
+            services.AddHttpClientServices();
             services.Configure<AppSettings>(Configuration);
-
             services.AddTransient<IUserService>(_ => new UserServiceClient(
                 EndpointConfiguration.BasicHttpBinding_IUserService,
                 new EndpointAddress(Configuration["RegistrationUsersEndpoint"])));
 
             services.AddTransient<IRegisterService, RegisterService>();
 
-            services.AddSwaggerGen(options =>
-            {
-                options.SwaggerDoc("v1", new OpenApiInfo
-                {
-                    Title = "Tailwind Traders - Web BFF HTTP API",
-                    Version = "v1"
-                });
-            });
-
+            services.AddSwagger();
             services.AddApiVersioning(options =>
             {
                 options.ReportApiVersions = true;
@@ -71,31 +60,31 @@ namespace Tailwind.Traders.WebBff
             }
 
             services.AddControllers()
-                .SetCompatibilityVersion(CompatibilityVersion.Latest)
-                .AddNewtonsoftJson()
-                .Services
-                .AddHealthChecks(Configuration)
-                .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(options =>
-                {
-                    if (UseBc2.GetUseB2CBoolean(Configuration))
-                    {
-                        options.Authority = Configuration["Authority"];
-                        options.TokenValidationParameters.ValidateAudience = false;
-                        options.RequireHttpsMetadata = false;
-                    }
-                    else
-                    {
-                        options.TokenValidationParameters = new TokenValidationParameters
-                        {
-                            ValidateIssuer = true,
-                            ValidateAudience = false,
-                            ValidIssuer = Configuration["Issuer"],
-                            ValidateLifetime = true,
-                            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["SecurityKey"]))
-                        };
-                    }
-                });
+                            .SetCompatibilityVersion(CompatibilityVersion.Latest)
+                            .AddNewtonsoftJson()
+                            .Services
+                            .AddHealthChecks(Configuration)
+                            .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                            .AddJwtBearer(options =>
+                            {
+                                if (UseBc2.GetUseB2CBoolean(Configuration))
+                                {
+                                    options.Authority = Configuration["Authority"];
+                                    options.TokenValidationParameters.ValidateAudience = false;
+                                    options.RequireHttpsMetadata = false;
+                                }
+                                else
+                                {
+                                    options.TokenValidationParameters = new TokenValidationParameters
+                                    {
+                                        ValidateIssuer = true,
+                                        ValidateAudience = false,
+                                        ValidIssuer = Configuration["Issuer"],
+                                        ValidateLifetime = true,
+                                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["SecurityKey"]))
+                                    };
+                                }
+                            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -103,7 +92,7 @@ namespace Tailwind.Traders.WebBff
         {
             var swaggerEndpoint = "/swagger/v1/swagger.json";
 
-            if(!string.IsNullOrEmpty(Configuration["gwPath"]))
+            if (!string.IsNullOrEmpty(Configuration["gwPath"]))
             {
                 swaggerEndpoint = $"/{Configuration["gwPath"]}{swaggerEndpoint}";
             }
@@ -122,15 +111,11 @@ namespace Tailwind.Traders.WebBff
                     .AllowAnyMethod();
             });
 
-            app.UseHttpsRedirection();
-
             app.UseRouting();
-
             app.UseAuthentication();
             app.UseAuthorization();
-
             app.UseSwagger();
-    
+
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint(swaggerEndpoint, "WebBFF V1");
@@ -149,7 +134,7 @@ namespace Tailwind.Traders.WebBff
 
     static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddHttpClientServices(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddHttpClientServices(this IServiceCollection services)
         {
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
