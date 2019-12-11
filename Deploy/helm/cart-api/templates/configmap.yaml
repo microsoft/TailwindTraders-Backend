@@ -16,11 +16,11 @@ data:
   ISSUER: {{ .Values.sec.issuer }}
   SECURITYKEY: {{ .Values.sec.securityKey }}
   UseB2C: {{ .Values.B2C.UseB2C | quote }}
-  tenantID: {{ .Values.B2C.tenantID }}
-  clientID: {{ .Values.B2C.clientID }}
-  policyName: {{ .Values.B2C.policyName }}
-  identityMetadata: {{ .Values.B2C.identityMetadata }}
-  issuer: {{ .Values.B2C.issuer }}
+  tenantID: {{ .Values.B2C.tenantID | quote }}
+  clientID: {{ .Values.B2C.clientID | quote }}
+  policyName: {{ .Values.B2C.policyName | quote }}
+  identityMetadata: {{ .Values.B2C.identityMetadata | quote }}
+  issuer: {{ .Values.B2C.issuer | quote }}
   APPLICATIONINSIGHTSIK:  {{ .Values.inf.appinsights.id }} 
 
 

@@ -35,9 +35,6 @@ Write-Host "The name of your AKS: $aksName" -ForegroundColor Yellow
 Write-Host "Retrieving credentials" -ForegroundColor Yellow
 az aks get-credentials -n $aksName -g $resourceGroup
 
-# ## Add Tiller
-.\powershell\Add-Tiller.ps1
-
 ## Generate Config
 .\powershell\Generate-Config.ps1 -resourceGroup $resourceGroup -outputFile "..\helm\__values\$gValuesFile" -rewardsResourceGroup $rewardsResourceGroup -rewardsDbPassword $rewardsDbPassword
 

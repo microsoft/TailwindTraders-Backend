@@ -5,7 +5,6 @@ This folder contains a set of deployment scripts to cover various scenarios
 ## Powershell scripts inside powershell folder
 
 - `Add-Cert-Manager.ps1`: Adds cert manager to AKS.
-- `Add-Tiller.ps1`: Installs and configure Tiller.
 - `Build-Push.ps1`: Build and pushes all Docker images to ACR.
 - `Create-Secret.ps1`: Create the secret `acr-auth` in AKS used to allow pulling images from ACR.
 - `Deploy-Arm-Azure.ps1`: Deploys the ARM script to Azure and configure resources.
