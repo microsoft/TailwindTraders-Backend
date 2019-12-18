@@ -33,6 +33,30 @@ Tailwind Traders supports two deployment scenarios:
 1. [Deploy Tailwind Traders Backend on Azure AKS and Azure resources (CosmosDb and Storage accounts)](#deploy-resources)
 2. [Deploy Tailwind Traders Backend on Windows and Linux containers in AKS](#deploy-win-linux-containers)
 
+#### Service Principal
+
+A Service Principal is needed for creating the AKS. If you use the [CLI for create the resources](#create-infrastructure-cli), you can reuse a SP one passing to the script the id and password as optional parameters; if not, the script will create a new one for you and will print the details (id and password among them).
+
+In case you use [Azure Portal for the resources' creation](#create-infrastructure-portal), you can also reuse a SP or create manually a new one for passing the credentials to the template.
+
+If you want to create a Service Principal, you can do so via the CLI
+
+```
+az ad sp create-for-rbac --skip-assignment --name myAKSClusterServicePrincipal
+```
+
+The output is similar to the following example. Make a note of your own appId and password. These values are used when you create an AKS cluster throughout this guide.
+
+```
+{
+  "appId": "559513bd-0c19-4c1a-87cd-851a26afd5fc",
+  "displayName": "myAKSClusterServicePrincipal",
+  "name": "http://myAKSClusterServicePrincipal",
+  "password": "e763725a-5eee-40e8-a466-dc88d980f415",
+  "tenant": "72f988bf-86f1-41af-91ab-2d7cd011db48"
+}
+```
+
 ### Deploy using one script
 
 You can deploy all basics scenarios using one script under `/Deploy` folder.
@@ -124,12 +148,6 @@ Pre-requisites for this deployment are to have:
 - [Helm 3](https://helm.sh/docs/intro/install/) installed with 3.0 or superior version (v3.0.0 at this moment).
 - Docker installed
 
-#### Service Principal
-
-A Service Principal is needed for creating the AKS. If you use the [CLI for create the resources](#create-infrastructure-cli), you can reuse a SP one passing to the script the id and password as optional parameters; if not, the script will create a new one for you and will print the details (id and password among them).
-
-In case you use [Azure Portal for the resources' creation](#create-infrastructure-portal), you can also reuse a SP or create manually a new one for passing the credentials to the template.
-
 #### Connecting kubectl to AKS
 
 From the terminal type:
@@ -209,8 +227,6 @@ In case that ACR is not created with administrator rights you will have to provi
 
 - `-clientId <id>` Client id of the service principal to use
 - `-password <pwd>` Service principal secret
-
-Please, note that the Service principal must exist. To create a service principal you can run the command `az ad sp create-for-rbac`.
 
 #### Build & deploy images to ACR
 
