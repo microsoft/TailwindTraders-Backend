@@ -35,9 +35,6 @@ Write-Host "The name of your AKS: $aksName" -ForegroundColor Yellow
 # Write-Host "Retrieving credentials" -ForegroundColor Yellow
 az aks get-credentials -n $aksName -g $resourceGroup
 
-# Add Tiller
-& ./Add-Tiller.ps1
-
 # Generate Config
 $gValuesLocation=$(./Join-Path-Recursively.ps1 -pathParts ..,helm,__values,$gValuesFile)
 & ./Generate-Config.ps1 -resourceGroup $resourceGroup -outputFile $gValuesLocation
