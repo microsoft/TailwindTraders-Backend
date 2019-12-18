@@ -31,7 +31,7 @@ spec:
     - host: {{ . }}
       http:
         paths:
-          - path: {{ $ingressPath }}(/|$)(.*)
+          - path: {{ $ingressPath }}
             backend:
               serviceName: rewards-registration
               servicePort: http

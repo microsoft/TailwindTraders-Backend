@@ -40,27 +40,27 @@ inf:
     id: {{appinsightsik}}
   ingress:
     products:
-      path: /product-api
+      path: /product-api{{ingressrewritepath}}
     profile:
-      path: /profile-api
+      path: /profile-api{{ingressrewritepath}}
     coupons:
-      path: /coupons-api
+      path: /coupons-api{{ingressrewritepath}}
     popularproducts:
-      path: /popular-products-api
+      path: /popular-products-api{{ingressrewritepath}}
     stock:
-      path: /stock-api
+      path: /stock-api{{ingressrewritepath}}
     imageclassifier:
-      path: /image-classifier-api
+      path: /image-classifier-api{{ingressrewritepath}}
     mobilebff:
-      path: /mobilebff
+      path: /mobilebff{{ingressrewritepath}}
     webbff:
-      path: /webbff    
+      path: /webbff{{ingressrewritepath}}
     login:
-      path: /login-api      
+      path: /login-api{{ingressrewritepath}}
     cart:
-      path: /cart-api
+      path: /cart-api{{ingressrewritepath}}
     rewardsregistration:
-      path: /rewards-registration-api
+      path: /rewards-registration-api{{ingressrewritepath}}
   apiurls:
     popularproductsapiurl: http://popularproducts
     productsapiurl: http://product 
@@ -80,8 +80,8 @@ ingress:
     kubernetes.io/ingress.class: {{ingressclass}}
     ingress.kubernetes.io/ssl-redirect: "false"
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
-    ingress.kubernetes.io/rewrite-target: /$2
-    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    ingress.kubernetes.io/rewrite-target: /{{ingressrewritetarget}}
+    nginx.ingress.kubernetes.io/rewrite-target: /{{ingressrewritetarget}}
 #  hosts:
 #    - <guid>.<region>.aksapp.io   # NOT NEEDED. SET BY SCRIPTS
 
