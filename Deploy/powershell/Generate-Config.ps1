@@ -65,6 +65,18 @@ else {
     $tokens.rewardspwd="password"
 }
 
+## Getting App Insights instrumentation key, if required
+$appinsightsId=""
+$appInsightsName=$(az resource list -g $resourceGroup --resource-type Microsoft.Insights/components --query [].name | ConvertFrom-Json)
+if ($appInsightsName -and $appInsightsName.Length -eq 1) {
+    $appinsightsConfig=$(az monitor app-insights component show --app $appInsightsName[0] -g $resourceGroup -o json | ConvertFrom-Json)
+
+    if ($appinsightsConfig) {
+        $appinsightsId = $appinsightsConfig.instrumentationKey           
+    }
+}
+Write-Host "App Insights Instrumentation Key: $($appinsightsId)" -ForegroundColor Yellow
+
 ## Showing Values that will be used
 
 Write-Host "===========================================================" -ForegroundColor Yellow
@@ -79,21 +91,6 @@ $tokens.couponspwd=$mongodbKey
 
 $tokens.storage=$storage.blob
 $tokens.rewardsregistration=If ($rewardsResourceGroup) { $true } Else { $false }
-
-$appinsightsId=""
-
-## Getting App Insights instrumentation key, if required
-$appInsightsName=$(az resource list -g $resourceGroup --resource-type Microsoft.Insights/components --query [].name | ConvertFrom-Json)
-if ($appInsightsName -and $appInsightsName.Length -eq 1) {
-    $appinsightsConfig=$(az monitor app-insights component show --app $appInsightsName[0] -g $resourceGroup -o json | ConvertFrom-Json)
-
-    if ($appinsightsConfig) {
-        $appinsightsId = $appinsightsConfig.instrumentationKey
-        Write-Host "App Insights Instrumentation Key: $($appinsightsId)" -ForegroundColor Yellow    
-    }
-}
-
-Write-Host "App Insights Instrumentation Key: $($appinsightsId)" -ForegroundColor Yellow
 $tokens.appinsightsik=$appinsightsId
 
 # Standard fixed tokens
