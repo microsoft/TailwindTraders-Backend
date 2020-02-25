@@ -2,7 +2,7 @@
 {{- $cfgname := printf "%s-%s" "cfg" $name -}}
 {{- $cfginitname := printf "%s-%s" "cfg-init" $name -}}
 
-apiVersion: apps/v1beta2
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ template "tt-popularproducts.fullname" . }}
