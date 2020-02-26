@@ -1,4 +1,4 @@
-apiVersion: certmanager.k8s.io/v1alpha1
+apiVersion: cert-manager.io/v1alpha2
 kind: Issuer
 metadata:
   name: {{ .Values.issuerName }}
@@ -11,4 +11,7 @@ spec:
     email: not@used.com
     privateKeySecretRef:
       name: {{ .Values.issuerSecretName }}
-    http01: {}
+    solvers:
+    - http01:
+        ingress:
+          class: {{ .Values.ingressClass }}
