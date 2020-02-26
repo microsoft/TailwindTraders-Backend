@@ -3,8 +3,9 @@ kind: Issuer
 metadata:
   name: {{ .Values.issuerName }}
   namespace: default
-  environment: {{ .Values.environment }}
-  app: {{ .Values.applicationName }}
+  labels:
+    environment: {{ .Values.environment }}
+    app: {{ .Values.applicationName }}
 spec:
   acme:
     server: {{ .Values.server }}
