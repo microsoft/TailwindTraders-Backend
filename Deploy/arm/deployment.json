@@ -21,7 +21,7 @@
     "storage_name": "[concat('ttstorage',uniqueString(resourceGroup().id))]",
     "aks_name": "[concat('tailwindtradersaks',uniqueString(resourceGroup().id))]",
     "function_name": "[concat('ttfunction',uniqueString(resourceGroup().id))]",
-    "cuopons_cosmosdb_name": "[concat('ttcuoponsdb',uniqueString(resourceGroup().id))]",
+    "coupons_cosmosdb_name": "[concat('ttcouponsdb',uniqueString(resourceGroup().id))]",
     "shopping_cosmosdb_name": "[concat('ttshoppingdb',uniqueString(resourceGroup().id))]",
     "workspaceName": "[concat('ttoms', uniqueString(resourceGroup().id))]",
     "omsWorkspaceId": "[concat('/subscriptions/', subscription().subscriptionId,'/resourceGroups/',resourceGroup().name,'/providers/Microsoft.OperationalInsights/workspaces/', variables('workspaceName'))]"
@@ -176,13 +176,13 @@
       "apiVersion": "2015-04-08",
       "kind": "MongoDB",
       "type": "Microsoft.DocumentDB/databaseAccounts",
-      "name": "[variables('cuopons_cosmosdb_name')]",
+      "name": "[variables('coupons_cosmosdb_name')]",
       "location": "[resourceGroup().location]",
       "properties": {
         "databaseAccountOfferType": "Standard",
         "locations": [
           {
-            "id": "[concat(variables('cuopons_cosmosdb_name'), '-', resourceGroup().location)]",
+            "id": "[concat(variables('coupons_cosmosdb_name'), '-', resourceGroup().location)]",
             "failoverPriority": 0,
             "locationName": "[resourceGroup().location]"
           }
@@ -275,9 +275,9 @@
       "type": "string",
       "value": "[variables('function_name')]"
     },
-    "cuoponsdb": {
+    "couponsdb": {
       "type": "string",
-      "value": "[variables('cuopons_cosmosdb_name')]"
+      "value": "[variables('coupons_cosmosdb_name')]"
     },
     "shoppingdb": {
       "type": "string",
