@@ -1,14 +1,18 @@
-apiVersion: certmanager.k8s.io/v1alpha1
+apiVersion: cert-manager.io/v1alpha2
 kind: Issuer
 metadata:
   name: {{ .Values.issuerName }}
   namespace: default
-  environment: {{ .Values.environment }}
-  app: {{ .Values.applicationName }}
+  labels:
+    environment: {{ .Values.environment }}
+    app: {{ .Values.applicationName }}
 spec:
   acme:
     server: {{ .Values.server }}
     email: not@used.com
     privateKeySecretRef:
       name: {{ .Values.issuerSecretName }}
-    http01: {}
+    solvers:
+    - http01:
+        ingress:
+          class: {{ .Values.ingressClass }}
