@@ -1,22 +1,15 @@
-apiVersion: certmanager.k8s.io/v1alpha1
+apiVersion: cert-manager.io/v1alpha2
 kind: Certificate
 metadata:
   name: {{ .Values.certName }}
   namespace: default
-  environment: {{ .Values.environment }}
-  app: {{ .Values.applicationName }}
+  labels:
+    environment: {{ .Values.environment }}
+    app: {{ .Values.applicationName }}
 spec:
   secretName: {{ .Values.certSecretName }}
   issuerRef:
     name: {{ .Values.issuerName }}
-    environment: {{ .Values.environment }}
-    app: {{ .Values.applicationName }}
   commonName: {{ .Values.domain }}
   dnsNames:
   - {{ .Values.domain }}
-  acme:
-    config:
-    - http01:
-        ingressClass: {{ .Values.ingressClass }}
-      domains:
-      - {{ .Values.domain }}
