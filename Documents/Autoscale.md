@@ -12,7 +12,7 @@ You can get more information in [Kubernetes docs about HPA and metrics](https://
 
 Run `helm ls` to find the Service API release name you want to set the *HPA*.
 
-![Output of helm ls showing the deployed releases](./Images/deployed-releases.png)
+![Output of helm ls showing the deployed releases](Images/deployed-releases.PNG)
 
 
 ### Deploy HPA for the API and BFF services
@@ -22,7 +22,7 @@ To activate and configure the HPA feature, follow the following steps:
 1. Redeploy the services in AKS as explained in [Deploy Backend services on AKS](./DeploymentGuide.md#deploying-services) (don't forget to set the -autoscale parameter in `Deploy-Images-Aks.ps1` )
 2. If you type `kubectl get hpa`, the deployed HPAs will be showed:
 
-    ![Output of kubectl get hpa showing the all the deployed hpas](./Images/all-hpas-deployed.png)
+    ![Output of kubectl get hpa showing the all the deployed hpas](Images/all-hpas-deployed.PNG)
 3. Say `Hooray!`
 
 *Note:* If you open the `gvalues.yaml`, `gvalues_inf.yaml` files or use a values file generates by the `Generate-Config.ps1` script you'll see the following values:
