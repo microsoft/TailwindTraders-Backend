@@ -10,8 +10,8 @@ This repository contains all code + deployment scripts for the Tailwind Traders 
 - [Deployment scenarios](#deployment-scenarios)
   - [Deploy Tailwind Traders Backend on Azure AKS and Azure resources (CosmosDb and Storage accounts)](#deploy-resources)
   - [Deploy Tailwind Traders Backend on Windows and Linux containers in AKS](#deploy-win-linux-containers)
-- [Run Tailwind Traders Backend Services Locally](#run-backend-locally)
-- [Run Tailwind Traderes Backend using Devspaces](#run-devspaces)
+- [Run Tailwind Traders Backend Services Locally(#run-backend-locally)
+- [Run Tailwind Traders Backend using Bridge to Kubernetes](#run-bridge2k8s)
 - [Test image classiffier](#test-image)
 - [Contributing](#contributing)
 
@@ -507,257 +507,202 @@ COSMOSDB_AUTHKEY=C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyP
 
 To run the Backend using Visual Studio, just open the `Tailwind.Traders.Backend.sln`, and set "Docker-compose" as startup project and run the solution. Visual Studio will use the compose file to build and run all the containers.
 
-# <a name="run-devspaces"></a>Running using Devspaces
+# <a name="run-bridge2ks"></a>Running using Bridge to Kubernetes
 
-Tailwind Traders supports [Azure Devspaces](https://docs.microsoft.com/en-us/azure/dev-spaces/). Follow the steps in this document to deploy Tailwind traders under devspaces.
+Tailwind Traders supports [Bridge to Kubernetes](https://code.visualstudio.com/docs/containers/bridge-to-kubernetes). Follow the steps in this document to use Bridge to kubernetes with Tailwind Traders.
 
-**Note**: There is an [end-to-end Devspaces demo](<https://github.com/microsoft/TailwindTraders/tree/main/Documents/DemoScripts/Managing%20backend%20with%20Azure%20Kubernetes%20Service%20(AKS)>).
+### Requirements
 
-### Requeriments
+- A Kubernetes Cluster with an app you want to debug (Tailwind Traders)
+- [Visual Studio Code](https://code.visualstudio.com/download) running on macOS, Windows 10, or Linux 
+- The [Bridge to Kubernetes](https://marketplace.visualstudio.com/items?itemName=mindaro.mindaro) extension installed in Visual Studio Code
 
-- AKS with Devspaces enabled
-- Devspaces CLI installed
-
-**Note** Tailwind Traders has been tested with Devspaces CLI version:
-
-```
-Azure Dev Spaces CLI
-1.0.20190423.8
-API v3.2
-```
-
-### Creating a parent Devspace
-
-First you need to create the parent devspace, using Azure CLI:
+**Note** Tailwind Traders has been tested with Bridge to Kubernetes version:
 
 ```
-> azds space select
-Select a dev space or Kubernetes namespace to use as a dev space.
- [1] default
-Type a number or a new name:
+Bridge to Kubernetes
+v1.0.120210126
 ```
 
-Type the name of the parent devspace in the prompr (like dev):
+### Configuring Bridge to Kubernetes
+Bridge to Kubernetes will work with the following Tailwind Traders APIs in this repo and serve as examples of how easy it is to get started debugging Kubernetes Microservices:
+
+- [Tailwind.Traders.Login.Api - .NET 5.0 Example](Source/Services/Tailwind.Traders.Login.Api)
+- [Tailwind.Traders.Cart.Api - NodeJS Example](Source/Services/Tailwind.Traders.Cart.Api)
+- [Tailwind.Traders.Coupon.Api - NodeJS Example](Source/Services/Tailwind.Traders.Coupon.Api)
+
+In each of the above folders, you will find a .vscode folder with the following files:
+
+- launch.json
+- tasks.json
+
+These files already contain the configuration code for Visual Studio Code to connect the existing debuggers (.NET or Node) to Bridge to Kubernetes. Note: These examples assume you have Tailwind Traders deployed to a Kubernetes namespace with the name: `twt`. If you have them deployed to a namespace with a different name, you will have to update the `"targetNamespace"` in the tasks.json folder for your API of choice.
+
+Here are some samples of the `launch.json`:
 
 ```
-Dev space 'dev' does not exist and will be created.
-
-Select a parent dev space or Kubernetes namespace to use as a parent dev space.
- [0] <none>
- [1] default
-Type a number:
+nodeJS debug with Kubernetes sample:
+{
+    "type": "node",
+    "request": "launch",
+    "name": "Launch Program with Kubernetes",
+    "skipFiles": [
+        "<node_internals>/**"
+    ],
+    "program": "${workspaceFolder}/bin/www",
+    "preLaunchTask": "bridge-to-kubernetes.service",
+    "env": {
+        "GRPC_DNS_RESOLVER": "native"
+    }
+},
 ```
 
-Type `0` to make the `dev` devspace a root devspace.
-
-Then the devspace is created. You can check that the devspace is created by typing:
+```
+.NET 5.0 debug with Kubernetes sample:
+{
+    "name": ".NET Launch with Kubernetes",
+    "type": "coreclr",
+    "request": "launch",
+    "preLaunchTask": "bridge-to-kubernetes.compound",
+    "program": "${workspaceFolder}/bin/Debug/net5.0/Tailwind.Traders.Login.Api.dll",
+    "args": [],
+    "cwd": "${workspaceFolder}",
+    "console": "internalConsole",
+    "stopAtEntry": false,
+    "env": {
+        "GRPC_DNS_RESOLVER": "native",
+        "ASPNETCORE_URLS": "http://+:5000"
+    }
+},
+```
+The `tasks.json` will contain the tasks to launch the `bridge-to-kubernetes.service` with isolated addresses. Here are some samples:
 
 ```
->azds space list
-   Name     DevSpacesEnabled
--  -------  ----------------
-   default  False
-*  dev      True
-```
-
-### Deploying the service account and secrets in the namespace
-
-Run Create-Secret.ps1 inside /Deploy/powershell it will create ttsa and ACR secret related to your **namespace**.
-
-- `-resourceGroup`: Name of the resource group **Required for this demo**.
-- `-acrName`: Name of your Azure Container Registry **Required for this demo**.
-- `-clientId`: Service Principal Id.
-- `-password`: Service Principal Password.
-- `-namespace`: Name of your namespace defined above, default is empty. **Required for this demo for example `dev`**.
-
-It will create pods needed to deploy images, ttsa and acr-secrets pods inside selected namespace.
-
-### Deploying to the parent Devspace using CLI
-
-Like deploying without devspaces you need a configuration file (a _gvalues.yml_ like file) with all the needed configuration (connection strings, storage keys, endpoints, etc). To be used by devspaces this file **has to be named `gvalues.azds.yaml`** and **has to be located in the `/Deploy/helm/` folder**.
-
-> **Note**: File `/Deploy/helm/gvalues.azds.yaml` is in the `.gitignore`, so it is ignored by Git.
-
-You should have to copy your configuration file to the `/Deploy/helm` and rename to `gvalues.azds.yaml`. The powershell script `/Deploy/demos/devspaces/Prepare-Devspaces.ps1` can do it for you:
+nodeJS bridge-to-kubernetes.service sample:
+{
+  "label": "bridge-to-kubernetes.service",
+  "type": "bridge-to-kubernetes.service",
+  "service": "cart",
+  "ports": [
+    3000
+  ],
+  "targetCluster": "tailwindtradersakscnnn2hudd2oae",
+  "targetNamespace": "twt",
+  "isolateAs": "twtsample-f325"
+}
 
 ```
-.\Prepare-Devspaces.ps1 -file \Path\To\My\Config\File.yaml
+```
+.NET 5.0 bridge-to-kubernetes.service sample:
+{
+    "label": "bridge-to-kubernetes.service",
+    "type": "bridge-to-kubernetes.service",
+    "service": "login",
+    "ports": [
+        5000
+    ],
+    "targetCluster": "tailwindtradersakscnnn2hudd2oae",
+    "targetNamespace": "twt",
+    "isolateAs": "twtsample-8bbd"
+},
+{
+    "label": "bridge-to-kubernetes.compound",
+    "dependsOn": [
+        "bridge-to-kubernetes.service",
+        "build"
+    ],
+    "dependsOrder": "sequence"
+}
 ```
 
-Example (inside devspaces folder run):
+### Creating your own configurations
+First, you will need to make sure your local system has access to your Kubernetes Cluster, and that you are in the namespace with your application deployed.
 
-```
-.\prepare-devspaces.ps1 -file ..\..\helm\__values\configFile.yaml
-```
+Second, you will need to ensure you have a Run and Debug configuration (`launch.json`) existing for your application. 
 
-The script just copies the file passed in to the `/Deploy/helm` folder with the right name. If file already exists is overwritted.
+Once you have your launch.json for your application code working locally, you are ready to add your own Bridge to Kubernetes configuration.
 
-Once you have a valid configuration file, you need to deploy the APIs to the devspaces. You need to go to the **root source folder of each API** and type:
+1. Open your command palette. (`cmd` + `shift` + `p` on macOS or `ctrl` + `shift` + `p` on Windows)
+2. Search for `Bridge to Kubernetes: Configure`, hit `enter`
+3. Bridge to Kubernetes will beging to search your Kubernetes cluster to find which services exist; you will then need to select which service you want to route traffic for.
+4. You will then be prompted to enter a port for which your application serves _local_ traffic.
 
-```
-azds up -v -d
-```
+Example: 
 
-(The _root source folder_ of each API is the one that has the `azds.yaml` file, like `/Source/Services/Tailwind.Traders.Login.Api/` or `/Source/ApiGWs/Tailwind.Traders.WebBff/`).
+The nodeJS samples provided for Tailwind Traders, by default, serve traffic on port 3000. If you were to debug _locally_ you would use port 3000; thus, you would enter port 3000 in the Bridge to Kubernetes box. 
 
-APIs that have devspaces enabled are:
+Alternatively, the .NET 5.0 sample provided for Tailwind Traders, by default, serve traffic on port 5000. Thus, would use enter port 5000 in the Bridge to Kubernetes box.
 
-- MobileBFF (`/Source/ApiGWs/Tailwind.Traders.Bff`) - a Net Core API
-- WebBFF (`/Source/ApiGWs/Tailwind.Traders.WebBff`) - a Net Core API
-- Cart API (`/Source/Services/Tailwind.Traders.Cart.Api`) - a Node.js API
-- Coupons API (`/Source/Services/Tailwind.Traders.Coupon.Api`) - a Node.js API
-- Login API (`/Source/Services/Tailwind.Traders.Login.Api`) - a Net Core API
-- Popular Products API (`/Source/Services/Tailwind.Traders.PopularProduct.Api`) - a Golang API
-- Profiles API (`/Source/Services/Tailwind.Traders.Profile.Api`) - a Net Core API
-- Stock API (`/Source/Services/Tailwind.Traders.Stock.Api`) - a Java API
+5. Lastly, you will be asked if you want to isolate traffic for the service you selected. The samples provided above assume you __will__ want to route traffic, which will create an isolated environment, with a DNS prefix, where you can test your selected service. If you do not wisht to isolate traffic, you would select `no`; if you do wish to isolate traffic, you would select `yes`. A default `"isolateAs"` will be added to your `.vscode/tasks.json`. If you wish, you may change this value to anything you want.
 
-Once you have all them deployed in Dev Spaces you can check it using `azds list-up`:
+### Using Bridge to Kubernetes
+First, you will need to make sure you have access to the cluster you have Tailwind Traders deployed, and you are in the current namespace where the Tailwind Traders services are running.
 
-```
->  azds list-up
-Name             DevSpace  Type     Updated  Status
----------------  --------  -------  -------  -------
-cart             dev       Service  8m ago   Running
-coupons          dev       Service  7m ago   Running
-login            dev       Service  7m ago   Running
-mobilebff        dev       Service  15m ago  Running
-popularproducts  dev       Service  5m ago   Running
-product          dev       Service  3m ago   Running
-profile          dev       Service  2m ago   Running
-stock            dev       Service  1m ago   Running
-webbff           dev       Service  9m ago   Running
-```
+Second, you will need to make sure you are using Visual Studio Code with the API folder you wish to debug. If you are using macOS, it is recommended you launch Visual Studio Code from a terminal so you have access to all tools in your path. 
 
-Each API has its own _ingress_ created. The command `azds list-uris` will display all URIs for every service:
+Example:
 
-```
->  azds list-uris
-Uri                                                                     Status
-----------------------------------------------------------------------  ---------
-http://dev.tt.xxxxxxxxxs.weu.azds.io/cart-api                           Available
-http://dev.tt.xxxxxxxxxs.weu.azds.io/coupons-api                        Available
-http://dev.tt.xxxxxxxxxs.weu.azds.io/login-api                          Available
-http://dev.tt.xxxxxxxxxs.weu.azds.io/mobilebff                          Available
-http://dev.tt.xxxxxxxxxs.weu.azds.io/popular-products-api               Available
-http://dev.tt.xxxxxxxxxs.weu.azds.io/product-api                        Available
-http://dev.tt.xxxxxxxxxs.weu.azds.io/profile-api                        Available
-http://dev.tt.xxxxxxxxxs.weu.azds.io/stock-api                          Available
-http://dev.tt.xxxxxxxxxs.weu.azds.io/webbff                             Available
-```
+From within a Terminal Session, you would navigate to the folder you wish to open and debug within Visual Studio Code:
 
-All pods run in the namespace selected as a Dev Space (`dev` in our case). Using `kubectl get pods` will show all running pods:
+`cd TailwindTraders-Backend/Source/Services/Tailwind.Traders.Cart.Api && code .`
 
-```
->  kubectl get pods -n dev
-NAME                                                  READY   STATUS    RESTARTS   AGE
-azds-14223a-dev-tt-popularproducts-79667b6684-75vd8   2/2     Running   0          6m42s
-azds-212ef9-dev-tt-products-59f77b8bb6-rbql9          2/2     Running   0          4m2s
-azds-26b908-dev-tt-profile-7f97b8d5cb-lwq2k           2/2     Running   0          2m57s
-azds-3128d4-dev-tt-login-5b976cf44b-zjkp7             2/2     Running   0          7m59s
-azds-312ebd-dev-tt-stock-7b6fb8b87f-wvq62             2/2     Running   0          114s
-azds-6ab0d6-dev-tt-cart-574bbf95fb-rvshq              2/2     Running   0          9m17s
-azds-70a6e6-dev-tt-coupons-775d47fcf7-rcfq9           2/2     Running   0          8m46s
-azds-c16cb7-dev-tt-webbff-cc899c886-sb9bx             2/2     Running   0          10m
-azds-c9f588-dev-tt-mobilebff-776cc9f45f-drgdz         2/2     Running   0          13m
-```
+Once Visual Studio Code opens and you see your Tailwind Traders API code in the Explorer, you will then navigate to the debugger and select "Launch Program with Kubernetes."
 
-**Congratulations!** You have deployed all APIs in a parent Dev Space
+Visual Studio Code will begin to handle the routing and creation of your debugging services.
 
-### Deploying on a child Dev Space
+Example:
 
-To deploy an API to a child Dev Space just create the child Dev Space (using `azds space select`), selecting `dev` as parent devspace. Then deploy again (with `azds up -d -v`) one of the APIs.
+![Visual Studio Code Routing Manager Starting](Documents/Images/bridge2k8s-endpoint-mgr.png)
 
-Here Alice is one engineer that need to fix a bug in the _Stock API_, so first she creates a child devspace for her to use:
+If you are using isolation, you will be prompted to update your machine's hosts file to match your Kubernetes cluster environment - you will need to allow Visual Studio Code to make _temporary_ changes to your hosts file.
 
-```
->  azds space select
-Select a dev space or Kubernetes namespace to use as a dev space.
- [1] default
- [2] dev
-Type a number or a new name: alice
+Once your debugger has started, navigate to the bottom of your screen within Visual Studio Code and find the small icon with a person standing in the middle of some circles, next to that you should see, "Kubernetes: `twt`", where `twt` is equal to whatever yourname space is where you have Tailwind Traders deployed.
 
-Dev space 'alice' does not exist and will be created.
+![Visual Studio Code Bridge to Kubernetes Extension](Documents/Images/bridge2ks-launcher.png)
 
-Select a parent dev space or Kubernetes namespace to use as a parent dev space.
- [0] <none>
- [1] default
- [2] dev
-Type a number: 2
+If you click that icon, you will see a popup offering you FQDN addresses where you can easily navigate to your now isolated service in Kubernetes. 
 
-Creating and selecting dev space 'dev/alice'...2s
-```
+![Visual Studio Code Bridge to Kubernetes FQDN Example](Documents/Imgages/../Images/bridge2k8s-fqdn-selector.png)
 
-An `azds space list` verifies that she is using the Dev Space `alice`:
+Find the service you are working in (I.E. Cart, Coupon, or Login), and select it. Your browser should launch and you should see your own sandbox where you can begin to debug.
 
-```
->  azds space list
-   Name       DevSpacesEnabled
--  ---------  ----------------
-   default    False
-   dev        True
-*  dev/alice  True
-```
+To test this, set a break point at one (or more) of the following places:
 
-Fist **she must deploy the `/Deploy/helm/ttsa.yaml` file using `kubectl apply`**. If she fails doing that, the Devspaces deploy will be stuck at "Waiting for container image build..." phase.
+#### If you are debugging the Tailwind Traders Cart Api:
 
-She can now deploy her version of Stock API, just going to `/Source/Services/Tailwind.Traders.Stock.Api` and use `azds up -d -v`. Once service is deployed a `azds list-up` shows that, for Alice, all APIs runs on `dev` but _Stock API_:
+- Set a breakpoint on `line 53` of `/Tailwind.Traders.Cart.Api/models/shoppingCartDao.js`
 
-```
->  azds list-up
-Name             DevSpace  Type     Updated  Status
----------------  --------  -------  -------  -------
-cart             dev       Service  16m ago  Running
-coupons          dev       Service  16m ago  Running
-login            dev       Service  15m ago  Running
-mobilebff        dev       Service  23m ago  Running
-popularproducts  dev       Service  13m ago  Running
-product          dev       Service  11m ago  Running
-profile          dev       Service  10m ago  Running
-stock            alice     Service  1m ago   Running
-webbff           dev       Service  17m ago  Running
-```
+#### If you are debugging the Tailwind Traders Coupon Api:
 
-If Alice types `azds list-uris` she will see the URIs for her namespace. These are the uris she has to use:
+- Set a breakpoint on `line 5` of `/Tailwind.Traders.Coupon.Api/api/controllers/coupon.js`
 
-```
-> azds list-uris
-Uri                                                                             Status
-------------------------------------------------------------------------------  ---------
-http://alice.s.dev.tt.xxxxxxxxxs.weu.azds.io/cart-api                           Available
-http://alice.s.dev.tt.xxxxxxxxxs.weu.azds.io/coupons-api                        Available
-http://alice.s.dev.tt.xxxxxxxxxs.weu.azds.io/login-api                          Available
-http://alice.s.dev.tt.xxxxxxxxxs.weu.azds.io/mobilebff                          Available
-http://alice.s.dev.tt.xxxxxxxxxs.weu.azds.io/popular-products-api               Available
-http://alice.s.dev.tt.xxxxxxxxxs.weu.azds.io/product-api                        Available
-http://alice.s.dev.tt.xxxxxxxxxs.weu.azds.io/profile-api                        Available
-http://alice.s.dev.tt.xxxxxxxxxs.weu.azds.io/stock-api                          Available
-http://alice.s.dev.tt.xxxxxxxxxs.weu.azds.io/webbff                             Available
-```
+#### If you are debugging the Tailwind Traders Login Api:
 
-Next step is [deploy the website in the devspaces](https://github.com/Microsoft/TailwindTraders-Website/blob/main/Documents/Devspaces.md) too.
+- Set a breakpoint on `line 28` and `line 52` of `/Tailwind.Traders.Login.Api/Services/TokenHandlerServicec.cs`
+  
+Once you breakpoint is set, you can refresh your browser and hit your breakpoints by doing the following:
 
-> **Note**: The web **must be** deployed in the same AKS that Backend is deployed. Deploy 1st the backend and then the Website.
+#### Cart Api
 
-# <a name="test-image"></a>Test image classiffier
+1. Login to Tailwind Traders using: `admin@tailwindtraders.com` as the username and `password` as the password.
 
-To test the image classiffier service, you can use the curl to get the suggested products.
+2. Find any item in the store, select it, and then click `Add to cart.` You should then hit your breakpoint you set in the shoppingCartDao.js. You will notice you hit your breakpoint, you can now see your callstack from within Visual Studio Code, and you can use IntelliSense.
 
-The modifier "-v" is for verbose mode.
+![Cart Debugging Example](Documents/Images/cart-debugging.png)
 
-- To use the web backend for frontend gateway:
+#### Coupon Api
 
-  - curl YOUR_URL_OF_BACKEND/webbff/V1/products/imageclassifier -X POST -F "file=@C:\YOUR_PATH_AND_FILENAME_OF_PHOTO_TO_SEARCH" -v
+1. Login to Tailwind Traders using: `admin@tailwindtraders.com` as the username and `password` as the password.
+2. From the home screen, after you have logged in, click, "See my coupons". You will notice you have hit your breakpoint, you can now see your callstack from within Visual Studio Code, and you can use IntelliSense.
+  
+![Coupon Debugging Example](Documents/Images/coupon-debugging.png)
 
-- To call directly to image classifier service:
-  - curl YOUR_URL_OF_BACKEND/image-classifier-api/V1/imageclassifier -X POST -F "file=@C:\YOUR_PATH_AND_FILENAME_OF_PHOTO_TO_SEARCH.jpg" -v
+#### Login Api
 
-The response should be similar to:
+1. Login to Tailwind Traders using: `admin@tailwindtraders.com` as the username and `password` as the password.
+2. You will notice you have hit your breakpoint, you can now see your callstack from within Visual Studio Code, and you can use IntelliSense.
 
-- [{"id":57,"name":"Yellow hard hat with tool bag pack","price":46.0,"imageUrl":"YOUR_URL_OF_STORAGE/images/product-list/59890052.jpg"}]\* Connection #0 to host localhost left intact
-
-You have sample images to test this feature in:
-
-- [Documents/Images/ImageClassiffier](Documents/Images/ImageClassiffier/)
+![Login Debugging Example](Documents/Images/login-debugging.png)
 
 # <a name="contributing"></a>Contributing
 

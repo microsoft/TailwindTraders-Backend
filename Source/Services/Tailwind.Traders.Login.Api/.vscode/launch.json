@@ -1,0 +1,34 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": ".NET Launch with Kubernetes",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "bridge-to-kubernetes.compound",
+            "program": "${workspaceFolder}/bin/Debug/net5.0/Tailwind.Traders.Login.Api.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "console": "internalConsole",
+            "stopAtEntry": false,
+            "env": {
+                "GRPC_DNS_RESOLVER": "native",
+                "ASPNETCORE_URLS": "http://+:5000"
+            }
+        },
+        {
+            "name": ".NET Launch",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/bin/Debug/net5.0/Tailwind.Traders.Login.Api.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "console": "internalConsole",
+            "stopAtEntry": false
+        }
+    ]
+}

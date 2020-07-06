@@ -5,7 +5,6 @@
 **/.vs
 **/.vscode
 **/*.*proj.user
-**/azds.yaml
 **/charts
 **/bin
 **/obj

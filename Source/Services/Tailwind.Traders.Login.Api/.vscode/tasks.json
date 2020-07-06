@@ -1,0 +1,61 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/Tailwind.Traders.Login.Api.csproj",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "publish",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "publish",
+                "${workspaceFolder}/Tailwind.Traders.Login.Api.csproj",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "watch",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "watch",
+                "run",
+                "${workspaceFolder}/Tailwind.Traders.Login.Api.csproj",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "bridge-to-kubernetes.service",
+            "type": "bridge-to-kubernetes.service",
+            "service": "login",
+            "ports": [
+                5000
+            ],
+            "targetCluster": "tailwindtradersakscnnn2hudd2oae",
+            "targetNamespace": "twt",
+            "isolateAs": "twtsample-8bbd"
+        },
+        {
+            "label": "bridge-to-kubernetes.compound",
+            "dependsOn": [
+                "bridge-to-kubernetes.service",
+                "build"
+            ],
+            "dependsOrder": "sequence"
+        }
+    ]
+}

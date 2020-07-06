@@ -1,0 +1,16 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "bridge-to-kubernetes.service",
+			"type": "bridge-to-kubernetes.service",
+			"service": "coupons",
+			"ports": [
+				3000
+			],
+			"targetCluster": "tailwindtradersakscnnn2hudd2oae",
+			"targetNamespace": "twt",
+			"isolateAs": "twtsample-205d"
+		}
+	]
+}
