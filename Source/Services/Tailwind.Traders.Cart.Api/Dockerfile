@@ -1,5 +1,7 @@
 FROM node:9-alpine
 
+USER 1000
+
 WORKDIR /src
 
 COPY package*.json ./
