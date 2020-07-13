@@ -105,7 +105,7 @@ To run Tailwind Traders you need to create the Azure infrastructure. There are t
 
 An ARM script is provided so you can automate the creation of the resources required for the backend services just clicking following button:
 
-<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FMicrosoft%2FTailwindTraders-Backend%2Fmaster%2FDeploy%2Farm%2Fdeployment.json"><img src="Documents/Images/deploy-to-azure.png" alt="Deploy to Azure"/></a>
+<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FMicrosoft%2FTailwindTraders-Backend%2Fmain%2FDeploy%2Farm%2Fdeployment.json"><img src="Documents/Images/deploy-to-azure.png" alt="Deploy to Azure"/></a>
 
 Azure portal will ask you for the following parameters:
 
@@ -469,7 +469,7 @@ We have added an ARM template so you can automate the creation of the resources 
 
 Click the following button to deploy:
 
-<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FMicrosoft%2FTailwindTraders-Backend%2Fmaster%2FDeploy%2Farm%2Fdeployment-dual-nodes.json"><img src="./Documents/Images/deploy-to-azure.png" alt="Deploy to Azure"/></a>
+<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FMicrosoft%2FTailwindTraders-Backend%2Fmain%2FDeploy%2Farm%2Fdeployment-dual-nodes.json"><img src="./Documents/Images/deploy-to-azure.png" alt="Deploy to Azure"/></a>
 
 For mixed (Windows and Linux containers) scenario we need to deploy [Tailwind Traders Rewards](https://github.com/Microsoft/TailwindTraders-Rewards). The data base deployed in Tailwind Traders Rewards is used by a WCF service of this project.
 
@@ -511,7 +511,7 @@ To run the Backend using Visual Studio, just open the `Tailwind.Traders.Backend.
 
 Tailwind Traders supports [Azure Devspaces](https://docs.microsoft.com/en-us/azure/dev-spaces/). Follow the steps in this document to deploy Tailwind traders under devspaces.
 
-**Note**: There is an [end-to-end Devspaces demo](<https://github.com/microsoft/TailwindTraders/tree/master/Documents/DemoScripts/Managing%20backend%20with%20Azure%20Kubernetes%20Service%20(AKS)>).
+**Note**: There is an [end-to-end Devspaces demo](<https://github.com/microsoft/TailwindTraders/tree/main/Documents/DemoScripts/Managing%20backend%20with%20Azure%20Kubernetes%20Service%20(AKS)>).
 
 ### Requeriments
 
@@ -734,7 +734,7 @@ http://alice.s.dev.tt.xxxxxxxxxs.weu.azds.io/stock-api                          
 http://alice.s.dev.tt.xxxxxxxxxs.weu.azds.io/webbff                             Available
 ```
 
-Next step is [deploy the website in the devspaces](https://github.com/Microsoft/TailwindTraders-Website/blob/master/Documents/Devspaces.md) too.
+Next step is [deploy the website in the devspaces](https://github.com/Microsoft/TailwindTraders-Website/blob/main/Documents/Devspaces.md) too.
 
 > **Note**: The web **must be** deployed in the same AKS that Backend is deployed. Deploy 1st the backend and then the Website.
 
