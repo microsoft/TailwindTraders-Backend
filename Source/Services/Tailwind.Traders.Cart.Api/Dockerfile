@@ -14,7 +14,4 @@ COPY . .
 
 ENV PORT 3001
 EXPOSE 3001
-
-USER 1000
-
 CMD [ "npm", "start" ]
