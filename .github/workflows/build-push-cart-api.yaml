@@ -12,7 +12,7 @@ env:
   resourceGroup: ado30jd
 
   # path prefix
-  tailwindChartValuesScript: helm-values/generate-config.ps1
+  tailwindChartValuesScript: Deploy/helm-values/generate-config.ps1
 
 jobs:
   build:

@@ -1,0 +1,113 @@
+# Template for generating a gvalues file
+
+inf:
+  sa: ttsa
+  db:
+    products:
+      host: {{shoppinghost}}
+      auth: {{shoppingauth}}
+    profile:
+      host: {{shoppinghost}}
+      auth: {{shoppingauth}}
+    popularproducts:
+      host: {{shoppinghost}}
+      auth: {{shoppingauth}}
+    stock:
+      host: {{shoppinghost}}
+      auth: {{shoppingauth}}
+    cart:
+      host: {{shoppinghost}}
+      auth: {{shoppingauth}}
+    rewards:
+      host: {{rewardshost}}
+      port: "1433"
+      catalog: rewardsdb
+      user: {{rewardsuser}}
+      pwd: {{rewardspwd}}
+    coupons:
+      user: {{couponsuser}}
+      pwd: {{couponspwd}}
+      host: {{couponshost}}
+      port: "10255"
+      dbName: Coupon
+      collection: CouponCollection
+  storage:
+    productimages: {{storage}}product-list
+    productdetailimages: {{storage}}product-detail
+    couponimage: {{storage}}coupon-list
+    profileimages: {{storage}}profiles-list
+  appinsights:
+    id: {{appinsightsik}}
+  ingress:
+    products:
+      path: /product-api{{ingressrewritepath}}
+    profile:
+      path: /profile-api{{ingressrewritepath}}
+    coupons:
+      path: /coupons-api{{ingressrewritepath}}
+    popularproducts:
+      path: /popular-products-api{{ingressrewritepath}}
+    stock:
+      path: /stock-api{{ingressrewritepath}}
+    imageclassifier:
+      path: /image-classifier-api{{ingressrewritepath}}
+    mobilebff:
+      path: /mobilebff{{ingressrewritepath}}
+    webbff:
+      path: /webbff{{ingressrewritepath}}
+    login:
+      path: /login-api{{ingressrewritepath}}
+    cart:
+      path: /cart-api{{ingressrewritepath}}
+    rewardsregistration:
+      path: /rewards-registration-api{{ingressrewritepath}}
+  apiurls:
+    popularproductsapiurl: http://popularproducts
+    productsapiurl: http://product 
+    profileapiurl: http://profile
+    couponsapiurl: http://coupons
+    stockapiurl: http://stock
+    imageclassifierapiurl: http://imageclassifier
+    loginapiurl: http://login
+  registrationusers:
+    registerusers: {{rewardsregistration}}
+    registrationusersurl: http://rewards-registration/UserService.svc
+
+# Shared ingress configurations
+ingress:
+  enabled: true
+  annotations:
+    kubernetes.io/ingress.class: {{ingressclass}}
+    ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    ingress.kubernetes.io/rewrite-target: /{{ingressrewritetarget}}
+    nginx.ingress.kubernetes.io/rewrite-target: /{{ingressrewritetarget}}
+#  hosts:
+#    - <guid>.<region>.aksapp.io   # NOT NEEDED. SET BY SCRIPTS
+
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+sec:
+  issuer: {{secissuer}}
+  securityKey: {{seckey}}
+
+B2C:
+  UseB2C: "false"
+  B2CIssuer: ""
+  Authority: ""
+  tenantID: ""
+  clientID: ""
+  policyName: ""
+  identityMetadata: ""
+  issuer: ""
+
+# Autoscaling global settings
+hpa:
+  activated: false # set to true to deploy HPA for services
+  cpu:
+    averageUtilization: 40 
+  minReplicas: 1
+  maxReplicas: 40
