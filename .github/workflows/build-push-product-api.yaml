@@ -1,0 +1,61 @@
+name: Build/Push Product api
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - Source/Services/Tailwind.Traders.Product.Api/**
+
+env:
+  # azure
+  resourceGroup: ado30jd
+
+  # path prefix
+  tailwindChartValuesScript: Deploy/helm-values/generate-config.ps1
+
+jobs:
+  build:
+    runs-on: ubuntu-16.04
+    steps:
+      - name: "Checkout main branch"
+        uses: actions/checkout@main
+
+      - name: "Login via Azure CLI"
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: "Create Helm gvalues file"
+        run: |
+          pwsh $tailwindChartValuesScript -resourceGroup $resourceGroup -outputFile values.yaml
+
+      - name: "Get ACR Container Information"
+        run: |
+          echo "Retrieving Container Registry info..."
+
+          acrName=$(az acr list -g $resourceGroup -o tsv --query [0].name)
+          CONTAINER_REGISTRY=$(az acr list -g $resourceGroup -o tsv --query [0].loginServer)
+
+          # acr/container registry variables
+          echo "::set-env name=CONTAINER_REGISTRY::$(az acr list -g $resourceGroup -o tsv --query [0].loginServer)"
+
+          echo "::set-env name=REGISTRY_USERNAME::$(az acr credential show -n $acrName --query username -o tsv)"
+          echo "::set-env name=REGISTRY_PASSWORD::$(az acr credential show -n $acrName -o tsv --query passwords[0].value)"
+
+          echo "::set-env name=dPath::$GITHUB_WORKSPACE/TailwindTraders-Backend/Source"
+
+          echo "::set-env name=pictures::$(az storage account list -g $resourceGroup --query [0].primaryEndpoints.blob -o tsv)"
+
+      # docker login
+      - name: "docker login"
+        uses: azure/docker-login@v1
+        with:
+          login-server: ${{ env.CONTAINER_REGISTRY }}
+          username: ${{ env.REGISTRY_USERNAME }}
+          password: ${{ env.REGISTRY_PASSWORD }}
+
+      - name: "docker build/push"
+        run: |
+          docker build Source/Services/Tailwind.Traders.Product.Api/ -t $CONTAINER_REGISTRY/product.api:$GITHUB_SHA
+          docker push $CONTAINER_REGISTRY/product.api:$GITHUB_SHA
