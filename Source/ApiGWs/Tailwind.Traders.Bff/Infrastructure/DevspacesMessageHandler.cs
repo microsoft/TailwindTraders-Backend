@@ -20,9 +20,9 @@ namespace Tailwind.Traders.MobileBff.Infrastructure
         {
             var req = _httpContextAccessor.HttpContext.Request;
 
-            if (req.Headers.ContainsKey("azds-route-as"))
+            if (req.Headers.ContainsKey("kubernetes-route-as"))
             {
-                request.Headers.Add("azds-route-as", req.Headers["azds-route-as"] as IEnumerable<string>);
+                request.Headers.Add("kubernetes-route-as", req.Headers["kubernetes-route-as"] as IEnumerable<string>);
             }
             return base.SendAsync(request, cancellationToken);
         }
