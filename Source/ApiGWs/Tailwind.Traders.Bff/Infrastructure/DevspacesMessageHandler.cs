@@ -20,9 +20,13 @@ namespace Tailwind.Traders.MobileBff.Infrastructure
         {
             var req = _httpContextAccessor.HttpContext.Request;
 
-            if (req.Headers.ContainsKey("azds-route-as"))
+            if (req.Headers.ContainsKey("routing.visualstudio.io/route-from"))
             {
-                request.Headers.Add("azds-route-as", req.Headers["azds-route-as"] as IEnumerable<string>);
+                request.Headers.Add("routing.visualstudio.io/route-from", req.Headers["routing.visualstudio.io/route-from"] as IEnumerable<string>);
+            }
+            if (req.Headers.ContainsKey("routing.visualstudio.io/route-on-header"))
+            {
+                request.Headers.Add("routing.visualstudio.io/route-on-header", req.Headers["routing.visualstudio.io/route-on-header"] as IEnumerable<string>);
             }
             return base.SendAsync(request, cancellationToken);
         }

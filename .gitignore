@@ -331,8 +331,6 @@ ASALocalRun/
 # MFractors (Xamarin productivity tool) working folder 
 .mfractor/
 
-
-*.azds.yaml
 Deploy/helm/__values/*
 !Deploy/helm/__values/readme.txt
 
