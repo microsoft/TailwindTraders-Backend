@@ -35,6 +35,8 @@ jobs:
           # set for this step
           AKS_CLUSTER=$(az aks list --resource-group $resourceGroup --query [0].name -o tsv)
 
+          echo "::set-env name=AKS_CLUSTER::$(az aks list --resource-group $resourceGroup --query [0].name -o tsv)"
+
           echo "::set-env name=INGRESS::$(az aks show -n $AKS_CLUSTER -g $resourceGroup --query addonProfiles.httpApplicationRouting.config.HTTPApplicationRoutingZoneName -o tsv)"
 
           echo "Retrieving Container Registry info..."
@@ -48,10 +50,6 @@ jobs:
           echo "::set-env name=REGISTRY_USERNAME::$(az acr credential show -n $acrName --query username -o tsv)"
           echo "::set-env name=REGISTRY_PASSWORD::$(az acr credential show -n $acrName -o tsv --query passwords[0].value)"
 
-          echo "::set-env name=dPath::$GITHUB_WORKSPACE/TailwindTraders-Backend/Source"
-
-          echo "::set-env name=pictures::$(az storage account list -g $resourceGroup --query [0].primaryEndpoints.blob -o tsv)"
-
       # docker login
       - name: "docker login"
         uses: azure/docker-login@v1
@@ -64,11 +62,11 @@ jobs:
           docker build Source/Services/Tailwind.Traders.Cart.Api/ -t $CONTAINER_REGISTRY/cart.api:$GITHUB_SHA
           docker push $CONTAINER_REGISTRY/cart.api:$GITHUB_SHA
 
-      # - uses: azure/aks-set-context@v1
-      #   with:
-      #     creds: "${{ secrets.AZURE_CREDENTIALS }}"
-      #     cluster-name: ${{ env.AKS_CLUSTER }}
-      #     resource-group: $resourceGroup
+      - uses: azure/aks-set-context@v1
+        with:
+          creds: "${{ secrets.AZURE_CREDENTIALS }}"
+          cluster-name: ${{ env.AKS_CLUSTER }}
+          resource-group: $resourceGroup
 
       - name: Create valid branch name
         id: generate-valid-branch-name
