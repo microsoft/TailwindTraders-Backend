@@ -8,13 +8,18 @@ on:
       - Source/Services/Tailwind.Traders.Cart.Api/**
 
 env:
+  # azure
   resourceGroup: ado30jd
+
+  # path prefix
+  tailwindChartValuesScript: Deploy/helm-values/generate-config.ps1
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-16.04
     steps:
-      - uses: actions/checkout@main
+      - name: "Checkout branch"
+        uses: actions/checkout@v2
 
       - name: "Login via Azure CLI"
         uses: azure/login@v1
