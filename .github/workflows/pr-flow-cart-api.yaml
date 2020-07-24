@@ -30,7 +30,7 @@ jobs:
         run: |
           pwsh $tailwindChartValuesScript -resourceGroup $resourceGroup -outputFile values.yaml
 
-      - name: "Set Environment Info"
+      - name: "Set PR Environment"
         run: |
           # set for this step
           AKS_CLUSTER=$(az aks list --resource-group $resourceGroup --query [0].name -o tsv)
@@ -67,7 +67,7 @@ jobs:
       - uses: azure/aks-set-context@v1
         with:
           creds: "${{ secrets.AZURE_CREDENTIALS }}"
-          cluster-name: $AKS_CLUSTER
+          cluster-name: ${{ env.AKS_CLUSTER }}
           resource-group: $resourceGroup
 
       - name: Create valid branch name
