@@ -1,0 +1,107 @@
+name: PRFlow Cart API
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - Source/Services/Tailwind.Traders.Cart.Api/**
+
+env:
+  resourceGroup: ado30jd
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@main
+
+      - name: "Login via Azure CLI"
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: "Create Helm gvalues file"
+        run: |
+          pwsh $tailwindChartValuesScript -resourceGroup $resourceGroup -outputFile values.yaml
+
+      - name: "Set Environment Info"
+        run: |
+          # set for this step
+          AKS_CLUSTER=$(az aks list --resource-group $resourceGroup --query [0].name -o tsv)
+
+          echo "::set-env name=INGRESS::$(az aks show -n $AKS_CLUSTER -g $resourceGroup --query addonProfiles.httpApplicationRouting.config.HTTPApplicationRoutingZoneName -o tsv)"
+
+          echo "Retrieving Container Registry info..."
+
+          acrName=$(az acr list -g $resourceGroup -o tsv --query [0].name)
+          CONTAINER_REGISTRY=$(az acr list -g $resourceGroup -o tsv --query [0].loginServer)
+
+          # acr/container registry variables
+          echo "::set-env name=CONTAINER_REGISTRY::$(az acr list -g $resourceGroup -o tsv --query [0].loginServer)"
+
+          echo "::set-env name=REGISTRY_USERNAME::$(az acr credential show -n $acrName --query username -o tsv)"
+          echo "::set-env name=REGISTRY_PASSWORD::$(az acr credential show -n $acrName -o tsv --query passwords[0].value)"
+
+          echo "::set-env name=dPath::$GITHUB_WORKSPACE/TailwindTraders-Backend/Source"
+
+          echo "::set-env name=pictures::$(az storage account list -g $resourceGroup --query [0].primaryEndpoints.blob -o tsv)"
+
+      # docker login
+      - name: "docker login"
+        uses: azure/docker-login@v1
+        with:
+          login-server: ${{ env.CONTAINER_REGISTRY }}
+          username: ${{ env.REGISTRY_USERNAME }}
+          password: ${{ env.REGISTRY_PASSWORD }}
+
+      - run: |
+          docker build Source/Services/Tailwind.Traders.Cart.Api/ -t $CONTAINER_REGISTRY/cart.api:$GITHUB_SHA
+          docker push $CONTAINER_REGISTRY/cart.api:$GITHUB_SHA
+
+      - uses: azure/aks-set-context@v1
+        with:
+          creds: "${{ secrets.AZURE_CREDENTIALS }}"
+          cluster-name: $AKS_CLUSTER
+          resource-group: $resourceGroup
+
+      - name: Create valid branch name
+        id: generate-valid-branch-name
+        run: |
+          branch=${GITHUB_HEAD_REF::63}        
+          branch=$(echo ${branch//[!0-9a-zA-Z]/-} | tr '[:upper:]' '[:lower:]' | sed -e 's/^-/z/' -e 's/-$/z/')
+          echo ::set-output name=result::$branch
+
+      - uses: azure/k8s-create-secret@v1
+        with:
+          namespace: ${{ secrets.MASTER_SPACE }}
+          container-registry-url: ${{ env.CONTAINER_REGISTRY }}
+          container-registry-username: ${{ env.REGISTRY_USERNAME }}
+          container-registry-password: ${{ env.REGISTRY_PASSWORD }}
+          secret-name: twt-cart-cr
+
+      - name: Create valid release-name
+        id: generate-release-name
+        run: |
+          release=cart-$GITHUB_HEAD_REF
+          release=${release::53}
+          release=$(echo ${release//[!0-9a-zA-Z]/-} | tr '[:upper:]' '[:lower:]' | sed -e 's/^-/z/' -e 's/-$/z/')
+          echo ::set-output name=result::$release
+
+      - name: Helm Install PR
+        run: |
+          cd Deploy/helm
+          helm upgrade --install --namespace  ${{ secrets.MASTER_SPACE }} ${{steps.generate-release-name.outputs.result}} \
+            -f $tailwindChartValues --set ingress.hosts={$INGRESS} --set image.repository=$CONTAINER_REGISTRY/cart.api --set image.tag=$GITHUB_SHA $tailwindCharts/cart-api --set B2C.clientID=none --set B2C.identityMetadata=none --set B2C.issuer=none --set B2C.policyName=none --set B2C.tenantID=none
+
+      - name: Add routing labels
+        run: |
+          kubectl label pods --selector="app=twt-cart,release=${{steps.generate-release-name.outputs.result}}" routing.visualstudio.io/route-from=twt-cart -n ${{ secrets.MASTER_SPACE }}
+          kubectl annotate pods --selector="app=twt-cart,release=${{steps.generate-release-name.outputs.result}}" routing.visualstudio.io/route-on-header=kubernetes-route-as=${{steps.generate-valid-branch-name.outputs.result}} -n ${{ secrets.MASTER_SPACE }}
+
+      - uses: azure/dev-spaces/actions/add-review-url@Releases/v2
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          host: ${INGRESS}
+          child-space: ${{steps.generate-valid-branch-name.outputs.result}}
+          protocol: "http"
