@@ -18,18 +18,18 @@ class CartController {
 
     // gnome bug
     async addProduct(req, res) {
-        const body = {
-            detailProduct: {
-                id: 58,
-                name: "Single red garden gnome",
-                price: 56,
-                imageUrl: "https://github.com/microsoft/TailwindTraders-Backend/blob/main/Deploy/tailwindtraders-images/product-detail/6112251.jpg?raw=true",
-                email: "admin@tailwindtraders.com",
-                typeid: 4,
-            },
-            qty: 1,
-        };
-        const item = body;
+        // const body = {
+        //     detailProduct: {
+        //         id: 58,
+        //         name: "Single red garden gnome",
+        //         price: 56,
+        //         imageUrl: "https://github.com/microsoft/TailwindTraders-Backend/blob/main/Deploy/tailwindtraders-images/product-detail/6112251.jpg?raw=true",
+        //         email: "admin@tailwindtraders.com",
+        //         typeid: 4,
+        //     },
+        //     qty: 1,
+        // };
+        const item = req.body;
         const doc = await this.shoppingCartDao.addItem(item);
         res.status(201).send({ message: `${doc.detailProduct.name} added to shopping cart`, id: doc.id });
         console.log(`Succsessfull added product ${doc.detailProduct.name} to shopping cart`)
