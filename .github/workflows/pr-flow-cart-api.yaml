@@ -65,7 +65,7 @@ jobs:
       - uses: azure/aks-set-context@v1
         with:
           creds: "${{ secrets.AZURE_CREDENTIALS }}"
-          cluster-name: ${{ env.CLUSTER_NAME }}
+          cluster-name: ${{ env.AKS_CLUSTER }}
           resource-group: $resourceGroup
 
       - name: Create valid branch name
