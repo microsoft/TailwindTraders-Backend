@@ -1,13 +1,18 @@
 package Tailwind.Traders.Stock.Api.repositories;
 
-import java.util.List;
+import java.util.Iterator;
+import java.util.UUID;
 
+import com.azure.cosmos.CosmosClient;
+import com.azure.cosmos.CosmosContainer;
+import com.azure.cosmos.CosmosDatabase;
+import com.azure.cosmos.CosmosException;
+import com.azure.cosmos.implementation.Document;
+import com.azure.cosmos.models.CosmosContainerProperties;
+import com.azure.cosmos.models.CosmosDatabaseProperties;
+import com.azure.cosmos.models.CosmosItemRequestOptions;
+import com.azure.cosmos.models.PartitionKey;
 import com.microsoft.applicationinsights.core.dependencies.gson.Gson;
-import com.microsoft.azure.documentdb.Database;
-import com.microsoft.azure.documentdb.Document;
-import com.microsoft.azure.documentdb.DocumentClient;
-import com.microsoft.azure.documentdb.DocumentClientException;
-import com.microsoft.azure.documentdb.DocumentCollection;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,122 +21,116 @@ import org.springframework.stereotype.Component;
 import Tailwind.Traders.Stock.Api.models.StockItem;
 
 @Component
-public class StockItemRepository
-{
-    @Value("${azure.cosmosdb.database}")
+public class StockItemRepository {
+	@Value("${azure.cosmosdb.database}")
 	private String DATABASE_ID;
 
 	private static final String COLLECTION_ID = "StockCollection";
-    private static Gson gson = new Gson();
+	private static final String partitonkey = "827bba17-8ee4-4a74-977d-855983431861";
+	private static Gson gson = new Gson();
 
-	private static Database databaseCache;
-    private static DocumentCollection collectionCache;
-	
+	private static CosmosDatabaseProperties databaseCache;
+	private static CosmosContainerProperties containerCache;
+
+
 	@Autowired
-	private DocumentClient documentClient;
+	private CosmosClient cosmosClient;
 
-	public StockItem findByProductId(Integer pid)
-	{
-		Document stockItemDocument = getItemById(pid);
+	public StockItem findByProductId(Integer pid) {
+		StockItem stockItemDocument = getItemById(pid);
 
-        if (stockItemDocument != null) {
-            // De-serialize the document in to a StockItem.
-            return gson.fromJson(stockItemDocument.toString(), StockItem.class);
-        } else {
-            return null;
-        }
+		return stockItemDocument;
 	}
 
 	public void update(StockItem stockItem) {
-		Document stockItemDocument = getItemById(stockItem.getProductId());
-		stockItemDocument.set("stockCount", stockItem.getStockCount());
+		CosmosContainer cosmosContainer = cosmosClient.getDatabase(getTodoDatabase().getId()).getContainer(getTodoCollection().getId());
+		StockItem stockItemDocument = getItemById(stockItem.getProductId());
+		stockItemDocument.setStockCount(stockItem.getStockCount());
+		try {
+			cosmosContainer.replaceItem(stockItemDocument, stockItemDocument.getId(), new PartitionKey(partitonkey), new CosmosItemRequestOptions());
+		} catch (CosmosException e) {
+			e.printStackTrace();
+		}
+	}
 
-        try {
-        	documentClient.replaceDocument(stockItemDocument, null);
-        } catch (DocumentClientException e) {
-            e.printStackTrace();
-        }
-    }
-    
 	public void save(StockItem stockItem) {
+		CosmosContainer cosmosContainer = cosmosClient.getDatabase(getTodoDatabase().getId()).getContainer(getTodoCollection().getId());
+		stockItem.setId(UUID.randomUUID().toString());
+		stockItem.setPartition(partitonkey);
 		Document todoItemDocument = new Document(gson.toJson(stockItem));
-        todoItemDocument.set("entityType", "stockItem");
-
-        try {
-            todoItemDocument = documentClient.createDocument(getTodoCollection().getSelfLink(), todoItemDocument, null, false).getResource();
-        } catch (DocumentClientException e) {
-            e.printStackTrace();
-        }
-	}
-
-	public Integer count()
-	{
-		List<Document> stockItemDocument = documentClient
-			.queryDocuments(getTodoCollection().getSelfLink(), "SELECT 1 FROM root r", null)
-			.getQueryIterable().toList();
-			
-		return stockItemDocument.size();
-	}
-	
-    private Document getItemById(Integer id) {
-        List<Document> documentList = documentClient
-                .queryDocuments(getTodoCollection().getSelfLink(), "SELECT * FROM root r WHERE r.productId=" + id, null)
-                .getQueryIterable().toList();
-
-        if (documentList.size() > 0) {
-            return documentList.get(0);
-		}
+		todoItemDocument.set("entityType", "stockItem");
 		
-		return null;
-    }
+		try {
+			
+			cosmosContainer.createItem(todoItemDocument,new PartitionKey(partitonkey), new CosmosItemRequestOptions());
+		} catch (CosmosException e) {
+			e.printStackTrace();
+		}
+	}
 
-    private DocumentCollection getTodoCollection() {
-		if (collectionCache != null) {
-			return collectionCache;
+	public Integer count() {
+		int count= 0;
+		CosmosContainer cosmosContainer = cosmosClient.getDatabase(getTodoDatabase().getId()).getContainer(getTodoCollection().getId());
+		Iterator<StockItem> allItems = cosmosContainer.readAllItems(new PartitionKey(partitonkey) , StockItem.class).iterator();
+		while(allItems.hasNext()){
+			allItems.next();
+			count++;
+		}
+		return count;
+	}
+
+	private StockItem getItemById(Integer id) {
+		CosmosContainer cosmosContainer = cosmosClient.getDatabase(getTodoDatabase().getId()).getContainer(getTodoCollection().getId());
+		Iterator<StockItem> documentList = cosmosContainer
+				.queryItems("SELECT * FROM root r WHERE r.productId=" + id, null, StockItem.class).iterator();
+
+		if (documentList.hasNext()) {
+			return documentList.next();
 		}
 
-		List<DocumentCollection> collectionList = documentClient
-				.queryCollections(
-						getTodoDatabase().getSelfLink(),
-						"SELECT * FROM root r WHERE r.id='" + COLLECTION_ID + "'",
-						null).getQueryIterable().toList();
+		return null;
+	}
 
-		if (collectionList.size() > 0) {
-			collectionCache = collectionList.get(0);
+	private CosmosContainerProperties getTodoCollection() {
+		if (containerCache != null) {
+			return containerCache;
+		}
+		CosmosDatabase cosmosDatabase = cosmosClient.getDatabase(getTodoDatabase().getId());
+		Iterator<CosmosContainerProperties> collectionList = cosmosDatabase
+				.queryContainers(
+				"SELECT * FROM root r WHERE r.id='" + COLLECTION_ID + "'", null).iterator();
+
+		if (collectionList.hasNext()) {
+			containerCache = collectionList.next();
 		} else {
 			try {
-				DocumentCollection collectionDefinition = new DocumentCollection();
-				collectionDefinition.setId(COLLECTION_ID);
+				CosmosContainerProperties cosmosContainerProperties = new CosmosContainerProperties(COLLECTION_ID, "/partition");
 
-				collectionCache = documentClient.createCollection(
-						getTodoDatabase().getSelfLink(),
-						collectionDefinition, null).getResource();
-			} catch (DocumentClientException e) {
+				containerCache = cosmosDatabase
+						.createContainer(cosmosContainerProperties).getProperties();
+			} catch (CosmosException e) {
 				e.printStackTrace();
 			}
 		}
 
-        return collectionCache;
+		return containerCache;
 	}
-	
-    private Database getTodoDatabase() {
-		if (databaseCache != null){
+
+	private CosmosDatabaseProperties getTodoDatabase() {
+		if (databaseCache != null) {
 			return databaseCache;
 		}
 
-		List<Database> databaseList = documentClient
-				.queryDatabases("SELECT * FROM root r WHERE r.id='" + DATABASE_ID + "'", null).getQueryIterable().toList();
+		Iterator<CosmosDatabaseProperties> databaseList = cosmosClient
+				.queryDatabases("SELECT * FROM root r WHERE r.id='" + DATABASE_ID + "'", null).iterator();
 
-		if (databaseList.size() > 0) {
-			databaseCache = databaseList.get(0);
+		if (databaseList.hasNext()) {
+			databaseCache = databaseList.next();
 		} else {
 			try {
-				Database databaseDefinition = new Database();
-				databaseDefinition.setId(DATABASE_ID);
-
-				databaseCache = documentClient.createDatabase(
-						databaseDefinition, null).getResource();
-			} catch (DocumentClientException e) {
+				CosmosDatabaseProperties databaseDefinition = new CosmosDatabaseProperties(DATABASE_ID);
+				databaseCache = cosmosClient.createDatabase(databaseDefinition).getProperties();
+			} catch (CosmosException e) {
 				e.printStackTrace();
 			}
 		}

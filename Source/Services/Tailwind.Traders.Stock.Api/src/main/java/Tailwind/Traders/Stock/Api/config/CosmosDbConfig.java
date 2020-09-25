@@ -7,9 +7,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 
-import com.microsoft.azure.documentdb.ConnectionPolicy;
-import com.microsoft.azure.documentdb.ConsistencyLevel;
-import com.microsoft.azure.documentdb.DocumentClient;
+import com.azure.cosmos.CosmosClient;
+import com.azure.cosmos.CosmosClientBuilder;
 
 @Configuration
 public class CosmosDbConfig {
@@ -21,11 +20,16 @@ public class CosmosDbConfig {
     @Value("${azure.cosmosdb.host}")
     private String HOST;
 
+    
     @Bean
     @Scope("singleton")
-    public DocumentClient documentClient() {
+    public CosmosClient cosmosClient() {
             log.info(String.format("CosmosDb Auth key: %s", MASTER_KEY));
             log.info(String.format("CosmosDb host: %s", HOST));
-            return new DocumentClient(HOST, MASTER_KEY, ConnectionPolicy.GetDefault(), ConsistencyLevel.Session);
+            return new CosmosClientBuilder()
+            .endpoint(HOST)
+            .key(MASTER_KEY)
+            .consistencyLevel(com.azure.cosmos.ConsistencyLevel.SESSION)
+            .buildClient();
     }
 }
