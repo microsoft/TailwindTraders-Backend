@@ -15,5 +15,4 @@ rules:
         pod: {resource: "pod"}
     name:
      as: "http_requests_in_progress"
-#    metricsQuery: 'round(sum(avg_over_time(<<.Series>>{<<.LabelMatchers>>}[30s])))'
-    metricsQuery: 'http_requests_in_progress'
+    metricsQuery: 'round(sum(avg_over_time(<<.Series>>{<<.LabelMatchers>>}[30s])))'
