@@ -1,0 +1,12 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name:  sm-products
+  labels:
+    app: tailwindtraders
+spec:
+  selector:
+    matchLabels:
+      app: tailwindtraders-products
+  endpoints:
+  - port: http
