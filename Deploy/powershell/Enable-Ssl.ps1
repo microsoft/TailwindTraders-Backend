@@ -8,7 +8,8 @@ Param (
     [parameter(Mandatory=$false)][string]$tlsCertFile="",
     [parameter(Mandatory=$false)][string]$tlsKeyFile="",
     [parameter(Mandatory=$false)][string]$domain="",
-    [parameter(Mandatory=$false)][string]$tlsSecretName="tt-tls-custom"
+    [parameter(Mandatory=$false)][string]$tlsSecretName="tt-tls-custom",
+    [parameter(Mandatory=$false)][string]$ingressClass="addon-http-application-routing"
 )
 
 function validate {
@@ -76,11 +77,11 @@ Join-Path .. helm | Push-Location
 if ($sslSupport -eq "staging") {
     Write-Host "Adding TLS/SSL support using Let's Encrypt Staging environment" -ForegroundColor Yellow
     Write-Host "helm install $name-ssl -f $(Join-Path tls-support values-staging.yaml) --set domain=$domain tls-support" -ForegroundColor Yellow
-    cmd /c "helm install $name-ssl-staging -f $(Join-Path tls-support values-staging.yaml) --set domain=$domain tls-support"
+    cmd /c "helm install $name-ssl-staging -f $(Join-Path tls-support values-staging.yaml) --set domain=$domain --set ingressClass=$ingressClass tls-support"
 }
 if ($sslSupport -eq "prod") {
     Write-Host "Adding TLS/SSL support using Let's Encrypt PRODUCTION environment" -ForegroundColor Yellow
-    cmd /c "helm install $name-ssl-prod -f $(Join-Path tls-support values-prod.yaml) --set domain=$domain tls-support"
+    cmd /c "helm install $name-ssl-prod -f $(Join-Path tls-support values-prod.yaml) --set domain=$domain --set ingressClass=$ingressClass tls-support"
 }
 if ($sslSupport -eq "custom") {
     Write-Host "TLS support is custom bound to domain $domain" -ForegroundColor Yellow
