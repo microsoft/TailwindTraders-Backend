@@ -100,7 +100,7 @@ $tokens.seckey="nEpLzQJGNSCNL5H6DIQCtTdNxf5VgAGcBbtXLms1YDD01KJBAs0WVawaEjn97uwB
 $tokens.ingressrewritepath=""
 $tokens.ingressrewritetarget=""
 
-if($ingressClass -ne "addon-http-application-routing") {
+if($ingressClass -eq "nginx") {
     $tokens.ingressrewritepath="(/|$)(.*)" 
     $tokens.ingressrewritetarget="`$2"
 }

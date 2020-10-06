@@ -89,7 +89,7 @@ Write-Host " --------------------------------------------------------"
 
 $acrLogin=$(az acr show -n $acrName -o json| ConvertFrom-Json).loginServer
 
-if ($tlsEnv -ne "custom") {
+if ($tlsEnv -ne "custom" -and [String]::IsNullOrEmpty($tlsHost)) {
     $aksHost=$(az aks show -n $aksName -g $resourceGroup --query addonProfiles.httpapplicationrouting.config.HTTPApplicationRoutingZoneName -o json | ConvertFrom-Json)
 
     if (-not $aksHost) {
