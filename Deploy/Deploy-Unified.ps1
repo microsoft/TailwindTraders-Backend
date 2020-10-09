@@ -6,7 +6,8 @@ Param(
     [parameter(Mandatory=$true)][string]$subscription,
     [parameter(Mandatory=$false)][string]$clientId,
     [parameter(Mandatory=$false)][string]$password,
-    [parameter(Mandatory=$false)][bool]$deployAks=$true
+    [parameter(Mandatory=$false)][bool]$deployAks=$true,
+    [parameter(Mandatory=$false)][bool]$deployProductsOnVnodes=$false
 )
 $gValuesFile="configFile.yaml"
 
@@ -49,7 +50,11 @@ Write-Host "The Name of your ACR: $acrName" -ForegroundColor Yellow
 
 # Deploy images in AKS
 $gValuesLocation=$(./Join-Path-Recursively.ps1 -pathParts __values,$gValuesFile)
-& ./Deploy-Images-Aks.ps1 -aksName $aksName -resourceGroup $resourceGroup -charts "*" -acrName $acrName -valuesFile $gValuesLocation
+$chartsToDeploy = "*"
+if ($deployProductsOnVnodes) {
+    $chartsToDeploy = "*,pr!"           #pr! forces using vnodes for products chart
+}
+& ./Deploy-Images-Aks.ps1 -aksName $aksName -resourceGroup $resourceGroup -charts $chartsToDeploy -acrName $acrName -valuesFile $gValuesLocation
 
 # Deploy pictures in AKS
 $storageName = $(az resource list --resource-group $resourceGroup --resource-type Microsoft.Storage/storageAccounts -o json | ConvertFrom-Json).name
