@@ -14,6 +14,69 @@ This folder contains additional scripts needed for testing the vnodes scenario
 4. Deploy the service monitor to monitor products api: `kubectl apply -f service-monitor`
 5. Create the HPA for products: `kubectl apply -f hpa`
 
-## Powershell scripts
+## Verify metrics server
 
-- `Create-Aks.ps1`: Creates an AKS with vnodes enabled.
+Verify metrics are exposed through metrics server: `kubectl get --raw /apis/custom.metrics.k8s.io/v1beta1/ | jq` 
+
+```json
+{
+  "kind": "APIResourceList",
+  "apiVersion": "v1",
+  "groupVersion": "custom.metrics.k8s.io/v1beta1",
+  "resources": [
+    {
+      "name": "namespaces/http_requests_in_progress",
+      "singularName": "",
+      "namespaced": false,
+      "kind": "MetricValueList",
+      "verbs": [
+        "get"
+      ]
+    },
+    {
+      "name": "pods/http_requests_in_progress",
+      "singularName": "",
+      "namespaced": true,
+      "kind": "MetricValueList",
+      "verbs": [
+        "get"
+      ]
+    }
+  ]
+}
+```
+
+Verify metrics can be fetched from Prometheus: `kubectl get --raw /apis/custom.metrics.k8s.io/v1beta1/namespace/default/http_requests_in_progress`
+
+```json
+{
+  "kind": "MetricValueList",
+  "apiVersion": "custom.metrics.k8s.io/v1beta1",
+  "metadata": {
+    "selfLink": "/apis/custom.metrics.k8s.io/v1beta1/namespace/default/http_requests_in_progress"
+  },
+  "items": [
+    {
+      "describedObject": {
+        "kind": "Namespace",
+        "name": "default",
+        "apiVersion": "/v1"
+      },
+      "metricName": "http_requests_in_progress",
+      "timestamp": "2020-10-09T09:02:36Z",
+      "value": "1",
+      "selector": null
+    }
+  ]
+}
+```
+
+## Run blackfriday scripts
+
+Now we need to do some calls to the products API. You can use the  blackfriday script. Run several of them (`./blackfriday.sh -d <dns-ingress> /dev/null &`) and see how metric is growing in the HPA (`kubectl get hpa kubectl get hpa products-reqs-progress-hpa -w`).
+
+Once demo is finished kill the blackfriday scripts:
+
+`kill $(ps | grep blackfriday.sh |  awk -F" " '{print $1}' )`
+
+After some time HPA will scale down the replicas.
