@@ -19,4 +19,4 @@ data:
   ProfilesImageUrl: {{  .Values.inf.storage.profileimages  }}
   Issuer: {{ .Values.sec.issuer }}
   SecurityKey: {{ .Values.sec.securityKey }}
-  ApplicationInsights__InstrumentationKey:  {{ .Values.inf.appinsights.id }} 
+  ApplicationInsights__InstrumentationKey:  "{{ .Values.inf.appinsights.id }}" 
