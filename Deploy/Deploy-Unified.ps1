@@ -17,6 +17,9 @@ Push-Location $($MyInvocation.InvocationName | Split-Path)
 az extension add --name aks-preview
 az extension update --name aks-preview
 
+az extension add --name  application-insights
+az extension update --name  application-insights
+
 # Write-Host "Login in your account" -ForegroundColor Yellow
 az login
 
