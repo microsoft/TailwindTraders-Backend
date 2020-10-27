@@ -11,7 +11,8 @@ Param(
     [parameter(Mandatory=$false)][bool]$stepDeployArm=$true,
     [parameter(Mandatory=$false)][bool]$stepBuildPush=$true,
     [parameter(Mandatory=$false)][bool]$stepDeployImages=$true,
-    [parameter(Mandatory=$false)][bool]$stepDeployPics=$true
+    [parameter(Mandatory=$false)][bool]$stepDeployPics=$true,
+    [parameter(Mandatory=$false)][bool]$stepLoginAzure=$true
 )
 $gValuesFile="configFile.yaml"
 
@@ -24,8 +25,10 @@ az extension update --name aks-preview
 az extension add --name  application-insights
 az extension update --name  application-insights
 
-# Write-Host "Login in your account" -ForegroundColor Yellow
-az login
+if ($stepLoginAzure) {
+    # Write-Host "Login in your account" -ForegroundColor Yellow
+    az login
+}
 
 # Write-Host "Choosing your subscription" -ForegroundColor Yellow
 az account set --subscription $subscription
