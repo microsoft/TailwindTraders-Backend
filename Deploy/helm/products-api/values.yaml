@@ -14,7 +14,7 @@ resources:
   limits:
     cpu: "500m"
   requests:
-    cpu: "100m"
+    cpu: "500m"
 
 nodeSelector:
   "kubernetes.io/os": linux

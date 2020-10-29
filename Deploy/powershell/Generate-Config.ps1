@@ -75,7 +75,7 @@ if ($appInsightsName -and $appInsightsName.Length -eq 1) {
         $appinsightsId = $appinsightsConfig.instrumentationKey           
     }
 }
-Write-Host "App Insights Instrumentation Key: $($appinsightsId)" -ForegroundColor Yellow
+Write-Host "App Insights Instrumentation Key: $appinsightsId" -ForegroundColor Yellow
 
 ## Showing Values that will be used
 
