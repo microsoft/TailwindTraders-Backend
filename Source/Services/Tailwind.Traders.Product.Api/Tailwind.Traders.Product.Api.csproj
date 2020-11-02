@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>$(NetCoreTargetVersion)</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <DockerDefaultTargetOS>$(DockerDefaultTargetOS)</DockerDefaultTargetOS>
     <UserSecretsId>f2fcf537-652a-4a9e-840e-ab5f0651520f</UserSecretsId>
     <AssemblyName>Tailwind.Traders.Product.Api</AssemblyName>

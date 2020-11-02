@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>$(NetCoreTargetVersion)</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <AspNetCoreHostingModel>$(AspNetCoreHostingModel)</AspNetCoreHostingModel>
     <DockerDefaultTargetOS>$(DockerDefaultTargetOS)</DockerDefaultTargetOS>
     <UserSecretsId>1817a120-7dc7-4fa8-829c-80d84a3d0fa7</UserSecretsId>
