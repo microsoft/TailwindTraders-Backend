@@ -11,4 +11,4 @@ nodeSelector:
   beta.kubernetes.io/os: linux
   type: virtual-kubelet
 
-# vnodes: true
+vnodes: true
