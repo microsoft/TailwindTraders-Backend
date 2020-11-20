@@ -2,7 +2,7 @@
 {{- $fullName := include "tt-popularproducts.fullname" . -}}
 {{- $ingressPath := .Values.inf.ingress.popularproducts.path -}}
 
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: {{ $fullName }}
