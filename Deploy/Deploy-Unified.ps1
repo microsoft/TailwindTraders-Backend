@@ -6,7 +6,13 @@ Param(
     [parameter(Mandatory=$true)][string]$subscription,
     [parameter(Mandatory=$false)][string]$clientId,
     [parameter(Mandatory=$false)][string]$password,
-    [parameter(Mandatory=$false)][bool]$deployAks=$true
+    [parameter(Mandatory=$false)][bool]$deployAks=$true,
+    [parameter(Mandatory=$false)][bool]$deployProductsOnVnodes=$false,
+    [parameter(Mandatory=$false)][bool]$stepDeployArm=$true,
+    [parameter(Mandatory=$false)][bool]$stepBuildPush=$true,
+    [parameter(Mandatory=$false)][bool]$stepDeployImages=$true,
+    [parameter(Mandatory=$false)][bool]$stepDeployPics=$true,
+    [parameter(Mandatory=$false)][bool]$stepLoginAzure=$true
 )
 $gValuesFile="configFile.yaml"
 
@@ -16,16 +22,23 @@ Push-Location $($MyInvocation.InvocationName | Split-Path)
 az extension add --name aks-preview
 az extension update --name aks-preview
 
-# Write-Host "Login in your account" -ForegroundColor Yellow
-az login
+az extension add --name  application-insights
+az extension update --name  application-insights
+
+if ($stepLoginAzure) {
+    # Write-Host "Login in your account" -ForegroundColor Yellow
+    az login
+}
 
 # Write-Host "Choosing your subscription" -ForegroundColor Yellow
 az account set --subscription $subscription
 
 Push-Location powershell
 
-# Deploy ARM
-& ./Deploy-Arm-Azure.ps1 -resourceGroup $resourceGroup -location $location -clientId $clientId -password $password -deployAks $deployAks
+if ($stepDeployArm) {
+    # Deploy ARM
+    & ./Deploy-Arm-Azure.ps1 -resourceGroup $resourceGroup -location $location -clientId $clientId -password $password -deployAks $deployAks
+}
 
 # Connecting kubectl to AKS
 Write-Host "Retrieving Aks Name" -ForegroundColor Yellow
@@ -44,16 +57,26 @@ $acrName = $(az acr list --resource-group $resourceGroup --subscription $subscri
 Write-Host "The Name of your ACR: $acrName" -ForegroundColor Yellow
 & ./Create-Secret.ps1 -resourceGroup $resourceGroup -acrName $acrName
 
-# Build an Push
-& ./Build-Push.ps1 -resourceGroup $resourceGroup -acrName $acrName -isWindows $false
+if ($stepBuildPush) {
+    # Build an Push
+    & ./Build-Push.ps1 -resourceGroup $resourceGroup -acrName $acrName -isWindows $false
+}
 
-# Deploy images in AKS
-$gValuesLocation=$(./Join-Path-Recursively.ps1 -pathParts __values,$gValuesFile)
-& ./Deploy-Images-Aks.ps1 -aksName $aksName -resourceGroup $resourceGroup -charts "*" -acrName $acrName -valuesFile $gValuesLocation
+if ($stepDeployImages) {
+    # Deploy images in AKS
+    $gValuesLocation=$(./Join-Path-Recursively.ps1 -pathParts __values,$gValuesFile)
+    $chartsToDeploy = "*"
+    if ($deployProductsOnVnodes) {
+        $chartsToDeploy = "*,pr!"           #pr! forces using vnodes for products chart
+    }
+    & ./Deploy-Images-Aks.ps1 -aksName $aksName -resourceGroup $resourceGroup -charts $chartsToDeploy -acrName $acrName -valuesFile $gValuesLocation
+}
 
-# Deploy pictures in AKS
-$storageName = $(az resource list --resource-group $resourceGroup --resource-type Microsoft.Storage/storageAccounts -o json | ConvertFrom-Json).name
-& ./Deploy-Pictures-Azure.ps1 -resourceGroup $resourceGroup -storageName $storageName
+if ($stepDeployPics) {
+    # Deploy pictures in AKS
+    $storageName = $(az resource list --resource-group $resourceGroup --resource-type Microsoft.Storage/storageAccounts -o json | ConvertFrom-Json).name
+    & ./Deploy-Pictures-Azure.ps1 -resourceGroup $resourceGroup -storageName $storageName
+}
 
 Pop-Location
 Pop-Location

@@ -10,7 +10,7 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 data:
-  ApplicationInsights__InstrumentationKey:  {{ .Values.inf.appinsights.id }}
+  ApplicationInsights__InstrumentationKey:  "{{ .Values.inf.appinsights.id }}"
   PopularProductsApiUrl: {{ .Values.inf.apiurls.popularproductsapiurl }}
   ProductsApiUrl: {{ .Values.inf.apiurls.productsapiurl }}
   ProfileApiUrl: {{ .Values.inf.apiurls.profileapiurl }}

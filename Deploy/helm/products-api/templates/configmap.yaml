@@ -14,6 +14,6 @@ data:
   CosmosDb__Host: {{ .Values.inf.db.products.host }}
   ProductImagesUrl: {{ .Values.inf.storage.productimages }}
   ProductDetailImagesUrl: {{ .Values.inf.storage.productdetailimages }}
-  ApplicationInsights__InstrumentationKey:  {{ .Values.inf.appinsights.id }}  
+  ApplicationInsights__InstrumentationKey:  "{{ .Values.inf.appinsights.id }}"  
   ISSUER: {{ .Values.sec.issuer }}
   SECURITYKEY: {{ .Values.sec.securityKey }}

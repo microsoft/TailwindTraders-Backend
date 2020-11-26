@@ -1,5 +1,6 @@
 Param(
-    [parameter(Mandatory=$true)][string]$aksName,
+    [parameter(Mandatory=$false)][string]$aksHost,
+    [parameter(Mandatory=$false)][string]$aksName,
     [parameter(Mandatory=$true)][string]$resourceGroup
 )
 
@@ -32,14 +33,16 @@ workflow LoadTestUri {
 }
 
 
-$aksHost=$(az aks show -n $aksName -g $resourceGroup -o json --query addonProfiles.httpapplicationrouting.config.HTTPApplicationRoutingZoneName | ConvertFrom-Json)
-if (-not $aksHost) {
-    $aksHost=$(az aks show -n $aksName -g $resourceGroup -o json --query addonProfiles.httpApplicationRouting.config.HTTPApplicationRoutingZoneName | ConvertFrom-Json)
-}
+if ([String]::IsNullOrEmpty($aksHost)) {
+    $aksHost=$(az aks show -n $aksName -g $resourceGroup -o json --query addonProfiles.httpapplicationrouting.config.HTTPApplicationRoutingZoneName | ConvertFrom-Json)
+    if (-not $aksHost) {
+        $aksHost=$(az aks show -n $aksName -g $resourceGroup -o json --query addonProfiles.httpApplicationRouting.config.HTTPApplicationRoutingZoneName | ConvertFrom-Json)
+    }
 
-if (-not $aksHost) {
-    Write-Host "Could not infer URL for AKS $aksName in RG $resourceGroup"
-    exit 1
+    if (-not $aksHost) {
+        Write-Host "Could not infer URL for AKS $aksName in RG $resourceGroup"
+        exit 1
+    }
 }
 
 $url="http://$aksHost/product-api/v1/product"

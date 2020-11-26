@@ -1,0 +1,14 @@
+## Add this values file to any Helm chart to force its deployment to run under virtual nodes
+
+tolerations:
+- key: virtual-kubelet.io/provider
+  operator: Exists
+- effect: NoSchedule
+  key: azure.com/aci
+
+nodeSelector:
+  kubernetes.io/role: agent
+  beta.kubernetes.io/os: linux
+  type: virtual-kubelet
+
+vnodes: true

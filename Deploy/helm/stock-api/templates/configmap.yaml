@@ -11,7 +11,7 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 data:
-  APPLICATION_INSIGHTS_IKEY:  {{ .Values.inf.appinsights.id }}
+  APPLICATION_INSIGHTS_IKEY:  "{{ .Values.inf.appinsights.id }}"
   COSMOSDB_AUTHKEY: {{ .Values.inf.db.stock.auth }}
   COSMOSDB_HOST: {{ .Values.inf.db.stock.host }}
   ISSUER: {{ .Values.sec.issuer }}

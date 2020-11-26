@@ -12,7 +12,7 @@ metadata:
 data:
   AUTHKEY: {{ .Values.inf.db.popularproducts.auth }}
   HOST: {{ .Values.inf.db.popularproducts.host }}
-  ApplicationInsightsIK:  {{ .Values.inf.appinsights.id }}
+  ApplicationInsightsIK:  "{{ .Values.inf.appinsights.id }}"
   AzureStorageUrl: {{ .Values.inf.storage.productimages }}
   ISSUER: {{ .Values.sec.issuer }}
   SECURITYKEY: {{ .Values.sec.securityKey }}

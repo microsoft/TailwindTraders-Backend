@@ -117,8 +117,13 @@ if ([String]::IsNullOrEmpty($valuesFile)) {
 Write-Host "Configuration file used is $valuesFile" -ForegroundColor Yellow
 
 if ($charts.Contains("pr") -or  $charts.Contains("*")) {
+    $useVnodes = $charts.Contains("pr!")
     Write-Host "Products chart - pr" -ForegroundColor Yellow
     $command = "helm upgrade --install $name-product products-api -f $valuesFile --set ingress.hosts='{$aksHost}' --set image.repository=$acrLogin/product.api --set image.tag=$tag --set hpa.activated=$autoscale"
+    if ($useVnodes) {
+        Write-Host "Products chart - pr will run on virtual nodes" -ForegroundColor Yellow
+        $command = "$command -f vnodes-values.yaml"
+    }
     $command = createHelmCommand $command 
     Invoke-Expression "$command"
 }
