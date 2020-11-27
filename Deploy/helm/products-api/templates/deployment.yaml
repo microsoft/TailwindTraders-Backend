@@ -52,7 +52,8 @@ spec:
             - name: http
               containerPort: 80
               protocol: TCP
-          {{ if .Values.probes -}}
+          {{ if not .Values.vnodes -}}
+          {{- if .Values.probes -}}
           {{- if .Values.probes.liveness -}}
           livenessProbe:
             httpGet:
@@ -71,6 +72,7 @@ spec:
             initialDelaySeconds: {{ .Values.probes.readiness.initialDelaySeconds }}
             periodSeconds: {{ .Values.probes.readiness.periodSeconds }}
             timeoutSeconds: {{ .Values.probes.readiness.timeoutSeconds }}
+          {{- end -}}
           {{- end -}}
           {{- end }}     
           resources:

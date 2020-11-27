@@ -1,0 +1,18 @@
+# Url to access prometheus
+prometheus:
+  url: http://prometheus-operated.default.svc.cluster.local
+  port: 9090
+
+metricsRelistInterval: 30s
+logLevel: 6
+rules:
+  default: false
+  custom:
+  - seriesQuery: 'http_requests_in_progress{namespace!="",pod!=""}'
+    resources:
+      overrides:
+        namespace: {resource: "namespace"}
+        pod: {resource: "pod"}
+    name:
+      as: "http_requests_in_progress"
+    metricsQuery: 'sum(avg_over_time(<<.Series>>{<<.LabelMatchers>>}[2m])) by (<<.GroupBy>>)'

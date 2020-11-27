@@ -18,4 +18,4 @@ data:
   URL_BASE: {{ $imagebaseurl }}
   ISSUER: {{ .Values.sec.issuer }}
   SECURITYKEY: {{ .Values.sec.securityKey }}
-  APPLICATIONINSIGHTSIK:  {{ .Values.inf.appinsights.id }} 
+  APPLICATIONINSIGHTSIK:  "{{ .Values.inf.appinsights.id }}" 

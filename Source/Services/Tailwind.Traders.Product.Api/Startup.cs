@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Prometheus;
 using Tailwind.Traders.Product.Api.Extensions;
 
 namespace Tailwind.Traders.Product.Api
@@ -66,11 +67,13 @@ namespace Tailwind.Traders.Product.Api
             });
 
             app.UseRouting();
+            app.UseHttpMetrics();
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapHealthChecks("/liveness", new HealthCheckOptions() { Predicate = r => r.Name.Contains("self") });
                 endpoints.MapHealthChecks("/readiness", new HealthCheckOptions() { });
+                endpoints.MapMetrics();
                 endpoints.MapDefaultControllerRoute();
                 endpoints.MapControllers();
             });

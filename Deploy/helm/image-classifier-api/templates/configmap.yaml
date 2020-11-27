@@ -10,7 +10,7 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 data:
-  ApplicationInsights__InstrumentationKey:  {{ .Values.inf.appinsights.id }}
+  ApplicationInsights__InstrumentationKey:  "{{ .Values.inf.appinsights.id }}"
   ImagePath: /imguploads
   ISSUER: {{ .Values.sec.issuer }}
   SECURITYKEY: {{ .Values.sec.securityKey }}
