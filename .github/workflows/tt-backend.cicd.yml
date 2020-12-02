@@ -1,0 +1,34 @@
+name: TailwindTraders Website Pipelines
+on:
+  push:
+    branches: [main, create-cicd-action, ]
+  pull_request:
+    # The branches below must be a subset of the branches above
+    branches: [main]
+  schedule:
+    - cron: '0 0 * * *'
+
+jobs:
+  pr-build:
+    if: ${{ github.event_name == 'pull_request' }}
+    runs-on: ubuntu-latest
+    steps:
+    - name: 'Checkout Github Action'
+      uses: actions/checkout@master
+
+    - name: Docker build
+      working-directory: Source/Tailwind.Traders.Backend
+      run: |
+        docker-compose build --no-cache 
+
+  main-build:
+    if: ${{ github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event.pull_request.merged == true) }}
+    runs-on: ubuntu-latest
+    steps:
+    - name: 'Checkout Github Action'
+      uses: actions/checkout@master
+
+    - name: Docker build
+      working-directory: Source/Tailwind.Traders.Backend
+      run: |
+        docker-compose build --no-cache 
