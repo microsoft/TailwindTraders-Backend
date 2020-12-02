@@ -32,3 +32,32 @@ jobs:
       working-directory: Source
       run: |
         docker-compose build --no-cache 
+
+  nightly-build-and-deploy:
+    if: ${{ github.event_name == 'schedule' }}
+    runs-on: ubuntu-latest
+    steps:
+    - name: 'Checkout Github Action'
+      uses: actions/checkout@master
+
+    - name: Login to Azure
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+    
+    - name: Set Azure subscription
+      run: |
+        az account set -s ${{ secrets.AZURE_SUBSCRIPTION }}
+    
+    - name: Docker login
+    - uses: azure/docker-login@v1
+      with:
+        login-server: ${{ secrets.ACR_LOGIN }}
+        username: ${{ secrets.ACR_USERNAME }}
+        password: ${{ secrets.ACR_PASSWORD }}
+
+    - name: Docker build and push
+      working-directory: Deploy/powershell
+      shell: powershell
+      run: |
+        Build-Push.ps1 -resourceGroup ${{ secrets.RESOURCE_GROUP }} -acrName ${{ secrets.ACR_NAME }}
