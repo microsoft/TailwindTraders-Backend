@@ -10,7 +10,6 @@ on:
 
 jobs:
   pr-build:
-    if: ${{ github.event_name == 'pull_request' }}
     runs-on: ubuntu-latest
     steps:
     - name: 'Checkout Github Action'
@@ -22,7 +21,6 @@ jobs:
         docker-compose build --no-cache 
 
   main-build:
-    if: ${{ github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event.pull_request.merged == true) }}
     runs-on: ubuntu-latest
     steps:
     - name: 'Checkout Github Action'
