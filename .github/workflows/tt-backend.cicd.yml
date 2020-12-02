@@ -16,7 +16,7 @@ jobs:
       uses: actions/checkout@master
 
     - name: Docker build
-      working-directory: Source/Tailwind.Traders.Backend
+      working-directory: Source
       run: |
         docker-compose build --no-cache 
 
@@ -27,6 +27,6 @@ jobs:
       uses: actions/checkout@master
 
     - name: Docker build
-      working-directory: Source/Tailwind.Traders.Backend
+      working-directory: Source
       run: |
         docker-compose build --no-cache 
