@@ -34,9 +34,9 @@ class ShoppingCartDao {
       throw new Error(`Collection is not initialized. ${this.container}`);
     }
 
-    const { result: results } = await this.container.items
+    const { resources: results } = await this.container.items
       .query(querySpec)
-      .toArray();
+      .fetchAll();
     return results.map(i => ({
       id: i.detailProduct.id,
       name: i.detailProduct.name,
@@ -49,14 +49,14 @@ class ShoppingCartDao {
   }
 
   async addItem(item) {
-    const { body: doc } = await this.container.items.create(item);
+    const { resource: doc } = await this.container.items.create(item);
     return doc;
   }
 
   async updateQuantity(id, newqty) {
     const itemToReplace = this.container.item(id);
     try {
-      const { code, body: doc } = await itemToReplace.read();
+      const { resource: doc } = await itemToReplace.read();
       doc.qty = newqty;
       await itemToReplace.replace(doc);
     } catch (e) {

@@ -64,16 +64,14 @@ app.use(setHeaders);
 console.log(`Cosmos to use is ${config.host}`);
 const cosmosClientOptions = {
   endpoint: config.host,
-  auth: {
-    masterKey: config.authKey
-  }
+  key: config.authKey
 };
 
 const locations = process.env.LOCATIONS;
 if (locations) {
   console.log(`Preferred locations are set to: '${locations}'`);
   const connectionPolicy = new ConnectionPolicy();
-  connectionPolicy.PreferredLocations = locations.split(",");
+  connectionPolicy.preferredLocations = locations.split(",");
   cosmosClientOptions.connectionPolicy = connectionPolicy;
 }
 
@@ -86,7 +84,6 @@ if (disableSSL) {
   if (cosmosClientOptions.connectionPolicy == undefined) {
     cosmosClientOptions.connectionPolicy = new ConnectionPolicy();
   }
-  cosmosClientOptions.connectionPolicy.DisableSSLVerification = true;
 }
 
 const cosmosClient = new CosmosClient(cosmosClientOptions);
