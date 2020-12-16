@@ -9,30 +9,6 @@ on:
     - cron: '0 0 * * *'
 
 jobs:
-  pr-build:
-    if: ${{ github.event_name == 'pull_request' }}
-    runs-on: ubuntu-latest
-    steps:
-    - name: 'Checkout Github Action'
-      uses: actions/checkout@master
-
-    - name: Docker build
-      working-directory: Source
-      run: |
-        docker-compose build --no-cache 
-
-  main-build:
-    if: ${{ github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event.pull_request.merged == true) }}
-    runs-on: ubuntu-latest
-    steps:
-    - name: 'Checkout Github Action'
-      uses: actions/checkout@master
-
-    - name: Docker build
-      working-directory: Source
-      run: |
-        docker-compose build --no-cache 
-
   nightly-build-and-deploy:
     runs-on: ubuntu-latest
     steps:
