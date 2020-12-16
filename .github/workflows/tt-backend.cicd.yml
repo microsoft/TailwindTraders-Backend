@@ -25,7 +25,7 @@ jobs:
         az account set -s ${{ secrets.AZURE_SUBSCRIPTION }}
     
     - name: Docker login
-    - uses: azure/docker-login@v1
+      uses: azure/docker-login@v1
       with:
         login-server: ${{ secrets.ACR_LOGIN }}
         username: ${{ secrets.ACR_USERNAME }}
