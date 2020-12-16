@@ -34,6 +34,7 @@ jobs:
         docker-compose build --no-cache 
 
   nightly-build-and-deploy:
+    if: ${{ github.event_name == 'schedule' }}
     runs-on: ubuntu-latest
     steps:
     - name: 'Checkout Github Action'
