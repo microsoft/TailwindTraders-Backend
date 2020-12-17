@@ -50,11 +50,15 @@ jobs:
       run: |
         ./Generate-Config.ps1 -resourceGroup ${{ secrets.RESOURCE_GROUP }} -outputFile ${{ env.GVALUES_LOCATION }}
 
-    - name: Get credentials
-      working-directory: Deploy/powershell
-      shell: pwsh
+    - name: Install extensions
       run: |
+        az extension add --name  application-insights
+        az extension update --name  application-insights
         az extension add --name aks-preview
+        az extension update --name aks-preview
+
+    - name: Get credentials
+      run: |
         az aks get-credentials -n ${{ secrets.AKS_NAME }} -g ${{ secrets.RESOURCE_GROUP }}
 
     - name: Create secrets
@@ -67,7 +71,7 @@ jobs:
       working-directory: Deploy/powershell
       shell: pwsh
       run: |
-        ./Deploy-Images-Aks.ps1 -resourceGroup ${{ secrets.RESOURCE_GROUP }} -acrName ${{ secrets.ACR_NAME }} -valuesFile ${{ env.GVALUES_LOCATION }} -tlsEnv prod
+        ./Deploy-Images-Aks.ps1 -aksName ${{ secrets.AKS_NAME }} -resourceGroup ${{ secrets.RESOURCE_GROUP }} -acrName ${{ secrets.ACR_NAME }} -valuesFile ${{ env.GVALUES_LOCATION }} -tlsEnv prod
     
     - name: Deploy pictures
       working-directory: Deploy/powershell
