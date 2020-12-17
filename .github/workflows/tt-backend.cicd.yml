@@ -49,6 +49,12 @@ jobs:
       run: |
         Deploy/powershell/Generate-Config.ps1 -resourceGroup ${{ secrets.RESOURCE_GROUP }} -outputFile ${{ env.GVALUES_LOCATION }}
 
+    - name: Get credentials
+      shell: pwsh
+      run: |
+        az extension add --name aks-preview
+        az aks get-credentials -n ${{ secrets.AKS_NAME }} -g ${{ secrets.RESOURCE_GROUP }}
+
     - name: Create secrets
       shell: pwsh
       run: |
