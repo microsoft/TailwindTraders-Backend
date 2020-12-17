@@ -40,18 +40,18 @@ jobs:
     - name: Set environment variables
       shell: pwsh
       working-directory: Deploy/powershell
-      run: /
-        $gValuesLocation=configFile.yaml
+      run: |
+        $gValuesLocation=$(./Join-Path-Recursively.ps1 -pathParts ..,helm,__values, configFile.yaml)
         echo "GVALUES_LOCATION=$gValuesLocation" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
     - name: Generate config
       shell: pwsh
-      run: /
+      run: |
         Deploy/powershell/Generate-Config.ps1 -resourceGroup ${{ secrets.RESOURCE_GROUP }} -outputFile ${{ env.GVALUES_LOCATION }}
 
     - name: Create secrets
       shell: pwsh
-      run: /
+      run: |
         Deploy/powershell/Create-Secret.ps1 -resourceGroup ${{ secrets.RESOURCE_GROUP }} -acrName ${{ secrets.ACR_NAME }}
 
     - name: Docker build and push
@@ -61,10 +61,10 @@ jobs:
 
     - name: Deploy images
       shell: pwsh
-      run: /
+      run: |
         Deploy/powershell/Deploy-Images-Aks.ps1 -aksName ${{ secrets.AKS_NAME }} -resourceGroup ${{ secrets.RESOURCE_GROUP }} -acrName ${{ secrets.ACR_NAME }} -valuesFile ${{ env.GVALUES_LOCATION }}
     
     - name: Deploy pictures
       shell: pwsh
-      run: /
+      run: |
         Deploy/powershell/Deploy-Pictures-Azure.ps1 -resourceGroup ${{ secrets.RESOURCE_GROUP }} -storageName ${{ secrets.STORAGE_NAME }}
