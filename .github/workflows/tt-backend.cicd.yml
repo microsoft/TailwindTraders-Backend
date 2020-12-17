@@ -67,12 +67,6 @@ jobs:
       run: |
         ./Create-Secret.ps1 -resourceGroup ${{ secrets.RESOURCE_GROUP }} -acrName ${{ secrets.ACR_NAME }}
 
-    - name: Docker build and push	
-      working-directory: Deploy/powershell	
-      shell: pwsh	
-      run: |	
-        ./Build-Push.ps1 -resourceGroup ${{ secrets.RESOURCE_GROUP }} -acrName ${{ secrets.ACR_NAME }}
-
     - name: Deploy images
       working-directory: Deploy/powershell
       shell: pwsh
