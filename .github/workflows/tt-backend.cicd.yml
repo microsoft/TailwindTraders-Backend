@@ -67,11 +67,17 @@ jobs:
       run: |
         ./Create-Secret.ps1 -resourceGroup ${{ secrets.RESOURCE_GROUP }} -acrName ${{ secrets.ACR_NAME }}
 
+    - name: Docker build and push	
+      working-directory: Deploy/powershell	
+      shell: pwsh	
+      run: |	
+        ./Build-Push.ps1 -resourceGroup ${{ secrets.RESOURCE_GROUP }} -acrName ${{ secrets.ACR_NAME }}
+
     - name: Deploy images
       working-directory: Deploy/powershell
       shell: pwsh
       run: |
-        ./Deploy-Images-Aks.ps1 -aksName ${{ secrets.AKS_NAME }} -resourceGroup ${{ secrets.RESOURCE_GROUP }} -charts "*" -acrName ${{ secrets.ACR_NAME }} -valuesFile ${{ env.GVALUES_LOCATION }}
+        ./Deploy-Images-Aks.ps1 -aksName ${{ secrets.AKS_NAME }} -resourceGroup ${{ secrets.RESOURCE_GROUP }} -charts "*" -acrName ${{ secrets.ACR_NAME }} -valuesFile ${{ env.GVALUES_LOCATION }} -tlsHost ${{ secrets.TLS_HOST }} -tlsEnv ${{ secrets.TLS_ENV }}
     
     - name: Deploy pictures
       working-directory: Deploy/powershell
