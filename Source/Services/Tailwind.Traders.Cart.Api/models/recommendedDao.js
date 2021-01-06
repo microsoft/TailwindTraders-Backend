@@ -38,7 +38,7 @@ class RecommendedDao {
         if (!this.container) {
             throw new Error("Collection is not initialized.");
         }
-        const { result: results } = await this.container.items.query(querySpec).toArray();
+        const { resources: results } = await this.container.items.query(querySpec).fetchAll();
         return results.map(i => ({
             email: i.email,
             typeid: i.typeid,
