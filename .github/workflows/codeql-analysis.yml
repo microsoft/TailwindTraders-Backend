@@ -25,6 +25,8 @@ jobs:
 
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v1
+      with:
+        languages: ${{ matrix.language }}
     
     - if: matrix.language == 'csharp' 
       name: Autobuild
@@ -37,6 +39,7 @@ jobs:
        
     - if: matrix.language == 'java'
       name: Run the Maven verify phase
+      working-directory: ./Source/Services/Tailwind.Traders.Stock.Api
       run: mvn --batch-mode --update-snapshots verify
 
     # ℹ️ Command-line programs to run using the OS shell.
