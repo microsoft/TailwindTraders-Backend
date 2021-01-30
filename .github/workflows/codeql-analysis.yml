@@ -16,6 +16,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
+      matrix:
+        language: ['csharp', 'go', 'javascript', 'java']
 
     steps:
     - name: Checkout repository
