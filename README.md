@@ -495,13 +495,32 @@ To do so, just create a file named `.env` in the same `./Source` folder with fol
 COSMOSDB_HOST=<Url of your CosmosDb>
 COSMOSDB_AUTHKEY=<AuthKey of your CosmosDb>
 ```
+## Connect to CosmosDb emulator from docker container
 
-If you are using Windows, you can run the [CosmosDb emulator](https://docs.microsoft.com/en-us/azure/cosmos-db/local-emulator). If using it, you can use following `.env` file:
+If you are using Windows, you can run the [CosmosDb emulator](https://docs.microsoft.com/en-us/azure/cosmos-db/local-emulator). If using it, follow this steps.
+
+### Generate and install a cert that allows host.docker.internal to be trusted
+
+1. Run PowerShell as Administrator
+2. Go to CosmosDb emulator folder ``cd "c:\Program Files\Azure Cosmos DB Emulator"``
+3. Generate certificate for docker dns `` .\Microsoft.Azure.Cosmos.Emulator.exe /GenCert=host.docker.internal``
+4. To export the certificate you can follow this guide (https://docs.microsoft.com/en-us/azure/cosmos-db/local-emulator-export-ssl-certificates#export-emulator-certificate)
+5. Rename the .cer exported certificate to cosmosdbcert.crt and place it in the /Source folder of the repo
+6. Modify **Product.Api** and **Profile.Api** Dockerfiles in line 7 to install the certificate
+```
+WORKDIR /usr/local/share/ca-certificates
+COPY ./cosmosdbcert.crt .
+RUN update-ca-certificates
+``` 
+7. Enable network access on emulator: **To enable network access for the first time**, shut down the emulator and delete the emulator's data directory %LOCALAPPDATA%\CosmosDBEmulator. Then, run ```.\Microsoft.Azure.Cosmos.Emulator.exe /FailOnSslCertificateNameMismatch /allownetworkaccess /Key=C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==```
+
+8. add following `.env` file:
 
 ```
-COSMOSDB_HOST=https://10.75.0.1:8081/
+COSMOSDB_HOST=https://host.docker.internal:8081/
 COSMOSDB_AUTHKEY=C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==
 ```
+9. Hit F5 and the collections should be created in the emulator. (https://localhost:8081/_explorer/index.html)
 
 ## Running using Visual Studio
 
