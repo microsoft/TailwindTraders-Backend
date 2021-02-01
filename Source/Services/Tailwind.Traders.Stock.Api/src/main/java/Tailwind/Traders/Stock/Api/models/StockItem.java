@@ -15,11 +15,20 @@ public class StockItem {
 
     private Integer stockCount;
 
+    private String partition;
+
     public String getId() {
         return this.id;
     }
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getPartition() {
+        return this.partition;
+    }
+    public void setPartition(String partition) {
+        this.partition = partition;
     }
 
     public Integer getProductId() {
