@@ -28,8 +28,9 @@ jobs:
         languages: ${{ matrix.language }}
     
     - if: matrix.language == 'csharp' 
-      name: Autobuild
-      uses: github/codeql-action/autobuild@v1
+      name: Build dotnet apps
+      working-directory: ./Source
+      run:  msbuild .\Tailwind.Traders.Backend.sln /p:VSToolsPath=''
 
     - if: matrix.language == 'java'       
       uses: actions/setup-java@v1
@@ -40,17 +41,6 @@ jobs:
       name: Run the Maven verify phase
       working-directory: ./Source/Services/Tailwind.Traders.Stock.Api
       run: mvn --batch-mode --update-snapshots verify
-
-    # ℹ️ Command-line programs to run using the OS shell.
-    # 📚 https://git.io/JvXDl
-
-    # ✏️ If the Autobuild fails above, remove it and uncomment the following three lines
-    #    and modify them (or add more) to build your code if your project
-    #    uses a compiled language
-
-    #- run: |
-    #   make bootstrap
-    #   make release
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v1
