@@ -30,7 +30,13 @@ jobs:
     - if: matrix.language == 'csharp' 
       name: Build dotnet apps
       working-directory: ./Source
-      run:  dotnet build ./Tailwind.Traders.Backend.sln /p:VSToolsPath=''
+      run:  |
+            dotnet build ./Services/Tailwind.Traders.ImageClassifier.Api/Tailwind.Traders.ImageClassifier.Api.csproj
+            dotnet build ./Services/Tailwind.Traders.Login.Api/Tailwind.Traders.Login.Api.csproj
+            dotnet build ./Services/Tailwind.Traders.Product.Api/Tailwind.Traders.Product.Api.csproj
+            dotnet build ./Services/Tailwind.Traders.Profile.Api/Tailwind.Traders.Profile.Api.csproj
+            dotnet build ./ApiGWs/Tailwind.Traders.Bff/Tailwind.Traders.MobileBff.csproj
+            dotnet build ./ApiGWs/Tailwind.Traders.WebBff/Tailwind.Traders.WebBff.csproj
 
     - if: matrix.language == 'java'       
       uses: actions/setup-java@v1
