@@ -30,7 +30,7 @@ jobs:
     - if: matrix.language == 'csharp' 
       name: Build dotnet apps
       working-directory: ./Source
-      run:  |
+      run: |
             dotnet build ./Services/Tailwind.Traders.ImageClassifier.Api/Tailwind.Traders.ImageClassifier.Api.csproj
             dotnet build ./Services/Tailwind.Traders.Login.Api/Tailwind.Traders.Login.Api.csproj
             dotnet build ./Services/Tailwind.Traders.Product.Api/Tailwind.Traders.Product.Api.csproj
