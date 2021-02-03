@@ -1,6 +1,6 @@
 <Project>
   <PropertyGroup Label="SDK Versions">
-    <NetCoreTargetVersion>netcoreapp3.1</NetCoreTargetVersion>
+    <NetCoreTargetVersion>net5.0</NetCoreTargetVersion>
   </PropertyGroup>
   <PropertyGroup Label="Global csproj settings">
     <LangVersion>latest</LangVersion>
@@ -10,32 +10,32 @@
 
   <PropertyGroup Label="Netcore Versions">
     <MicrosoftAspNetCoreRazorDesign>2.2.0</MicrosoftAspNetCoreRazorDesign>
-    <MicrosoftAspNetCoreHttpFeatures>2.2.0</MicrosoftAspNetCoreHttpFeatures>
-    <MicrosoftEntityFrameworkCore>3.0.0-preview8.19405.11</MicrosoftEntityFrameworkCore>
-    <MicrosoftEntityFrameworkCoreDesign>3.0.0-preview8.19405.11</MicrosoftEntityFrameworkCoreDesign>
-	  <MicrosoftEntityFrameworkCoreCosmos>3.0.0-preview8.19405.11</MicrosoftEntityFrameworkCoreCosmos>
-    <MicrosoftEntityFrameworkCoreSqlServer>3.0.0-preview8.19405.11</MicrosoftEntityFrameworkCoreSqlServer>
-    <MicrosoftVisualStudioWebCodeGenerationDesign>2.2.3</MicrosoftVisualStudioWebCodeGenerationDesign>
+    <MicrosoftAspNetCoreHttpFeatures>5.0.0</MicrosoftAspNetCoreHttpFeatures>
+    <MicrosoftEntityFrameworkCore>5.0.0</MicrosoftEntityFrameworkCore>
+    <MicrosoftEntityFrameworkCoreDesign>5.0.0</MicrosoftEntityFrameworkCoreDesign>
+	  <MicrosoftEntityFrameworkCoreCosmos>5.0.0</MicrosoftEntityFrameworkCoreCosmos>
+    <MicrosoftEntityFrameworkCoreSqlServer>5.0.0</MicrosoftEntityFrameworkCoreSqlServer>
+    <MicrosoftVisualStudioWebCodeGenerationDesign>5.0.0</MicrosoftVisualStudioWebCodeGenerationDesign>
   </PropertyGroup>
 
   <PropertyGroup Label="External Package Versions">
     <CsvHelper>7.1.1</CsvHelper> 
     <MicrosoftApplicationInsightsAspNetCore>2.5.1</MicrosoftApplicationInsightsAspNetCore>
-    <MicrosoftAspNetCoreMvcVersioning>2.3.0</MicrosoftAspNetCoreMvcVersioning>
-    <MicrosoftAspNetCoreMvcVersioningApiExplorer>2.2.0</MicrosoftAspNetCoreMvcVersioningApiExplorer>
+    <MicrosoftAspNetCoreMvcVersioning>5.0.0-preview.2</MicrosoftAspNetCoreMvcVersioning>
+    <MicrosoftAspNetCoreMvcVersioningApiExplorer>5.0.0-preview.2</MicrosoftAspNetCoreMvcVersioningApiExplorer>
     <MicrosoftML>1.1.0</MicrosoftML>
     <MicrosoftMLImageAnalytics>1.1.0</MicrosoftMLImageAnalytics>
     <MicrosoftMLTensorFlow>0.12.0</MicrosoftMLTensorFlow>
     <MicrosoftVisualStudioAzureContainersToolsTargets>1.1.1</MicrosoftVisualStudioAzureContainersToolsTargets>
     <MicrosoftAspNetWebApiClient>5.2.7</MicrosoftAspNetWebApiClient>
     <MicrosoftApplicationInsightsAspNetCore>2.7.1</MicrosoftApplicationInsightsAspNetCore>
-    <MicrosoftAspNetCoreAuthenticationJwtBearer>2.2.0</MicrosoftAspNetCoreAuthenticationJwtBearer>
+    <MicrosoftAspNetCoreAuthenticationJwtBearer>5.0.0</MicrosoftAspNetCoreAuthenticationJwtBearer>
     <MicrosoftML>1.1.0</MicrosoftML>
     <MicrosoftMLImageAnalytics>1.1.0</MicrosoftMLImageAnalytics>
     <MicrosoftMLTensorFlow>0.12.0</MicrosoftMLTensorFlow>
     <SwashbuckleAspNetCore>5.0.0-rc2</SwashbuckleAspNetCore>
     <AspNetCore_HealthChecks_SqlServer>2.2.0</AspNetCore_HealthChecks_SqlServer>
     <AspNetCore_HealthChecks_Uris>2.2.2</AspNetCore_HealthChecks_Uris>
-    <MicrosoftAspNetCoreMvcNewtonsoftJson>3.0.0-preview9.19424.4</MicrosoftAspNetCoreMvcNewtonsoftJson>
+    <MicrosoftAspNetCoreMvcNewtonsoftJson>5.0.0</MicrosoftAspNetCoreMvcNewtonsoftJson>
   </PropertyGroup>
 </Project>

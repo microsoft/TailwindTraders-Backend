@@ -8,10 +8,10 @@ using System.Threading.Tasks;
 
 namespace Tailwind.Traders.WebBff.Infrastructure
 {
-    public class DevspacesMessageHandler : DelegatingHandler
+    public class LPKMessageHandler : DelegatingHandler
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
-        public DevspacesMessageHandler(IHttpContextAccessor httpContextAccessor)
+        public LPKMessageHandler(IHttpContextAccessor httpContextAccessor)
         {
             _httpContextAccessor = httpContextAccessor;
         }
@@ -20,9 +20,10 @@ namespace Tailwind.Traders.WebBff.Infrastructure
         {
             var req = _httpContextAccessor.HttpContext.Request;
 
-            if (req.Headers.ContainsKey("azds-route-as"))
+            if (req.Headers.ContainsKey("kubernetes-route-as"))
             {
-                request.Headers.Add("azds-route-as", req.Headers["azds-route-as"] as IEnumerable<string>);
+                request.Headers.Add("kubernetes-route-as", req.Headers["kubernetes-route-as"] as IEnumerable<string>);
+                Console.WriteLine("Kubernetes-route-as : " + string.Join(",", req.Headers["kubernetes-route-as"]));
             }
             return base.SendAsync(request, cancellationToken);
         }

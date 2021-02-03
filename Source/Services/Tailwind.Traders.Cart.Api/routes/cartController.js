@@ -11,7 +11,8 @@ class CartController {
     async addProduct(req, res) {
         const item = req.body;
         const doc = await this.shoppingCartDao.addItem(item);
-        res.status(201).send({ message: "Product added on shopping cart", id: doc.id });
+        res.status(201).send({ message: `${doc.detailProduct.name} added to shopping cart`, id: doc.id });
+        console.log(`Succsessfully added product ${doc.detailProduct.name} to shopping cart`)
     }
 
     async getProductsByUser(req, res) {

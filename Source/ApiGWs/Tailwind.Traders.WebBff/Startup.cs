@@ -140,7 +140,7 @@ namespace Tailwind.Traders.WebBff
 
             //register delegating handlers
             services.AddTransient<HttpClientAuthorizationDelegatingHandler>();
-            services.AddTransient<DevspacesMessageHandler>();
+            services.AddTransient<LPKMessageHandler>();
 
             //InfinteTimeSpan -> See: https://github.com/aspnet/HttpClientFactory/issues/194
             services.AddHttpClient("extendedhandlerlifetime").SetHandlerLifetime(Timeout.InfiniteTimeSpan);
@@ -149,7 +149,7 @@ namespace Tailwind.Traders.WebBff
             services.AddHttpClient(HttpClients.ApiGW)
                    .SetHandlerLifetime(TimeSpan.FromMinutes(5))  //Sample. Default lifetime is 2 minutes
                    .AddHttpMessageHandler<HttpClientAuthorizationDelegatingHandler>()
-                   .AddHttpMessageHandler<DevspacesMessageHandler>();
+                   .AddHttpMessageHandler<LPKMessageHandler>();
 
             return services;
         }
