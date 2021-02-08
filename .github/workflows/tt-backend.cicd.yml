@@ -1,0 +1,111 @@
+name: TailwindTraders Website Pipelines
+on:
+  push:
+    branches: [main]
+  pull_request:
+    # The branches below must be a subset of the branches above
+    branches: [main]
+  schedule:
+    - cron: '0 0 * * *'
+
+jobs:
+  pr-build:
+    if: ${{ github.event_name == 'pull_request' }}
+    runs-on: ubuntu-latest
+    steps:
+    - name: 'Checkout Github Action'
+      uses: actions/checkout@master
+
+    - name: Docker build
+      working-directory: Source
+      run: |
+        docker-compose build --no-cache 
+
+  main-build:
+    if: ${{ github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event.pull_request.merged == true) }}
+    runs-on: ubuntu-latest
+    steps:
+    - name: 'Checkout Github Action'
+      uses: actions/checkout@master
+
+    - name: Docker build
+      working-directory: Source
+      run: |
+        docker-compose build --no-cache 
+        
+  nightly-build-and-deploy:
+    if: ${{ github.event_name == 'schedule' }}
+    runs-on: ubuntu-latest
+    steps:
+    - name: 'Checkout Github Action'
+      uses: actions/checkout@master
+
+    - name: Login to Azure
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+    
+    - name: Set Azure subscription
+      run: |
+        az account set -s ${{ secrets.AZURE_SUBSCRIPTION }}
+    
+    - name: Docker login
+      uses: azure/docker-login@v1
+      with:
+        login-server: ${{ secrets.ACR_LOGIN }}
+        username: ${{ secrets.ACR_USERNAME }}
+        password: ${{ secrets.ACR_PASSWORD }}
+
+    - name: Install Helm
+      run : |
+        curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
+        chmod 700 get_helm.sh
+        ./get_helm.sh
+
+    - name: Set environment variables
+      shell: pwsh
+      working-directory: Deploy/powershell
+      run: |
+        $gValuesLocation=$(./Join-Path-Recursively.ps1 -pathParts ..,helm,__values, configFile.yaml)
+        echo "GVALUES_LOCATION=$gValuesLocation" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+    - name: Generate config
+      working-directory: Deploy/powershell
+      shell: pwsh
+      run: |
+        ./Generate-Config.ps1 -resourceGroup ${{ secrets.RESOURCE_GROUP }} -outputFile ${{ env.GVALUES_LOCATION }}
+
+    - name: Install extensions
+      run: |
+        az extension add --name  application-insights
+        az extension update --name  application-insights
+        az extension add --name aks-preview
+        az extension update --name aks-preview
+
+    - name: Get credentials
+      run: |
+        az aks get-credentials -n ${{ secrets.AKS_NAME }} -g ${{ secrets.RESOURCE_GROUP }}
+
+    - name: Create secrets
+      working-directory: Deploy/powershell
+      shell: pwsh
+      run: |
+        ./Create-Secret.ps1 -resourceGroup ${{ secrets.RESOURCE_GROUP }} -acrName ${{ secrets.ACR_NAME }}
+    
+    - name: Docker build and push
+      working-directory: Deploy/powershell
+      shell: pwsh
+      run: |
+        ./Build-Push.ps1 -resourceGroup ${{ secrets.RESOURCE_GROUP }} -acrName ${{ secrets.ACR_NAME }}
+
+    - name: Deploy images
+      working-directory: Deploy/powershell
+      shell: pwsh
+      run: |
+        ./Deploy-Images-Aks.ps1 -aksName ${{ secrets.AKS_NAME }} -resourceGroup ${{ secrets.RESOURCE_GROUP }} -acrName ${{ secrets.ACR_NAME }} -valuesFile ${{ env.GVALUES_LOCATION }} -tlsHost ${{ secrets.TLS_HOST }} -tlsEnv ${{ secrets.TLS_ENV }}
+    
+    - name: Deploy pictures
+      working-directory: Deploy/powershell
+      shell: pwsh
+      run: |
+        ./Deploy-Pictures-Azure.ps1 -resourceGroup ${{ secrets.RESOURCE_GROUP }} -storageName ${{ secrets.STORAGE_NAME }}
