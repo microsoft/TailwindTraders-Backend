@@ -7,7 +7,8 @@ on:
     branches: [main]
   schedule:
     - cron: '0 0 * * *'
-
+  workflow_dispatch:
+    
 jobs:
   pr-build:
     if: ${{ github.event_name == 'pull_request' }}
