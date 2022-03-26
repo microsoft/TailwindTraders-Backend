@@ -31,5 +31,5 @@ Write-Host "Creating webapp for chart api2"
 az webapp plan create --name "$webappNamePrefix-2" --plan ${webappNamePrefix}-splan2 --resourceGroup $resourceGroup -deployment-container-image-name nginx
 az webapp config container set -g $resourceGroup -n "$webappNamePrefix-2" --docker-registry-server-url https://$acrLoginServer --docker-custom-image-name $acrLoginServer/cart.api:${imageTag}
 
-
+#Nishant Test here 
 
