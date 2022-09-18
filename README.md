@@ -1,4 +1,4 @@
-# Tailwind Traders Backend Services 1
+# Tailwind Traders Backend Services
 
 [![Build status](https://dev.azure.com/TailwindTraders/Backend/_apis/build/status/Backend-CI)](https://dev.azure.com/TailwindTraders/Backend/_build/latest?definitionId=26)
 
